@@ -112,6 +112,15 @@ QUALITY = dict(
     max_wrist_speed=6.0,     # T1: m/s, above = tracking glitch
     max_head_speed=4.0,      # T1: m/s
     max_ang_speed=15.0,      # T1: rad/s
+    # PIQE, the no-reference metric ego/robot curation pipelines actually use.
+    # It does NOT replace the Laplacian sharpness gate -- measured on this
+    # corpus the two are orthogonal and each covers the other's blind spot:
+    # Laplacian falls correctly with blur (5.3 -> 1.0 at sigma=5) but is fooled
+    # by noise, rating a noisy frame 4526; PIQE catches noise (2.9 -> 3.9) but
+    # models blockiness and noise rather than sharpness, so it rates a BLURRED
+    # frame as cleaner (2.9 -> 1.3). Carried as a second channel, not a swap.
+    piqe_activity=0.008,     # T1: calibrated; the published 0.1 judges 3.7% of blocks here
+    piqe_max=None,           # T1: noise gate; None until calibrated on your footage
     min_hand_vis=0.30,       # T1: full-frame gate; inert on this corpus (always 1.0)
     min_hand_c50=0.60,       # T1: fraction of hand joints inside the central 50%
     drop_motion_frac=0.30,   # T2: drop this top fraction by head motion

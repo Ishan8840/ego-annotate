@@ -1,0 +1,10 @@
+===== caption activity =====
+75 captions from 75 spans in 124s
+  throughput: 0.61 spans/s  |  1.3x realtime (165s video in 124s)
+===== caption rgb_flow =====
+63 captions from 63 spans in 104s
+  throughput: 0.60 spans/s  |  1.5x realtime (161s video in 104s)
+===== caption rgb_tsm =====
+68 captions from 68 spans in 112s
+  throughput: 0.61 spans/s  |  1.5x realtime (164s video in 112s)
+ARMS_DONE

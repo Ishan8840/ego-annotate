@@ -90,6 +90,40 @@ def activity_signal(ep, cfg=CFG):
     return base_t, smooth(np.maximum.reduce(normed), win)
 
 
+def signal_for(ep, cfg=CFG):
+    """
+    (timebase, activity) for whichever boundary signal this run selected.
+
+    All arms share one downstream path -- trough finding, the duration band,
+    boundary refinement and the pose facts -- so swapping the signal isolates
+    the question of where boundaries should come from.
+    """
+    kind = cfg.get("signal", "activity")
+    if kind == "activity":
+        return activity_signal(ep, cfg)
+    if kind.startswith("rgb_"):
+        from .rgb_boundaries import signal as rgb_signal
+        return rgb_signal(ep, kind)
+    if kind == "velocity":
+        # the velocity arm keeps the combined signal for band/refinement work;
+        # only its boundary set differs
+        return activity_signal(ep, cfg)
+    raise ValueError(f"unknown span signal {kind!r}")
+
+
+def troughs_for(ep, t, act, cfg=CFG):
+    """Boundary times for the selected signal."""
+    kind = cfg.get("signal", "activity")
+    if kind == "velocity":
+        from .events import velocity_troughs
+        return velocity_troughs(ep)
+    if not len(t):
+        return np.zeros(0)
+    idx = local_minima(act, cfg["prominence"],
+                       min_gap_samples=cfg["min_gap_s"], t=t)
+    return t[idx] if len(idx) else np.zeros(0)
+
+
 def activity_troughs(ep, cfg=CFG):
     """Boundary candidates: prominent minima of the combined activity signal."""
     t, act = activity_signal(ep, cfg)
@@ -492,22 +526,18 @@ def build(segments=None, out=None, only=None, cfg=CFG,
                            shifted=0, rejected=0, considered=0, total_delta=0.0)
     for seg in segs:
         name = os.path.basename(seg["source"]).rsplit(".", 1)[0]
+        needs_video = str(cfg.get("signal", "activity")).startswith("rgb_")
         try:
-            ep = read_episode(config.episode_path(name), want_video=False)
+            ep = read_episode(config.episode_path(name), want_video=needs_video)
         except FileNotFoundError as e:
             print("MISSING", e)
             continue
-        t, act = activity_signal(ep, cfg)
+        t, act = signal_for(ep, cfg)
         if not len(t):
-            print("no pose signal for", seg["id"])
+            print("no boundary signal for", seg["id"])
             del ep
             continue
-
-        if cfg["signal"] == "activity":
-            troughs = activity_troughs(ep, cfg)
-        else:
-            from .events import velocity_troughs
-            troughs = velocity_troughs(ep)
+        troughs = troughs_for(ep, t, act, cfg)
 
         t0, t1 = seg["t0"], seg["t1"]
         edges = np.concatenate([[t0], troughs[(troughs > t0) & (troughs < t1)], [t1]])
@@ -547,6 +577,7 @@ def build(segments=None, out=None, only=None, cfg=CFG,
                 start_ts=round(float(a), 3), end_ts=round(float(z), 3),
                 duration=round(float(z - a), 3),
                 # pose-derived, authoritative -- never asked of the model
+                boundary_signal=cfg.get("signal", "activity"),
                 hand=hand, acting_side=sides[0],
                 rotation=rot, fingers=fingers,
                 aperture_mm=(ap or {}).get("aperture_mm"),
