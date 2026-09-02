@@ -61,6 +61,8 @@ opening is a detectable error, not an opinion.
    propagated rather than imputed.
 3. **spans** — cuts annotation units at troughs in a **combined activity
    signal**: the max of normalised wrist speed, aperture rate and twist rate.
+   Pose-free RGB alternatives (`--signal rgb_flow` / `rgb_tsm`) run through the
+   same downstream path, so the boundary source can be swapped and measured.
    Wrist speed alone is the wrong cue — unscrewing a cap barely moves the
    wrist. The duration band is enforced *at cut time*, so the captioner is
    never marked down for a boundary it did not choose; each cut is then
@@ -150,6 +152,15 @@ p = 0.0076). The 66-vs-79 result that motivated boundary refinement was a
 property of those five development episodes, not of the architecture. The
 vision-only arm's *other* failures replicate cleanly &mdash; front-loading, 68% band
 compliance, 29% handedness disagreement.
+
+**And that vision-only arm was the wrong opponent.** Measured against real
+pose-free boundary detectors &mdash; optical flow and frame self-similarity, the
+primitives behind the unsupervised state of the art on Kinetics-GEBD &mdash; the
+pose-guided cutter is **no longer clearly ahead on boundaries** (F1@0.5 27% vs
+31% for `rgb_tsm`), though it keeps a lead on caption text. The honest claim is
+that pose gives boundaries that are free, deterministic and independently
+checkable, not boundaries that are better:
+[`docs/survey_followups.md`](docs/survey_followups.md).
 
 Full numbers, caveats and a reproduction script:
 [`docs/heldout_refinement.md`](docs/heldout_refinement.md).
@@ -304,3 +315,4 @@ with a comment saying where the number came from.
 - [`docs/events.md`](docs/events.md) — the event detector and its negative results
 - [`docs/labeling_spec.md`](docs/labeling_spec.md) — what an atomic caption is, and why
 - [`docs/heldout_refinement.md`](docs/heldout_refinement.md) — boundary refinement measured on held-out episodes, and the null result
+- [`docs/survey_followups.md`](docs/survey_followups.md) — a real RGB boundary baseline, standard dense-captioning metrics, and PIQE

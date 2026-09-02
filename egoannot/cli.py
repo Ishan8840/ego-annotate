@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 
 from . import config
@@ -94,7 +95,11 @@ def build_parser():
     sb = ss.add_parser("build", help="write spans.jsonl")
     sb.add_argument("--only", nargs="*", default=None, help="segment ids")
     sb.add_argument("--out", default=None)
-    sb.add_argument("--signal", choices=["activity", "velocity"], default=None)
+    sb.add_argument("--signal", default=None,
+                    choices=["activity", "velocity", "rgb_flow", "rgb_tsm"],
+                    help="where boundaries come from: pose activity (default), "
+                         "wrist velocity, or pose-free RGB (optical flow / "
+                         "temporal self-similarity)")
     sb.add_argument("--no-band", action="store_true",
                     help="skip duration-band enforcement (rule A1)")
     sb.add_argument("--no-boundary-refine", action="store_true",
@@ -137,6 +142,13 @@ def build_parser():
     sc.add_argument("captions", nargs="?", default=None)
 
     # -- gold / stereo / lint -----------------------------------------
+    dc = sub.add_parser("dense-eval",
+                        help="dense-captioning metrics vs the shipped references")
+    dc.add_argument("captions", nargs="*", default=None,
+                    help="one or more caption files; several are compared")
+    dc.add_argument("--labels", nargs="*", default=None,
+                    help="display names, matched positionally to the files")
+
     g = sub.add_parser("gold", help="score events against the human gold set")
     g.add_argument("--candidates", default=None)
 
@@ -262,6 +274,17 @@ def main(argv=None):
     if stage == "score":
         from .stages import score
         score.score(args.captions)
+        return 0
+
+    if stage == "dense-eval":
+        from .evaluation import captions as cap
+        paths = args.captions or [str(config.CAPTIONS)]
+        if len(paths) == 1:
+            cap.evaluate(paths[0])
+        else:
+            labels = args.labels or [
+                os.path.basename(p).replace(".jsonl", "") for p in paths]
+            cap.compare(dict(zip(labels, paths)))
         return 0
 
     if stage == "gold":

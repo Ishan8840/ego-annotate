@@ -4,6 +4,9 @@ mcap>=1.1
 mcap-protobuf-support>=0.5
 protobuf>=4.24
 
+# dense-captioning metrics (CIDEr / BLEU / METEOR); METEOR needs a JRE
+pycocoevalcap>=1.2
+
 # optional, per backend
 # anthropic>=0.40          # caption --backend anthropic
 # torch, transformers      # caption --backend qwen-local

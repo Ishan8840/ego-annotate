@@ -25,6 +25,7 @@ import numpy as np
 
 from .. import config
 from ..core.geometry import camera_convention, in_rect, project, quats_to_R
+from ..core.imquality import piqe
 from ..core.mcap_io import modality_audit, read_episode
 from ..core.signal import angular_speed, speed
 from ..core.video import decode_stream
@@ -142,8 +143,9 @@ def flow_series(ep, cfg=CFG):
 
 
 def blur_series(ep, cfg=CFG):
-    """Clip-relevant sharpness + exposure at native resolution, 2 fps."""
+    """Sharpness, exposure and PIQE at native resolution, 2 fps."""
     sharp, bright, masked, glob, bad, sats, darks = [], [], [], [], [], [], []
+    piqe_s, piqe_a = [], []
     for frame in decode_stream(ep["vid"], ep["src_fps"], cfg["blur_fps"], size=None):
         s, m, g = frame_sharpness(frame, cfg)
         sharp.append(s)
@@ -154,9 +156,13 @@ def blur_series(ep, cfg=CFG):
         sats.append(sat)
         darks.append(dark)
         bad.append(b)
+        p, a = piqe(frame, cfg.get("piqe_activity"))
+        piqe_s.append(p)
+        piqe_a.append(a)
     ts = np.arange(len(sharp)) / cfg["blur_fps"]
     return (ts, np.array(sharp), np.array(bright), np.array(masked),
-            np.array(glob, bool), np.array(bad, bool), np.array(sats), np.array(darks))
+            np.array(glob, bool), np.array(bad, bool), np.array(sats),
+            np.array(darks), np.array(piqe_s), np.array(piqe_a))
 
 
 # ---------------------------------------------------------------- T4 records
@@ -196,6 +202,12 @@ def hard_rejects(m: dict, cfg=CFG) -> list[str]:
     c50 = m.get("hand_central50_rate")
     if c50 is not None and c50 < cfg["min_hand_c50"]:
         reasons.append("hands_poorly_framed")
+    # PIQE catches compression artifacts and sensor noise, which the Laplacian
+    # gate not only misses but inverts -- a noisy frame reads as very sharp.
+    # Off until calibrated: `quality calibrate` prints the floor for a corpus.
+    pq, pq_max = m.get("piqe"), cfg.get("piqe_max")
+    if pq_max is not None and pq is not None and pq > pq_max:
+        reasons.append("compression_artifacts")
     return reasons
 
 
@@ -209,7 +221,8 @@ def episode_records(path, cfg=CFG):
     kin = pose_kinematics(ep, cfg)
     hv = hand_visibility(ep)
     f_ts, f_mag, n_flow = flow_series(ep, cfg)
-    b_ts, sharp, bright, mask, glob, badexp, sat, dark = blur_series(ep, cfg)
+    (b_ts, sharp, bright, mask, glob, badexp, sat, dark,
+     piqe_score, piqe_active) = blur_series(ep, cfg)
 
     n_clips = max(1, int(math.ceil(duration / cfg["clip_len_s"])))
     records = []
@@ -219,6 +232,7 @@ def episode_records(path, cfg=CFG):
         mb, mf = in_window(b_ts, a, b), in_window(f_ts, a, b)
         sh, br, mk, gl = sharp[mb], bright[mb], mask[mb], glob[mb]
         bd, sa, dk, fl = badexp[mb], sat[mb], dark[mb], f_mag[mf]
+        pq, pa = piqe_score[mb], piqe_active[mb]
 
         def peak(t, v):
             sel = in_window(t, a, b)
@@ -248,7 +262,9 @@ def episode_records(path, cfg=CFG):
             duration_s=b - a, missing_topics=missing, n_frames=len(sh),
             sharpness_p25=sharp_p25, brightness_out_frac=bright_bad,
             max_wrist_speed=wrist, max_head_speed=head, max_angular_speed=angular,
-            hand_visible_rate=vis, hand_central50_rate=vis_c50), cfg)
+            hand_visible_rate=vis, hand_central50_rate=vis_c50,
+            piqe=float(np.nanmedian(pq)) if len(pq) and np.isfinite(pq).any()
+            else None), cfg)
 
         records.append(dict(
             clip_id=f"{name}#{i:04d}", episode=name, source_path=str(path),
@@ -260,6 +276,9 @@ def episode_records(path, cfg=CFG):
             sharpness_min=round(float(sh.min()), 2) if len(sh) else None,
             lowtex_masked_frac=round(float(mk.mean()), 4) if len(mk) else None,
             globally_blurred_frames=int(gl.sum()) if len(gl) else 0,
+            piqe=round(float(np.nanmedian(pq)), 2)
+            if len(pq) and np.isfinite(pq).any() else None,
+            piqe_active_frac=round(float(np.mean(pa)), 3) if len(pa) else None,
             brightness_mean=round(float(br.mean()), 2) if len(br) else 0.0,
             brightness_out_frac=round(bright_bad, 4),
             saturated_pixel_frac=round(float(sa.max()), 4) if len(sa) else None,
@@ -356,7 +375,8 @@ def report(records):
     print(f"  {'episode':20s} {'clips':>5s} {'T1':>4s} {'T2':>4s} {'kept':>5s}")
     for name, (tot, h, m) in sorted(per_ep.items()):
         print(f"  {name:20s} {tot:5d} {h:4d} {m:4d} {tot - h - m:5d}")
-    for key in ("sharpness_p25", "brightness_mean", "saturated_pixel_frac",
+    for key in ("sharpness_p25", "piqe", "piqe_active_frac",
+                "brightness_mean", "saturated_pixel_frac",
                 "crushed_pixel_frac", "head_motion", "hand_visible_rate",
                 "hand_central50_rate", "hand_cam_dist_m", "hand_offaxis_deg",
                 "max_wrist_speed", "max_angular_speed", "lowtex_masked_frac"):
@@ -410,6 +430,7 @@ def calibrate(paths, cfg=CFG, per_ep=14):
     """
     import cv2
     tiles_all, sharp_ok, bright_ok = [], [], []
+    piqe_ok, piqe_active, piqe_noise = [], [], []
     sharp_blur = {1.5: [], 3.0: [], 5.0: []}
     cols, rows = cfg["tile_grid"]
     for path in paths:
@@ -432,6 +453,15 @@ def calibrate(paths, cfg=CFG, per_ep=14):
             tiles_all += vs
             sharp_ok.append(np.percentile(vs, 75))
             bright_ok.append(frame.mean())
+            p_ok, a_ok = piqe(frame, cfg.get("piqe_activity"))
+            piqe_ok.append(p_ok)
+            piqe_active.append(a_ok)
+            # synthetic positive control for the noise gate, matching how the
+            # blur floor is derived from deliberately degraded copies
+            noisy = np.clip(frame.astype(int)
+                            + np.random.default_rng(0).normal(0, 15, frame.shape),
+                            0, 255).astype(np.uint8)
+            piqe_noise.append(piqe(noisy, cfg.get("piqe_activity"))[0])
             for sigma in sharp_blur:
                 blurred = cv2.GaussianBlur(frame, (0, 0), sigma)
                 sharp_blur[sigma].append(np.percentile(tile_vars(blurred), 75))
@@ -459,9 +489,30 @@ def calibrate(paths, cfg=CFG, per_ep=14):
     hi = float(np.percentile(sharp, 5))
     rec_blur = round((lo + hi) / 2, 1) if lo < hi else round(hi * 0.6, 1)
     rec_lowtex = round(float(np.percentile(tiles, 10)), 1)
+    pq = np.array([x for x in piqe_ok if np.isfinite(x)])
+    pn = np.array([x for x in piqe_noise if np.isfinite(x)])
+    rec_piqe = None
+    if len(pq) and len(pn):
+        print("\n  PIQE (lower is better), real frames: " + "  ".join(
+            f"p{q}={np.percentile(pq, q):.2f}" for q in (5, 50, 95)))
+        print(f"  PIQE with sigma=15 noise injected: p5={np.percentile(pn, 5):.2f}"
+              f"  p50={np.percentile(pn, 50):.2f}")
+        print(f"  judgeable blocks at activity={cfg.get('piqe_activity')}: "
+              f"{100 * np.mean(piqe_active):.0f}%")
+        real_hi = float(np.percentile(pq, 95))
+        noise_lo = float(np.percentile(pn, 5))
+        rec_piqe = (round((real_hi + noise_lo) / 2, 2)
+                    if real_hi < noise_lo else None)
+        if rec_piqe is None:
+            print("  -> real and noisy frames are NOT separable by PIQE on this "
+                  "footage; leave piqe_max unset rather than gate on it")
+        else:
+            print(f"  -> recommended piqe_max = {rec_piqe} "
+                  f"(real p95={real_hi:.2f}, noisy p5={noise_lo:.2f})")
+
     print(f"\n  recommended  lowtex_floor = {rec_lowtex}   blur_floor = {rec_blur}   "
           f"(sigma1.5 p95={lo:.1f}, real p5={hi:.1f})")
-    return dict(lowtex_floor=rec_lowtex, blur_floor=rec_blur,
+    return dict(lowtex_floor=rec_lowtex, blur_floor=rec_blur, piqe_max=rec_piqe,
                 bright_lo=round(float(np.percentile(bright, 1)) * 0.5, 1),
                 bright_hi=round(min(250.0, float(np.percentile(bright, 99)) * 1.6), 1))
 
