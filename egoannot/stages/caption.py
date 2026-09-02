@@ -223,8 +223,13 @@ class QwenLocal:
         inputs = self.proc(text=[text], images=images,
                            return_tensors="pt").to(self.model.device)
         with self.torch.inference_mode():
-            gen = self.model.generate(**inputs, max_new_tokens=1024, do_sample=True,
-                                      temperature=CFG["temperature"], top_p=0.9)
+            if CFG.get("greedy"):
+                gen = self.model.generate(**inputs, max_new_tokens=1024,
+                                          do_sample=False)
+            else:
+                gen = self.model.generate(**inputs, max_new_tokens=1024,
+                                          do_sample=True,
+                                          temperature=CFG["temperature"], top_p=0.9)
         trimmed = gen[0][inputs.input_ids.shape[1]:]
         txt = self.proc.decode(trimmed, skip_special_tokens=True)
         self.last_raw = txt

@@ -135,9 +135,24 @@ original time, final time, delta, candidate count and rejection reason in
 `start_refine` / `end_refine`. `--no-boundary-refine` reproduces the old
 behaviour.
 
-Its effect on the grounding gap above is **not yet measured** &mdash; that needs a
-rebuild against the `.mcap` corpus, which is not redistributed here. Invariants
-and cost are covered by tests; the table above is still the pre-refinement run.
+**It did not work, and the premise behind it does not replicate.** Measured on
+eight held-out episodes pulled fresh from the dataset, no task overlapping the
+set above, with greedy decoding so sampling noise cannot be confused for the
+change: grounding is **79% with refinement and 79% without** (34/43 vs 33/42,
+Fisher p = 1.00). Band compliance stayed at 100% with 0 violations and density
+was unchanged, so nothing broke &mdash; the change simply does not move the metric
+it was built to move, even though it shifted 10 boundaries and altered 28 of 75
+captions.
+
+On that same held-out corpus the comparison in the table above **reverses**: the
+pose-guided arm scores 79% grounding against the vision-only arm's 51% (Fisher
+p = 0.0076). The 66-vs-79 result that motivated boundary refinement was a
+property of those five development episodes, not of the architecture. The
+vision-only arm's *other* failures replicate cleanly &mdash; front-loading, 68% band
+compliance, 29% handedness disagreement.
+
+Full numbers, caveats and a reproduction script:
+[`docs/heldout_refinement.md`](docs/heldout_refinement.md).
 
 ## What's honest about it
 
@@ -288,3 +303,4 @@ with a comment saying where the number came from.
 - [`docs/quality.md`](docs/quality.md) — quality tiers, calibration, limits
 - [`docs/events.md`](docs/events.md) — the event detector and its negative results
 - [`docs/labeling_spec.md`](docs/labeling_spec.md) — what an atomic caption is, and why
+- [`docs/heldout_refinement.md`](docs/heldout_refinement.md) — boundary refinement measured on held-out episodes, and the null result

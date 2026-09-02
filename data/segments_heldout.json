@@ -1,0 +1,58 @@
+[
+ {
+  "id": "fill_and_boil_water_in",
+  "source": "fill_and_boil_water_in_kettl.mcap",
+  "cls": "Fill and boil water in kettle",
+  "t0": 0.0,
+  "t1": 22.8
+ },
+ {
+  "id": "install_the_phone_case",
+  "source": "install_the_phone_case_onto.mcap",
+  "cls": "Install the phone case onto the ph",
+  "t0": 0.0,
+  "t1": 31.0
+ },
+ {
+  "id": "refill_badminton_shutt",
+  "source": "refill_badminton_shuttlecock.mcap",
+  "cls": "Refill Badminton Shuttlecocks",
+  "t0": 0.0,
+  "t1": 31.5
+ },
+ {
+  "id": "residual_adhesive_remo",
+  "source": "residual_adhesive_removal_fr.mcap",
+  "cls": "Residual Adhesive Removal from Bot",
+  "t0": 0.0,
+  "t1": 27.3
+ },
+ {
+  "id": "return_the_coat_rack",
+  "source": "return_the_coat_rack.mcap",
+  "cls": "Return the coat rack",
+  "t0": 0.0,
+  "t1": 11.4
+ },
+ {
+  "id": "take_out_the_file_fold",
+  "source": "take_out_the_file_folder.mcap",
+  "cls": "take out the file folder",
+  "t0": 0.0,
+  "t1": 11.8
+ },
+ {
+  "id": "wipe_speaker",
+  "source": "wipe_speaker.mcap",
+  "cls": "Wipe Speaker",
+  "t0": 0.0,
+  "t1": 26.5
+ },
+ {
+  "id": "wipe_the_inside_door_h",
+  "source": "wipe_the_inside_door_handle.mcap",
+  "cls": "Wipe the inside door handle",
+  "t0": 0.0,
+  "t1": 11.1
+ }
+]

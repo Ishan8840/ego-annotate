@@ -12,10 +12,27 @@ pytestmark = pytest.mark.skipif(
     reason="no episode corpus (set EGO_CORPUS or create a `corpus` symlink)")
 
 
+def need_episode(name):
+    """Skip rather than error when a corpus does not carry this episode."""
+    try:
+        return config.episode_path(name)
+    except FileNotFoundError:
+        pytest.skip(f"corpus has no episode {name!r}")
+
+
+def need_segment(sid):
+    """Skip rather than error when the segment definitions omit this id."""
+    import json
+    ids = {s["id"] for s in json.load(open(config.SEGMENT_DEFS))}
+    if sid not in ids:
+        pytest.skip(f"segment definitions have no {sid!r}")
+    return sid
+
+
 @pytest.fixture(scope="module")
 def episode():
     from egoannot.core.mcap_io import read_episode
-    return read_episode(config.episode_path("np_tissue"))
+    return read_episode(need_episode("np_tissue"))
 
 
 def test_reader_returns_a_coherent_episode(episode):
@@ -34,7 +51,7 @@ def test_hand_streams_share_a_timebase(episode):
 
 def test_pose_only_read_skips_the_video_bitstream():
     from egoannot.core.mcap_io import read_episode
-    ep = read_episode(config.episode_path("np_tissue"), want_video=False)
+    ep = read_episode(need_episode("np_tissue"), want_video=False)
     assert ep["vid"] == b""
     assert len(ep["/pose/right_hand"]) > 0
 
@@ -70,6 +87,7 @@ def test_camera_convention_is_recovered_from_geometry(episode):
 def test_spans_land_inside_the_linter_band():
     from egoannot.labels import atomicity as AL
     from egoannot.stages import spans
+    need_segment("np_tissue")
     rows = spans.build(only=["np_tissue"],
                        out=config.artifact("spans", "_test_spans.jsonl"))
     assert rows
@@ -82,6 +100,7 @@ def test_spans_land_inside_the_linter_band():
 
 def test_spans_carry_the_pose_facts_the_model_is_not_asked_for():
     from egoannot.stages import spans
+    need_segment("dv_contactlens")
     rows = spans.build(only=["dv_contactlens"],
                        out=config.artifact("spans", "_test_spans2.jsonl"))
     assert rows
@@ -96,6 +115,7 @@ def test_spans_carry_the_pose_facts_the_model_is_not_asked_for():
 def test_the_stub_backend_captions_every_span_and_scores_clean():
     from egoannot.stages import caption, score, spans
     span_path = config.artifact("spans", "_test_spans3.jsonl")
+    need_segment("np_tissue"); need_segment("dv_coffee")
     rows = spans.build(only=["np_tissue", "dv_coffee"], out=span_path)
     out = config.artifact("captions", "_test_caps.jsonl")
     caps = caption.run(span_path, "stub", out)
@@ -110,6 +130,7 @@ def test_the_frame_store_stays_small():
     """The old raw-frame cache reached 8.2 GB across the rendered segments."""
     from egoannot.core.video import SegmentFrames
     from egoannot.stages import spans
+    need_segment("np_storagebox")
     rows = spans.build(only=["np_storagebox"],
                        out=config.artifact("spans", "_test_spans4.jsonl"))
     store = SegmentFrames(config.SEGMENTS_DIR)

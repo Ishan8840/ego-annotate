@@ -1,0 +1,11 @@
+===== caption arm=off =====
+75 captions from 75 spans in 124s
+  throughput: 0.61 spans/s  |  1.3x realtime (165s video in 124s)
+  frame store peak 0.9 MB (300 JPEG frames; the old raw-frame cache held 8.2 GB)
+  mean tokens/call: in 5071  out 277
+===== caption arm=on =====
+75 captions from 75 spans in 124s
+  throughput: 0.61 spans/s  |  1.3x realtime (165s video in 124s)
+  frame store peak 0.9 MB (300 JPEG frames; the old raw-frame cache held 8.2 GB)
+  mean tokens/call: in 5074  out 277
+ALL_DONE

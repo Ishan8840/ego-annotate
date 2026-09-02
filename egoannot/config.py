@@ -82,7 +82,9 @@ SEGMENTS_DIR = Path(os.environ.get("EGO_SEGMENTS", ARTIFACTS / "segments"))
 SPANS = ARTIFACTS / "spans" / "spans.jsonl"
 CAPTIONS = ARTIFACTS / "captions" / "captions.jsonl"
 
-SEGMENT_DEFS = DATA / "segments.json"
+# Overridable like the corpus and the artifact root, so a held-out corpus can
+# be run end to end without editing the project's own segment definitions.
+SEGMENT_DEFS = Path(os.environ.get("EGO_SEGMENT_DEFS", DATA / "segments.json"))
 GOLD = DATA / "gold.json"
 LINT_POSITIVES = DATA / "lint_positives.jsonl"
 LINT_NEGATIVES = DATA / "lint_negatives.jsonl"
@@ -232,6 +234,10 @@ CAPTION = dict(
     openai_model=os.environ.get("OPENAI_MODEL", "Qwen/Qwen2.5-VL-7B-Instruct"),
     qwen_model=os.environ.get("QWEN_MODEL", "Qwen/Qwen3-VL-8B-Instruct"),
     temperature=0.4,
+    # Greedy decoding makes a run reproducible from the prompt alone. Off in
+    # production (sampling reads better), on when A/B-ing something upstream:
+    # otherwise sampling noise is confounded with the change under test.
+    greedy=os.environ.get("CAPTION_GREEDY", "0") == "1",
 )
 
 # ---------------------------------------------------------------- stage: segments

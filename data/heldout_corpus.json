@@ -1,0 +1,58 @@
+[
+ {
+  "id": "wipe_the_inside_door_h",
+  "episode": "wipe_the_inside_door_handle",
+  "task": "Wipe the inside door handle",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/Wipe the inside door handle/52f12a15-4a79-4e66-8b03-153b78584632.mcap",
+  "dur": 11.066667
+ },
+ {
+  "id": "return_the_coat_rack",
+  "episode": "return_the_coat_rack",
+  "task": "Return the coat rack",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/Return the coat rack/45eaaba4-e8d7-4c69-912d-df0a36c2c640.mcap",
+  "dur": 11.366667064
+ },
+ {
+  "id": "take_out_the_file_fold",
+  "episode": "take_out_the_file_folder",
+  "task": "take out the file folder",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/take out the file folder/abf2e777-ec69-4d0a-9e25-f52f9181f89f.mcap",
+  "dur": 11.800000064
+ },
+ {
+  "id": "residual_adhesive_remo",
+  "episode": "residual_adhesive_removal_fr",
+  "task": "Residual Adhesive Removal from Bottle Mouth",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/Residual Adhesive Removal from Bottle Mouth/01dd0822-fd47-4e18-96ee-d50fd361aee9.mcap",
+  "dur": 27.300000128
+ },
+ {
+  "id": "fill_and_boil_water_in",
+  "episode": "fill_and_boil_water_in_kettl",
+  "task": "Fill and boil water in kettle",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard-body/mcap/Fill and boil water in kettle/30ac9824-e8df-4d18-a620-2e45784f46f1.mcap",
+  "dur": 22.766667064
+ },
+ {
+  "id": "wipe_speaker",
+  "episode": "wipe_speaker",
+  "task": "Wipe Speaker",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/Wipe Speaker/017f007f-44b3-4b1b-b8db-13241b87a589.mcap",
+  "dur": 26.533333064
+ },
+ {
+  "id": "install_the_phone_case",
+  "episode": "install_the_phone_case_onto",
+  "task": "Install the phone case onto the phone",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/Install the phone case onto the phone/4bbf7ceb-aeae-4d41-8737-01d9984b9558.mcap",
+  "dur": 31.0
+ },
+ {
+  "id": "refill_badminton_shutt",
+  "episode": "refill_badminton_shuttlecock",
+  "task": "Refill Badminton Shuttlecocks",
+  "bucket": "hf://buckets/LightwheelAI/EgoStandard/EgoStandard/mcap/Refill Badminton Shuttlecocks/1b2b60ed-f5d5-49e9-bb35-e6d4c9ddf4af.mcap",
+  "dur": 31.52
+ }
+]
