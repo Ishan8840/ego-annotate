@@ -8,11 +8,16 @@ boundaries, hand assignment and caption timing inspectable at a glance -- and
 it doubles as the README demo.
 
     python -m egoannot demo --segments pp_shampoo np_storagebox --out demo.mp4
-    python -m egoannot demo --segments pp_shampoo:1.9:10 --gif demo.gif
+    python -m egoannot demo --segments pp_shampoo:1.9:8.2 --gif demo.gif \
+        --gif-fps 6 --gif-width 400 --gif-colors 40 --gif-dither none
 
 A segment may carry its own window as `id:start` or `id:start:duration`, in
 clip-local seconds, so a demo can open on the moment that shows the pipeline
 working rather than on whatever the clip happens to begin with.
+
+For a GIF, `--gif-dither none` is usually right: size here is dominated by
+camera motion rather than palette error, and dithering adds noise that costs
+roughly 30% with no visible gain on this footage.
 """
 from __future__ import annotations
 
@@ -183,7 +188,7 @@ def _frames_for_segment(sid, captions, seconds=None, start=0.0):
 
 
 def render(segments, out, seconds=None, gif=None, fps=None,
-           gif_fps=8, gif_width=430, gif_colors=64):
+           gif_fps=8, gif_width=430, gif_colors=64, gif_dither='bayer:bayer_scale=4'):
     """Composite one or more segments into a single annotated clip."""
     captions = [json.loads(l) for l in open(config.CAPTIONS)]
     specs = [parse_spec(x) for x in segments]
@@ -226,8 +231,9 @@ def render(segments, out, seconds=None, gif=None, fps=None,
                        check=True)
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out, "-i", palette,
                         "-lavfi", f"{vf} [x]; [x][1:v] paletteuse="
-                        "dither=bayer:bayer_scale=4", gif], check=True)
+                        f"dither={gif_dither}", gif], check=True)
         os.unlink(palette)
         print(f"wrote {gif}  {os.path.getsize(gif) / 1e6:.2f} MB "
-              f"({gif_fps} fps, {gif_width}px, {gif_colors} colors)")
+              f"({gif_fps} fps, {gif_width}px, {gif_colors} colors, "
+              f"dither={gif_dither})")
     return out

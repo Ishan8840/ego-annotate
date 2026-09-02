@@ -4,13 +4,23 @@ Dense action annotation for egocentric manipulation video. Feed it raw `.mcap`
 episodes — head camera, 21-joint hand pose, calibration — and it produces
 **~29 validated atomic captions per minute** of footage.
 
-![Annotated egocentric episode](assets/demo.gif)
+<table>
+<tr>
+<td width="50%"><img src="assets/demo-pickplace.gif" width="100%" alt="Retail shelf stocking, annotated"></td>
+<td width="50%"><img src="assets/demo-kitchen.gif" width="100%" alt="Kitchen cleaning, annotated"></td>
+</tr>
+<tr>
+<td><b>Pick-and-place.</b> One stocking cycle, cut into four atomic spans &mdash;
+grasp, transport, place, release.</td>
+<td><b>Kitchen cleaning.</b> Same pipeline, no retuning. The panel carries every
+measured field, including <code>clockwise</code> read off the hand pose.</td>
+</tr>
+</table>
 
-*One shelf-stocking cycle, cut into four atomic actions — grasp, transport,
-place, release. Hand skeleton is reprojected from the shipped pose; the caption
-and the measured fields sit below it, with span boundaries on the timeline.
-Longer 52-second version across three domains — pick-and-place, non-prehensile,
-personal care: [`assets/demo.mp4`](assets/demo.mp4).*
+Hand skeletons are reprojected from the shipped pose; the caption and the
+measured fields sit below each frame, with span boundaries on the timeline.
+Longer 52-second version across three domains:
+[`assets/demo.mp4`](assets/demo.mp4).
 
 ## The idea
 
@@ -66,7 +76,7 @@ python -m egoannot quality measure
 python -m egoannot spans   build
 python -m egoannot caption run --backend qwen-local
 python -m egoannot score
-python -m egoannot demo --segments pp_shampoo:1.9:10 --gif demo.gif
+python -m egoannot demo --segments pp_shampoo:1.9:8.2 --gif demo.gif
 ```
 
 Every path and threshold is in [`egoannot/config.py`](egoannot/config.py), each
@@ -89,11 +99,16 @@ local Qwen3-VL-8B:
 Both demo clips above are reproducible from the committed artifacts:
 
 ```bash
-python -m egoannot demo --segments pp_shampoo:1.9:10.2 --gif assets/demo.gif \
-    --gif-fps 7 --gif-width 400 --gif-colors 48
+GIF="--gif-fps 6 --gif-width 400 --gif-colors 40 --gif-dither none"
+python -m egoannot demo --segments pp_shampoo:1.9:8.2  --gif assets/demo-pickplace.gif $GIF
+python -m egoannot demo --segments dv_fryingpan:0:8.7  --gif assets/demo-kitchen.gif   $GIF
 python -m egoannot demo --segments pp_shampoo:1.9:20 np_storagebox:0:16 \
     dv_contactlens:0:16 --out assets/demo.mp4
 ```
+
+`id:start:duration` windows a segment in clip-local seconds. `--gif-dither none`
+matters: GIF size here is driven by camera motion, and dithering costs ~30% for
+no visible gain on this footage.
 
 Batch size is measured, not assumed — 5 spans per call beats 1 on atomicity
 (75% vs 67%), uniqueness (66.9% vs 56.1%) and length discipline (0 vs 15

@@ -140,6 +140,9 @@ def build_parser():
     d.add_argument("--gif-fps", type=int, default=8)
     d.add_argument("--gif-width", type=int, default=430)
     d.add_argument("--gif-colors", type=int, default=64)
+    d.add_argument("--gif-dither", default="bayer:bayer_scale=4",
+                   help="ffmpeg paletteuse dither; `none` compresses far "
+                        "better on video content")
 
     sub.add_parser("paths", help="show resolved paths and exit")
     return p
@@ -263,7 +266,8 @@ def main(argv=None):
                            args.out or config.artifact("reports", "demo.mp4"),
                            args.seconds, args.gif,
                            gif_fps=args.gif_fps, gif_width=args.gif_width,
-                           gif_colors=args.gif_colors)
+                           gif_colors=args.gif_colors,
+                           gif_dither=args.gif_dither)
         return 0
 
     if stage == "lint":
