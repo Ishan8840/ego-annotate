@@ -108,6 +108,21 @@ button:hover{border-color:var(--acc);color:var(--acc)}
 .track.vt .blk.no{background:var(--no)}
 .arms{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
 @media (max-width:820px){.arms{grid-template-columns:1fr}}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;align-items:start}
+@media (max-width:900px){.duo{grid-template-columns:1fr}}
+.ah{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-family:var(--m);
+  font-size:.66rem;color:var(--mut);margin-bottom:8px}
+.tag{font-family:var(--m);font-size:.6rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;padding:3px 7px;border-radius:4px}
+.tag.p{background:rgba(79,180,119,.16);color:var(--ok);border:1px solid rgba(79,180,119,.35)}
+.tag.v{background:rgba(255,180,84,.14);color:var(--acc);border:1px solid rgba(255,180,84,.35)}
+.duo .sub{padding:42px 16px 14px}
+.duo .sub .cap{font-size:clamp(.85rem,1.15vw,1.02rem)}
+.duo .sub .meta{font-size:.6rem;margin-top:6px}
+.duo .track{height:30px;margin-top:10px}
+.hint{font-family:var(--m);font-size:.63rem;color:var(--mut)}
+.gap{position:absolute;top:4px;bottom:15px;background:repeating-linear-gradient(
+  45deg,var(--line2) 0 3px,transparent 3px 6px);z-index:1}
 .vs{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:18px}
 .vs th,.vs td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:right}
 .vs th:first-child,.vs td:first-child{text-align:left}
@@ -281,6 +296,46 @@ BODY=r'''<div class="w">
     <tbody id="vsbody"></tbody>
   </table>
   <div class="note" id="vsnote"></div>
+
+  <div class="shead" style="margin-top:34px">
+    <h3 style="font-size:1.05rem">Watch both arms on the same clip</h3>
+    <p style="margin-top:6px">Same footage, same instant, one clock. The caption on
+    each screen is that arm&rsquo;s live label. Bars below are every label in the clip,
+    green where it passes the spec and red where it does not &mdash; the vision-only bar
+    is where the front-loading becomes obvious.</p>
+  </div>
+  <div class="chips" id="vchips"></div>
+  <div class="ctl">
+    <button id="vplay">&#9654;&nbsp; Play both</button>
+    <button id="vback">&#10229; prev</button>
+    <button id="vfwd">next &#10230;</button>
+    <button id="vrate">1&times;</button>
+    <label class="tog"><input type="checkbox" id="vskel"> hand pose overlay</label>
+    <span class="hint">click either bar to seek both</span>
+  </div>
+  <div class="duo">
+    <div>
+      <div class="ah"><span class="tag p">pose-guided</span> boundaries measured
+        &middot; <span id="an">&mdash;</span></div>
+      <div class="screen">
+        <video id="va" playsinline preload="metadata" muted></video>
+        <canvas id="ca" width="512" height="384"></canvas>
+        <div class="sub"><span class="cap" id="capa">&mdash;</span><span class="meta" id="metaa">&mdash;</span></div>
+      </div>
+      <div class="track" id="tka"><div class="head" id="hda"></div></div>
+    </div>
+    <div>
+      <div class="ah"><span class="tag v">vision-only</span> model chose its own
+        &middot; <span id="bn">&mdash;</span></div>
+      <div class="screen">
+        <video id="vb" playsinline preload="metadata" muted></video>
+        <canvas id="cb" width="512" height="384"></canvas>
+        <div class="sub"><span class="cap" id="capb">&mdash;</span><span class="meta" id="metab">&mdash;</span></div>
+      </div>
+      <div class="track vt" id="tkb"><div class="head" id="hdb"></div></div>
+    </div>
+  </div>
+
   <div class="arms" id="vsarms"></div>
 </section>
 
@@ -466,7 +521,7 @@ function vstable(){
     "what we expected to find.";
 }
 function arms(){
-  const A=$("vsarms"), d=D[cur];
+  const A=$("vsarms"), d=D[typeof vcur!=="undefined"?vcur:cur];
   const col=(title,caps,sub)=>{
     const box=document.createElement("div"); box.className="panel";
     let h='<div class="ph"><div class="ey">'+sub+'</div><div class="h">'+title+'</div></div><div class="rows">';
@@ -533,7 +588,7 @@ function load(id){
   cur=id; last=-2; v.src=V[id]; v.load();
   $("ptitle").textContent=D[id].task;
   $("ppack").textContent=D[id].pack.replace(/_/g," ")+" vocabulary";
-  chips(); track(); rows(); arms();
+  chips(); track(); rows();
 }
 $("play").onclick=()=>{ if(v.paused){v.play();$("play").innerHTML="❙❙&nbsp; Pause";}
                         else{v.pause();$("play").innerHTML="▶&nbsp; Play";} };
@@ -556,7 +611,112 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="ArrowRight"){e.preventDefault();jump(1);}
   else if(e.key==="ArrowLeft"){e.preventDefault();jump(-1);}
 });
-table(); vstable(); load(ids[0]); requestAnimationFrame(draw);
+
+/* ---------- side-by-side arms: two players, one clock ---------- */
+let vcur=ids.includes("dv_fryingpan")?"dv_fryingpan":ids[0];
+const va=$("va"), vb=$("vb");
+const ctxa=$("ca").getContext("2d"), ctxb=$("cb").getContext("2d");
+const vdur=()=>D[vcur].dur, vpc=t=>100*t/vdur();
+
+function vchips(){
+  const W=$("vchips"); W.innerHTML="";
+  ids.forEach(id=>{
+    const d=D[id], b=document.createElement("button");
+    b.className="chip"+(id===vcur?" on":"");
+    b.innerHTML='<div class="t">'+d.task+'</div><div class="s">'+
+      d.caps.length+' vs '+(d.capsv||[]).length+' labels · '+d.dur.toFixed(0)+'s</div>';
+    b.onclick=()=>loadv(id); W.appendChild(b);
+  });
+}
+function vfill(el,caps){
+  [...el.querySelectorAll(".blk")].forEach(n=>n.remove());
+  (caps||[]).forEach(x=>{
+    const e=document.createElement("div");
+    e.className="blk"+(x.ok?"":" no");
+    e.style.left=vpc(x.a)+"%"; e.style.width=Math.max(.5,vpc(x.b-x.a))+"%";
+    e.title=x.a.toFixed(1)+"-"+x.b.toFixed(1)+"s  "+x.t;
+    el.appendChild(e);
+  });
+}
+function loadv(id){
+  vcur=id; lva=lvb=-2;
+  [...$("tka").querySelectorAll(".gap")].forEach(n=>n.remove());
+  va.src=V[id]; vb.src=V[id]; va.load(); vb.load();
+  $("an").textContent=D[id].caps.length+" labels";
+  $("bn").textContent=(D[id].capsv||[]).length+" labels";
+  vfill($("tka"), D[id].caps); vfill($("tkb"), D[id].capsv);
+  (D[id].gaps||[]).forEach(g=>{
+    const e=document.createElement("div"); e.className="gap";
+    e.style.left=vpc(g.a)+"%"; e.style.width=Math.max(.5,vpc(g.b-g.a))+"%";
+    e.title="quality tier rejected: "+g.w; $("tka").appendChild(e);
+  });
+  vchips(); arms();
+}
+function skel(ctx,t){
+  const o=O[vcur]; ctx.clearRect(0,0,512,384);
+  if(!$("vskel").checked||!o) return;
+  const fi=Math.max(0,Math.min((o.L||[]).length-1,Math.round(t*o.fps)));
+  [[o.L,"#7fe3d8"],[o.R,"#ffb454"]].forEach(([arr,col])=>{
+    const f=arr&&arr[fi]; if(!f) return;
+    const P=[]; for(let j=0;j<21;j++){const X=f[1+2*j],Y=f[2+2*j];P.push(X<=-900?null:[X,Y]);}
+    ctx.strokeStyle=col; ctx.lineWidth=1.7; ctx.beginPath();
+    BN.forEach(([a,b])=>{if(P[a]&&P[b]){ctx.moveTo(P[a][0],P[a][1]);ctx.lineTo(P[b][0],P[b][1]);}});
+    ctx.stroke();
+    ctx.fillStyle=col; P.forEach(p=>{if(p){ctx.beginPath();ctx.arc(p[0],p[1],1.9,0,6.3);ctx.fill();}});
+  });
+}
+let lva=-2, lvb=-2;
+function gapAt(t){
+  return (D[vcur].gaps||[]).find(g=>t>=g.a&&t<g.b)||null;
+}
+function side(caps,t,capEl,metaEl,trackEl,lastIdx,isPose){
+  const i=(caps||[]).findIndex(x=>t>=x.a&&t<x.b);
+  if(i!==lastIdx){
+    const x=i>=0?caps[i]:null;
+    const g=isPose?gapAt(t):null;
+    $(capEl).textContent=x?x.t:(g?"\u2014 declined: "+g.w+" \u2014":"\u2014 no label here \u2014");
+    $(capEl).style.color=x?(x.ok?"#fff":"#ffc4b4"):"#8b9a9c";
+    $(metaEl).innerHTML=x?("<b>"+x.v+"</b> · hand "+x.h.toLowerCase()+
+      (x.ph&&x.ph!==x.h?" <b style='color:#e0715c'>(measured "+x.ph.toLowerCase()+")</b>":"")+
+      " · "+(x.b-x.a).toFixed(2)+"s"+(x.ok?"":" · <b>fails spec</b>")):
+      (g?"the quality tier rejected this footage; the pipeline does not label it":"\u2014");
+    [...$(trackEl).querySelectorAll(".blk")].forEach((n,k)=>n.classList.toggle("on",k===i));
+  }
+  return i;
+}
+function drawv(){
+  const t=va.currentTime;
+  if(!va.paused && Math.abs(vb.currentTime-t)>0.12) vb.currentTime=t;
+  lva=side(D[vcur].caps, t, "capa","metaa","tka", lva, true);
+  lvb=side(D[vcur].capsv, t, "capb","metab","tkb", lvb, false);
+  skel(ctxa,t); skel(ctxb,t);
+  $("hda").style.left=vpc(t)+"%"; $("hdb").style.left=vpc(t)+"%";
+  requestAnimationFrame(drawv);
+}
+$("vplay").onclick=()=>{
+  if(va.paused){ vb.currentTime=va.currentTime; va.play(); vb.play();
+                 $("vplay").innerHTML="&#10073;&#10073;&nbsp; Pause"; }
+  else { va.pause(); vb.pause(); $("vplay").innerHTML="&#9654;&nbsp; Play both"; }
+};
+va.addEventListener("pause",()=>{vb.pause();$("vplay").innerHTML="&#9654;&nbsp; Play both";});
+va.addEventListener("ended",()=>{vb.pause();$("vplay").innerHTML="&#9654;&nbsp; Play both";});
+const VRT=[1,.5,2]; let vri=0;
+$("vrate").onclick=()=>{vri=(vri+1)%VRT.length;va.playbackRate=vb.playbackRate=VRT[vri];
+  $("vrate").innerHTML=VRT[vri]+"&times;";};
+function vjump(dir){
+  const t=va.currentTime;
+  const a=D[vcur].caps.map(x=>x.a).filter(x=>dir>0?x>t+.15:x<t-.15);
+  if(a.length){ const to=(dir>0?Math.min(...a):Math.max(...a))+.04;
+    va.currentTime=to; vb.currentTime=to; }
+}
+$("vfwd").onclick=()=>vjump(1); $("vback").onclick=()=>vjump(-1);
+["tka","tkb"].forEach(id=>$(id).onclick=e=>{
+  const r=$(id).getBoundingClientRect();
+  const to=Math.max(0,Math.min(vdur()-.05,vdur()*(e.clientX-r.left)/r.width));
+  va.currentTime=to; vb.currentTime=to;});
+$("vskel").onchange=()=>{};
+table(); vstable(); load(ids[0]); loadv(vcur);
+requestAnimationFrame(draw); requestAnimationFrame(drawv);
 </script>
 '''
 JS=JS.replace("__D__",json.dumps(D,separators=(",",":")))
