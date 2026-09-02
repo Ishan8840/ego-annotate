@@ -1,0 +1,51 @@
+shampoo.mcap: 960x728  baseline 63.9 mm  disparities 160  distortion_nonzero=False
+  frames 14  disparity coverage mean 50.5%  samples 84  with depth 83
+  z_pose   p5 0.295  p50 0.396  p95 0.498 m
+  z_stereo p5 0.262  p50 0.375  p95 0.696 m
+  signed error (stereo - pose): median -0.003 m  MAE 0.098 m  p5 -0.118  p95 +0.270
+  |error| within 2/5/10/20 cm: 25%  49%  81%  93%
+  correlation(z_pose, z_stereo) = +0.343
+test.mcap: 960x728  baseline 64.0 mm  disparities 160  distortion_nonzero=False
+  frames 14  disparity coverage mean 65.5%  samples 84  with depth 79
+  z_pose   p5 0.262  p50 0.372  p95 0.425 m
+  z_stereo p5 0.282  p50 0.372  p95 0.682 m
+  signed error (stereo - pose): median +0.006 m  MAE 0.081 m  p5 -0.062  p95 +0.281
+  |error| within 2/5/10/20 cm: 33%  57%  73%  86%
+  correlation(z_pose, z_stereo) = +0.429
+noodles.mcap: 960x728  baseline 64.1 mm  disparities 160  distortion_nonzero=False
+  frames 14  disparity coverage mean 52.1%  samples 84  with depth 79
+  z_pose   p5 0.265  p50 0.435  p95 0.549 m
+  z_stereo p5 0.269  p50 0.470  p95 0.900 m
+  signed error (stereo - pose): median +0.049 m  MAE 0.251 m  p5 -0.226  p95 +0.555
+  |error| within 2/5/10/20 cm: 6%  16%  37%  56%
+  correlation(z_pose, z_stereo) = -0.095
+stockout_b.mcap: 960x728  baseline 63.9 mm  disparities 160  distortion_nonzero=False
+  frames 8  disparity coverage mean 52.0%  samples 48  with depth 47
+  z_pose   p5 0.414  p50 0.502  p95 0.568 m
+  z_stereo p5 0.299  p50 0.443  p95 0.649 m
+  signed error (stereo - pose): median -0.048 m  MAE 0.088 m  p5 -0.194  p95 +0.117
+  |error| within 2/5/10/20 cm: 13%  34%  66%  94%
+  correlation(z_pose, z_stereo) = +0.131
+b_ratlam.mcap: 960x728  baseline 64.2 mm  disparities 160  distortion_nonzero=False
+  frames 5  disparity coverage mean 55.3%  samples 30  with depth 29
+  z_pose   p5 0.350  p50 0.426  p95 0.504 m
+  z_stereo p5 0.373  p50 0.431  p95 0.650 m
+  signed error (stereo - pose): median +0.006 m  MAE 0.075 m  p5 -0.077  p95 +0.208
+  |error| within 2/5/10/20 cm: 14%  41%  76%  93%
+  correlation(z_pose, z_stereo) = +0.085
+belts_a.mcap: 960x728  baseline 64.3 mm  disparities 160  distortion_nonzero=False
+  frames 5  disparity coverage mean 61.1%  samples 30  with depth 24
+  z_pose   p5 0.412  p50 0.467  p95 0.584 m
+  z_stereo p5 0.295  p50 0.425  p95 0.950 m
+  signed error (stereo - pose): median -0.046 m  MAE 0.161 m  p5 -0.204  p95 +0.493
+  |error| within 2/5/10/20 cm: 8%  29%  50%  75%
+  correlation(z_pose, z_stereo) = -0.112
+==============================================================================
+episode                     n median_err      MAE    corr      <5cm  coverage
+shampoo.mcap               83     -0.003    0.098  +0.343       49%       50%
+test.mcap                  79     +0.006    0.081  +0.429       57%       65%
+noodles.mcap               79     +0.049    0.251  -0.095       16%       52%
+stockout_b.mcap            47     -0.048    0.088  +0.131       34%       52%
+b_ratlam.mcap              29     +0.006    0.075  +0.085       41%       55%
+belts_a.mcap               24     -0.046    0.161  -0.112       29%       61%
+HALFDONE

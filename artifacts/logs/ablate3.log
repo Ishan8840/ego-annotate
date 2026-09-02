@@ -1,0 +1,13 @@
+=== frames=4 spans/call=10 -> caps_base_f4s10.jsonl ===
+104 captions from 104 spans in 165s
+  throughput: 0.63 spans/s  |  1.3x realtime (210s video in 165s)
+  mean tokens/call: in 7505  out 446
+=== frames=8 spans/call=5 -> caps_abl_f8s5.jsonl ===
+104 captions from 104 spans in 183s
+  throughput: 0.57 spans/s  |  1.2x realtime (210s video in 183s)
+  mean tokens/call: in 8173  out 254
+=== frames=4 spans/call=1 -> caps_abl_f4s1.jsonl ===
+104 captions from 104 spans in 151s
+  throughput: 0.69 spans/s  |  1.4x realtime (210s video in 151s)
+  mean tokens/call: in 1775  out 56
+ABLATE3_DONE

@@ -1,0 +1,11 @@
+shampoo.mcap: 1920x1456  baseline 63.9 mm  disparities 320  distortion_nonzero=False
+  frames 14  disparity coverage mean 35.8%  samples 84  with depth 70
+  z_pose   p5 0.296  p50 0.390  p95 0.493 m
+  z_stereo p5 0.266  p50 0.412  p95 1.164 m
+  signed error (stereo - pose): median +0.051 m  MAE 0.215 m  p5 -0.193  p95 +0.803
+  |error| within 2/5/10/20 cm: 11%  29%  46%  71%
+  correlation(z_pose, z_stereo) = -0.108
+==============================================================================
+episode                     n median_err      MAE    corr      <5cm  coverage
+shampoo.mcap               70     +0.051    0.215  -0.108       29%       36%
+FULLDONE

@@ -1,0 +1,32 @@
+[1/11] belts_a                   13.7s 30fps   4 clips  hand=1.0  undelivered=['head_depth_camera']
+[2/11] belts_b                   16.8s 30fps   5 clips  hand=1.0  undelivered=['head_depth_camera']
+[3/11] cart_wipes                 9.9s 25fps   3 clips  hand=1.0  undelivered=['head_depth_camera']
+[4/11] cleaning_tools_a          10.6s 25fps   3 clips  hand=1.0  undelivered=['head_depth_camera']
+[5/11] cleaning_tools_b          11.7s 30fps   3 clips  hand=1.0  undelivered=['head_depth_camera']
+[6/11] noodles                  192.9s 30fps  49 clips  hand=1.0  undelivered=['head_depth_camera']
+[7/11] shampoo_b                168.4s 30fps  43 clips  hand=1.0  undelivered=['head_depth_camera']
+[8/11] stockout_a                13.0s 25fps   4 clips  hand=1.0  undelivered=['head_depth_camera']
+[9/11] stockout_b                23.0s 25fps   6 clips  hand=1.0  undelivered=['head_depth_camera']
+[10/11] shampoo                  134.2s 30fps  34 clips  hand=1.0  undelivered=['head_depth_camera']
+[11/11] test                     122.3s 30fps  31 clips  hand=1.0  undelivered=['head_depth_camera']
+
+wrote 185 clip records -> clip_quality.jsonl
+==========================================================================
+185 clips from 11 episodes (11.9 min)
+  T1 hard reject :    6 (  3.2%)
+  T2 motion drop :   53 ( 28.6%)
+  accepted       :  126 ( 68.1%)  8.3 min
+  reject reasons : {'clip_too_short': 6}
+  sharpness_p25          p5     7.72  p50    17.29  p95    60.58  max   132.00
+  brightness_mean        p5    49.27  p50    78.45  p95   112.71  max   114.37
+  saturated_pixel_frac   p5     0.00  p50     0.00  p95     0.00  max     0.01
+  crushed_pixel_frac     p5     0.00  p50     0.06  p95     0.26  max     0.33
+  head_motion            p5     2.19  p50     8.25  p95    13.23  max    15.28
+  hand_visible_rate      p5     1.00  p50     1.00  p95     1.00  max     1.00
+  hand_central50_rate    p5     0.79  p50     0.96  p95     1.00  max     1.00
+  hand_cam_dist_m        p5     0.32  p50     0.40  p95     0.48  max     0.55
+  hand_offaxis_deg       p5    17.04  p50    27.90  p95    35.34  max    44.70
+  max_wrist_speed        p5     0.35  p50     0.80  p95     1.62  max     2.38
+  max_angular_speed      p5     0.18  p50     1.03  p95     2.88  max     3.59
+  lowtex_masked_frac     p5     0.00  p50     0.02  p95     0.21  max     0.28
+DONE

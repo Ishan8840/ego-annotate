@@ -1,0 +1,69 @@
+Loading weights:   0%|          | 0/750 [00:00<?, ?it/s]Loading weights:   1%|          | 6/750 [00:00<00:12, 59.78it/s]Loading weights:   5%|▌         | 38/750 [00:00<00:03, 206.38it/s]Loading weights:   9%|▉         | 71/750 [00:00<00:02, 252.83it/s]Loading weights:  14%|█▍        | 105/750 [00:00<00:02, 279.07it/s]Loading weights:  20%|█▉        | 147/750 [00:00<00:01, 317.91it/s]Loading weights:  24%|██▍       | 180/750 [00:00<00:01, 320.81it/s]Loading weights:  29%|██▊       | 214/750 [00:00<00:01, 313.85it/s]Loading weights:  33%|███▎      | 248/750 [00:00<00:01, 314.66it/s]Loading weights:  38%|███▊      | 285/750 [00:00<00:01, 330.44it/s]Loading weights:  43%|████▎     | 323/750 [00:01<00:01, 343.23it/s]Loading weights:  48%|████▊     | 358/750 [00:01<00:01, 329.35it/s]Loading weights:  53%|█████▎    | 394/750 [00:01<00:01, 338.16it/s]Loading weights:  95%|█████████▌| 715/750 [00:01<00:00, 1175.02it/s]Loading weights: 100%|██████████| 750/750 [00:01<00:00, 531.87it/s] 
+loaded Qwen/Qwen3-VL-8B-Instruct on cuda:0
+frame plan: 1076 distinct frames across 17 segments (vs decoding every frame of each segment, which held 8.2 GB)
+  dv_coffee      [beverage] spans   0-  4 ->  5 captions  (input_tokens=5480, output_tokens=303, n_images=20)
+  dv_toothbrush  [small_assembly] spans   0-  2 ->  3 captions  (input_tokens=3812, output_tokens=187, n_images=12)
+  dv_plants      [plant_care] spans   0-  4 ->  5 captions  (input_tokens=5472, output_tokens=297, n_images=20)
+  dv_plants      [plant_care] spans   5-  8 ->  4 captions  (input_tokens=4789, output_tokens=244, n_images=16)
+  dv_contactlens [personal_care] spans   0-  4 ->  5 captions  (input_tokens=5460, output_tokens=292, n_images=20)
+  dv_contactlens [personal_care] spans   5-  9 ->  5 captions  (input_tokens=5612, output_tokens=294, n_images=20)
+  dv_contactlens [personal_care] spans  10- 14 ->  5 captions  (input_tokens=5611, output_tokens=294, n_images=20)
+  dv_contactlens [personal_care] spans  15- 19 ->  5 captions  (input_tokens=5602, output_tokens=307, n_images=20)
+  dv_contactlens [personal_care] spans  20- 21 ->  2 captions  (input_tokens=3127, output_tokens=123, n_images=8)
+  dv_fryingpan   [kitchen] spans   0-  4 ->  5 captions  (input_tokens=5484, output_tokens=314, n_images=20)
+  dv_fryingpan   [kitchen] spans   5-  9 ->  5 captions  (input_tokens=5626, output_tokens=326, n_images=20)
+  dv_fryingpan   [kitchen] spans  10- 14 ->  5 captions  (input_tokens=5634, output_tokens=308, n_images=20)
+  dv_fryingpan   [kitchen] spans  15- 19 ->  5 captions  (input_tokens=5642, output_tokens=308, n_images=20)
+  dv_fryingpan   [kitchen] spans  20- 24 ->  5 captions  (input_tokens=5631, output_tokens=304, n_images=20)
+  dv_fryingpan   [kitchen] spans  25- 29 ->  5 captions  (input_tokens=5609, output_tokens=310, n_images=20)
+  pp_shampoo     [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5493, output_tokens=307, n_images=20)
+  pp_shampoo     [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5647, output_tokens=308, n_images=20)
+  pp_shampoo     [retail_shelf] spans  10- 14 ->  5 captions  (input_tokens=5632, output_tokens=306, n_images=20)
+  pp_shampoo     [retail_shelf] spans  15- 19 ->  5 captions  (input_tokens=5653, output_tokens=302, n_images=20)
+  pp_shampoo     [retail_shelf] spans  20- 20 ->  1 captions  (input_tokens=2305, output_tokens=60, n_images=4)
+  pp_noodles     [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5464, output_tokens=317, n_images=20)
+  pp_noodles     [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5635, output_tokens=309, n_images=20)
+  pp_noodles     [retail_shelf] spans  10- 14 ->  5 captions  (input_tokens=5632, output_tokens=313, n_images=20)
+  pp_noodles     [retail_shelf] spans  15- 19 ->  5 captions  (input_tokens=5633, output_tokens=306, n_images=20)
+  pp_noodles     [retail_shelf] spans  20- 24 ->  5 captions  (input_tokens=5623, output_tokens=297, n_images=20)
+  pp_noodles     [retail_shelf] spans  25- 28 ->  4 captions  (input_tokens=4786, output_tokens=238, n_images=16)
+  pp_plate       [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5453, output_tokens=297, n_images=20)
+  pp_plate       [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5608, output_tokens=291, n_images=20)
+  pp_plate       [retail_shelf] spans  10- 14 ->  5 captions  (input_tokens=5606, output_tokens=289, n_images=20)
+  pp_plate       [retail_shelf] spans  15- 19 ->  5 captions  (input_tokens=5600, output_tokens=294, n_images=20)
+  pp_plate       [retail_shelf] spans  20- 21 ->  2 captions  (input_tokens=3126, output_tokens=120, n_images=8)
+  pp_belts       [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5502, output_tokens=297, n_images=20)
+  pp_belts       [retail_shelf] spans   5-  7 ->  3 captions  (input_tokens=3971, output_tokens=175, n_images=12)
+  np_storagebox  [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5473, output_tokens=289, n_images=20)
+  np_storagebox  [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5637, output_tokens=284, n_images=20)
+  np_storagebox  [retail_shelf] spans  10- 14 ->  5 captions  (input_tokens=5602, output_tokens=293, n_images=20)
+  np_storagebox  [retail_shelf] spans  15- 19 ->  5 captions  (input_tokens=5625, output_tokens=298, n_images=20)
+  np_storagebox  [retail_shelf] spans  20- 24 ->  5 captions  (input_tokens=5622, output_tokens=287, n_images=20)
+  np_storagebox  [retail_shelf] spans  25- 29 ->  5 captions  (input_tokens=5598, output_tokens=287, n_images=20)
+  np_cabinet_b   [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5451, output_tokens=298, n_images=20)
+  np_cabinet_b   [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5618, output_tokens=303, n_images=20)
+  np_cabinet_b   [retail_shelf] spans  10- 14 ->  5 captions  (input_tokens=5604, output_tokens=312, n_images=20)
+  np_cabinet_b   [retail_shelf] spans  15- 15 ->  1 captions  (input_tokens=2296, output_tokens=64, n_images=4)
+  np_tissue      [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5454, output_tokens=309, n_images=20)
+  np_tissue      [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5620, output_tokens=306, n_images=20)
+  np_tissue      [retail_shelf] spans  10- 11 ->  2 captions  (input_tokens=3133, output_tokens=123, n_images=8)
+  np_cabinet_a   [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5483, output_tokens=305, n_images=20)
+  np_cabinet_a   [retail_shelf] spans   5-  8 ->  4 captions  (input_tokens=4794, output_tokens=246, n_images=16)
+  tm_glass_a     [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5477, output_tokens=301, n_images=20)
+  tm_glass_a     [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5621, output_tokens=301, n_images=20)
+  tm_glass_b     [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5487, output_tokens=305, n_images=20)
+  tm_glass_b     [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5631, output_tokens=303, n_images=20)
+  tm_glass_b     [retail_shelf] spans  10- 10 ->  1 captions  (input_tokens=2299, output_tokens=59, n_images=4)
+  tm_conftable   [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5453, output_tokens=306, n_images=20)
+  tm_conftable   [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5604, output_tokens=306, n_images=20)
+  tm_conftable   [retail_shelf] spans  10- 14 ->  5 captions  (input_tokens=5634, output_tokens=299, n_images=20)
+  tm_conftable   [retail_shelf] spans  15- 17 ->  3 captions  (input_tokens=3949, output_tokens=184, n_images=12)
+  tm_keyboard    [retail_shelf] spans   0-  4 ->  5 captions  (input_tokens=5452, output_tokens=295, n_images=20)
+  tm_keyboard    [retail_shelf] spans   5-  9 ->  5 captions  (input_tokens=5594, output_tokens=298, n_images=20)
+  tm_keyboard    [retail_shelf] spans  10- 13 ->  4 captions  (input_tokens=4771, output_tokens=235, n_images=16)
+
+269 captions from 269 spans in 436s
+  throughput: 0.62 spans/s  |  1.3x realtime (564s video in 436s)
+  frame store peak 2.5 MB (1076 JPEG frames; the old raw-frame cache held 8.2 GB)
+  mean tokens/call: in 5149  out 271
+  wrote artifacts/captions/captions_qwen_b5.jsonl

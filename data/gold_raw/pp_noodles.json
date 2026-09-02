@@ -1,0 +1,534 @@
+{
+  "cls": "pick-and-place",
+  "done": true,
+  "episode": "noodles",
+  "events": [
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_20000",
+      "occluded": false,
+      "t": 20,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_20000",
+      "occluded": false,
+      "t": 20,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_21333",
+      "occluded": false,
+      "t": 21.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_21333",
+      "occluded": false,
+      "t": 21.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_23333",
+      "occluded": false,
+      "t": 23.333,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_23333",
+      "occluded": false,
+      "t": 23.333,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_26333",
+      "occluded": false,
+      "t": 26.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_26333",
+      "occluded": false,
+      "t": 26.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_28000",
+      "occluded": false,
+      "t": 28,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_28000",
+      "occluded": false,
+      "t": 28,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_30200",
+      "occluded": false,
+      "t": 30.2,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_30200",
+      "occluded": false,
+      "t": 30.2,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_31867",
+      "occluded": false,
+      "t": 31.867,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_32200",
+      "occluded": false,
+      "t": 32.2,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_34533",
+      "occluded": false,
+      "t": 34.533,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_34533",
+      "occluded": false,
+      "t": 34.533,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_36200",
+      "occluded": false,
+      "t": 36.2,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_36533",
+      "occluded": false,
+      "t": 36.533,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_37867",
+      "occluded": false,
+      "t": 37.867,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_37867",
+      "occluded": false,
+      "t": 37.867,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_39533",
+      "occluded": false,
+      "t": 39.533,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_39533",
+      "occluded": false,
+      "t": 39.533,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_41600",
+      "occluded": false,
+      "t": 41.6,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_41600",
+      "occluded": false,
+      "t": 41.6,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_42933",
+      "occluded": false,
+      "t": 42.933,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_42933",
+      "occluded": false,
+      "t": 42.933,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_45200",
+      "occluded": false,
+      "t": 45.2,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_45200",
+      "occluded": false,
+      "t": 45.2,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_46867",
+      "occluded": false,
+      "t": 46.867,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_46867",
+      "occluded": false,
+      "t": 46.867,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_48967",
+      "occluded": false,
+      "t": 48.967,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_48967",
+      "occluded": false,
+      "t": 48.967,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_50633",
+      "occluded": false,
+      "t": 50.633,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_50633",
+      "occluded": false,
+      "t": 50.633,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_53633",
+      "occluded": false,
+      "t": 53.633,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_53633",
+      "occluded": false,
+      "t": 53.633,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_55300",
+      "occluded": false,
+      "t": 55.3,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_55300",
+      "occluded": false,
+      "t": 55.3,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_58067",
+      "occluded": false,
+      "t": 58.067,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_58067",
+      "occluded": false,
+      "t": 58.067,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_59067",
+      "occluded": false,
+      "t": 59.067,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_59067",
+      "occluded": false,
+      "t": 59.067,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_61733",
+      "occluded": false,
+      "t": 61.733,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_62400",
+      "occluded": false,
+      "t": 62.4,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_64733",
+      "occluded": false,
+      "t": 64.733,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_66067",
+      "occluded": false,
+      "t": 66.067,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_66067",
+      "occluded": false,
+      "t": 66.067,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_68400",
+      "occluded": false,
+      "t": 68.4,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_69067",
+      "occluded": false,
+      "t": 69.067,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_69067",
+      "occluded": false,
+      "t": 69.067,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_71067",
+      "occluded": false,
+      "t": 71.067,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_71400",
+      "occluded": false,
+      "t": 71.4,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_release_73400",
+      "occluded": false,
+      "t": 73.4,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_noodles_R_contact_74067",
+      "occluded": false,
+      "t": 74.067,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_76067",
+      "occluded": false,
+      "t": 76.067,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_77733",
+      "occluded": false,
+      "t": 77.733,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_release_78400",
+      "occluded": false,
+      "t": 78.4,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_noodles_L_contact_79400",
+      "occluded": false,
+      "t": 79.4,
+      "type": "contact"
+    }
+  ],
+  "segment": "pp_noodles",
+  "src_fps": 30,
+  "t0": 20,
+  "t1": 80,
+  "updated": "2026-09-02T15:40:06.993Z"
+}

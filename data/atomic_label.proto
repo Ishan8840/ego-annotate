@@ -1,0 +1,45 @@
+syntax = "proto3";
+package annotation;
+
+// Drops in as a sibling MCAP channel to the existing
+// /annotation/semantic_segments, on topic:
+//     /annotation/atomic_labels        schema annotation.AtomicLabel
+// One message per label. Unlike SemanticSegment, atomic labels do NOT
+// partition the episode: gaps (dead time, ambiguous motion) are expected
+// and must be left unlabelled rather than absorbed into a neighbour.
+
+import "common/header.proto";
+
+message AtomicLabel {
+  common.Header header = 1;
+
+  // --- timing: episode-relative seconds, quantised to the 30 Hz frame grid ---
+  double start_ts = 2;   // inclusive
+  double end_ts   = 3;   // exclusive; end_ts - start_ts in [1.5, 4.0]
+
+  // --- text: imperative, present tense, 10-15 words, ONE verb-noun core ---
+  string text = 4;
+
+  // --- structured core, must be recoverable from `text` ---
+  string     verb       = 5;   // closed vocabulary, see Verb
+  string     noun       = 6;   // manipulated object, category vocabulary
+  Hand       hand       = 7;
+  Visibility visibility = 8;
+
+  enum Hand {
+    HAND_UNSPECIFIED = 0;
+    LEFT             = 1;
+    RIGHT            = 2;
+    BOTH             = 3;
+    NEITHER          = 4;  // only legal with a no-contact verb (reach/withdraw)
+  }
+
+  // Visibility of the manipulated object AND the acting hand.
+  enum Visibility {
+    VISIBILITY_UNSPECIFIED = 0;
+    FULL         = 1;  // both fully in frame and unoccluded
+    PARTIAL      = 2;  // partially occluded or clipped, identity still certain
+    OCCLUDED     = 3;  // identity inferred from context, not directly visible
+    OUT_OF_FRAME = 4;  // outside the head-camera FOV; not usable for grounding
+  }
+}

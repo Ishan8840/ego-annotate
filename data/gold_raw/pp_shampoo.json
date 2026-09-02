@@ -1,0 +1,246 @@
+{
+  "cls": "pick-and-place",
+  "done": true,
+  "episode": "shampoo",
+  "events": [
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_35333",
+      "occluded": false,
+      "t": 35.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_release_35333",
+      "occluded": false,
+      "t": 35.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_37667",
+      "occluded": false,
+      "t": 37.667,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_contact_37667",
+      "occluded": false,
+      "t": 37.667,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_42333",
+      "occluded": false,
+      "t": 42.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_release_42333",
+      "occluded": false,
+      "t": 42.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_contact_46000",
+      "occluded": false,
+      "t": 46,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_46333",
+      "occluded": false,
+      "t": 46.333,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_release_50667",
+      "occluded": false,
+      "t": 50.667,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_50667",
+      "occluded": false,
+      "t": 50.667,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_53000",
+      "occluded": false,
+      "t": 53,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_contact_54333",
+      "occluded": false,
+      "t": 54.333,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_58333",
+      "occluded": false,
+      "t": 58.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_release_58333",
+      "occluded": false,
+      "t": 58.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_contact_60667",
+      "occluded": false,
+      "t": 60.667,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_60667",
+      "occluded": false,
+      "t": 60.667,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_64333",
+      "occluded": false,
+      "t": 64.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_65667",
+      "occluded": false,
+      "t": 65.667,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_release_66667",
+      "occluded": false,
+      "t": 66.667,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_67000",
+      "occluded": false,
+      "t": 67,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_contact_69000",
+      "occluded": false,
+      "t": 69,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_69000",
+      "occluded": false,
+      "t": 69,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_release_73000",
+      "occluded": false,
+      "t": 73,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_release_73333",
+      "occluded": false,
+      "t": 73.333,
+      "type": "release"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "R",
+      "id": "pp_shampoo_R_contact_76667",
+      "occluded": false,
+      "t": 76.667,
+      "type": "contact"
+    },
+    {
+      "action": "pick-and-place",
+      "gloved": false,
+      "hand": "L",
+      "id": "pp_shampoo_L_contact_77667",
+      "occluded": false,
+      "t": 77.667,
+      "type": "contact"
+    }
+  ],
+  "segment": "pp_shampoo",
+  "src_fps": 30,
+  "t0": 35,
+  "t1": 80,
+  "updated": "2026-09-02T15:35:11.026Z"
+}

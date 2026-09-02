@@ -1,0 +1,11 @@
+=== A: 8 frames/span, 10 spans/call ===
+14 captions from 104 spans in 53s
+  throughput: 0.26 spans/s  |  4.0x realtime (210s video in 53s)
+  mean tokens/call: in 6408  out 198
+  wrote caps_f8.jsonl
+=== B: 4 frames/span, 1 span/call ===
+50 captions from 104 spans in 105s
+  throughput: 0.48 spans/s  |  2.0x realtime (210s video in 105s)
+  mean tokens/call: in 1700  out 35
+  wrote caps_s1.jsonl
+ABLATE_DONE

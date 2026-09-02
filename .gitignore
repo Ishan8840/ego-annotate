@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# the episode corpus lives outside the repo
+/corpus
+
+# large or machine-specific generated output
+/artifacts/segments/
+/artifacts/reports/
+/artifacts/legacy/
+/artifacts/features/*.npz
+/legacy-phases.tar.gz
+
+# integration-test scratch output
+/artifacts/**/_test_*

@@ -1,0 +1,377 @@
+[
+ {
+  "episode": "b_chairs_align",
+  "src_fps": 25.0,
+  "duration_s": 18.84,
+  "task": "Align Chairs Alignment",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 472,
+  "flag_pose_bad": 80,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "b_chairs",
+  "src_fps": 30.0,
+  "duration_s": 19.933333064,
+  "task": "Align Chairs",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 599,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "belts_a",
+  "src_fps": 30.0,
+  "duration_s": 13.666667,
+  "task": "Align and Hang Belts on Display Rack",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 411,
+  "flag_pose_bad": 8,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "belts_b",
+  "src_fps": 30.0,
+  "duration_s": 16.766667,
+  "task": "Align and Hang Belts on Display Rack",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 504,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "b_namkeen",
+  "src_fps": 30.0,
+  "duration_s": 11.1,
+  "task": "Align Namkeen Bags to Shelf Front Edge",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 334,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "b_penholder",
+  "src_fps": 30.0,
+  "duration_s": 25.633333,
+  "task": "Align Desk Pen Holder",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 770,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "b_ratlam",
+  "src_fps": 30.0,
+  "duration_s": 14.766667,
+  "task": "Ratlam Sev Snack Bag Alignment",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 444,
+  "flag_pose_bad": 46,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "b_shelflabels",
+  "src_fps": 30.0,
+  "duration_s": 10.500000064,
+  "task": "Adjust Shelf Labels",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 316,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "cart_wipes",
+  "src_fps": 25.0,
+  "duration_s": 9.88,
+  "task": "Disinfectant Wiping of Shopping Cart Handle",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 248,
+  "flag_pose_bad": 4,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "cleaning_tools_a",
+  "src_fps": 25.0,
+  "duration_s": 10.6,
+  "task": "Organize and Return Cleaning Tools",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 266,
+  "flag_pose_bad": 26,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "cleaning_tools_b",
+  "src_fps": 30.0,
+  "duration_s": 11.666667,
+  "task": "Organize and Return Cleaning Tools",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 351,
+  "flag_pose_bad": 36,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "noodles",
+  "src_fps": 30.0,
+  "duration_s": 192.866667,
+  "task": "Stocking Instant Noodles on Shelves",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 5787,
+  "flag_pose_bad": 422,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "np_cabinet_a",
+  "src_fps": 30.0,
+  "duration_s": 19.033333,
+  "task": "Close Cabinet Door",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 572,
+  "flag_pose_bad": 10,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "np_cabinet_b",
+  "src_fps": 30.0,
+  "duration_s": 34.833333,
+  "task": "Close Cabinet Door",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 1046,
+  "flag_pose_bad": 4,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "np_storagebox",
+  "src_fps": 30.0,
+  "duration_s": 95.133333,
+  "task": "Close Storage Bin",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 2855,
+  "flag_pose_bad": 62,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "np_tissue",
+  "src_fps": 30.0,
+  "duration_s": 45.566667,
+  "task": "Close Tissue Box",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 1368,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "shampoo_b",
+  "src_fps": 30.0,
+  "duration_s": 168.400000128,
+  "task": "Shampoo Shelf Stocking",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 5053,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "stockout_a",
+  "src_fps": 25.0,
+  "duration_s": 13.0,
+  "task": "Shelf Stock-Out Slot Audit",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 326,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "stockout_b",
+  "src_fps": 25.0,
+  "duration_s": 23.000000064,
+  "task": "Shelf Stock-Out Slot Audit",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 576,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "t_conftable",
+  "src_fps": 30.0,
+  "duration_s": 329.500000064,
+  "task": "Conference Table Wiping",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 9886,
+  "flag_pose_bad": 20,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "t_glassdoor_a",
+  "src_fps": 30.0,
+  "duration_s": 22.8,
+  "task": "Glass Door Wiping",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 685,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "t_glassdoor_b",
+  "src_fps": 25.0,
+  "duration_s": 26.72,
+  "task": "Glass Door Wiping",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 669,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "t_keyboard",
+  "src_fps": 30.0,
+  "duration_s": 186.566667064,
+  "task": "Keyboard Surface Dusting",
+  "paradigm": "natural_human_hand",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 5598,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "shampoo",
+  "src_fps": 30.0,
+  "duration_s": 134.166666999,
+  "task": "Shampoo Shelf Stocking",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 4026,
+  "flag_pose_bad": 0,
+  "flag_nan": 0,
+  "flag_vel": 0
+ },
+ {
+  "episode": "test",
+  "src_fps": 30.0,
+  "duration_s": 122.266667,
+  "task": "Align Plate Rack",
+  "paradigm": "robot_gripper_mimic",
+  "hands": [
+   "left",
+   "right"
+  ],
+  "frames": 3669,
+  "flag_pose_bad": 28,
+  "flag_nan": 0,
+  "flag_vel": 0
+ }
+]

@@ -1,0 +1,246 @@
+{
+  "cls": "non-prehensile",
+  "done": true,
+  "episode": "np_tissue",
+  "events": [
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_667",
+      "occluded": false,
+      "t": 0.667,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_2667",
+      "occluded": false,
+      "t": 2.667,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_contact_4000",
+      "occluded": false,
+      "t": 4,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_5667",
+      "occluded": false,
+      "t": 5.667,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_7333",
+      "occluded": false,
+      "t": 7.333,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_release_8000",
+      "occluded": false,
+      "t": 8,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_9333",
+      "occluded": false,
+      "t": 9.333,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_11333",
+      "occluded": false,
+      "t": 11.333,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_contact_13000",
+      "occluded": false,
+      "t": 13,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_14000",
+      "occluded": false,
+      "t": 14,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_release_18667",
+      "occluded": false,
+      "t": 18.667,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_18667",
+      "occluded": false,
+      "t": 18.667,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_contact_21000",
+      "occluded": false,
+      "t": 21,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_24333",
+      "occluded": false,
+      "t": 24.333,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_31333",
+      "occluded": false,
+      "t": 31.333,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_release_31333",
+      "occluded": false,
+      "t": 31.333,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_32000",
+      "occluded": false,
+      "t": 32,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_contact_32000",
+      "occluded": false,
+      "t": 32,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_35667",
+      "occluded": false,
+      "t": 35.667,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_release_35667",
+      "occluded": false,
+      "t": 35.667,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_37867",
+      "occluded": false,
+      "t": 37.867,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_contact_37867",
+      "occluded": false,
+      "t": 37.867,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_contact_42200",
+      "occluded": false,
+      "t": 42.2,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_contact_42200",
+      "occluded": false,
+      "t": 42.2,
+      "type": "contact"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "L",
+      "id": "np_tissue_L_release_43867",
+      "occluded": false,
+      "t": 43.867,
+      "type": "release"
+    },
+    {
+      "action": "non-prehensile",
+      "gloved": false,
+      "hand": "R",
+      "id": "np_tissue_R_release_45500",
+      "occluded": false,
+      "t": 45.5,
+      "type": "release"
+    }
+  ],
+  "segment": "np_tissue",
+  "src_fps": 30,
+  "t0": 0,
+  "t1": 45.5,
+  "updated": "2026-09-02T15:53:08.540Z"
+}

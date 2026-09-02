@@ -1,0 +1,121 @@
+[
+ {
+  "id": "dv_coffee",
+  "source": "ep/d_coffee.mcap",
+  "cls": "beverage prep",
+  "t0": 0.0,
+  "t1": 17.7
+ },
+ {
+  "id": "dv_toothbrush",
+  "source": "ep/d_toothbrush.mcap",
+  "cls": "small assembly",
+  "t0": 0.0,
+  "t1": 6.0
+ },
+ {
+  "id": "dv_plants",
+  "source": "ep/d_plants.mcap",
+  "cls": "plant care",
+  "t0": 0.0,
+  "t1": 20.5
+ },
+ {
+  "id": "dv_contactlens",
+  "source": "ep/d_contactlens.mcap",
+  "cls": "personal care",
+  "t0": 0.0,
+  "t1": 46.4
+ },
+ {
+  "id": "dv_fryingpan",
+  "source": "ep/d_fryingpan.mcap",
+  "cls": "kitchen cleaning",
+  "t0": 0.0,
+  "t1": 60.0
+ },
+ {
+  "id": "pp_shampoo",
+  "source": "shampoo.mcap",
+  "cls": "pick-and-place",
+  "t0": 35.0,
+  "t1": 80.0
+ },
+ {
+  "id": "pp_noodles",
+  "source": "ep/noodles.mcap",
+  "cls": "pick-and-place",
+  "t0": 20.0,
+  "t1": 80.0
+ },
+ {
+  "id": "pp_plate",
+  "source": "test.mcap",
+  "cls": "pick-and-place",
+  "t0": 10.0,
+  "t1": 55.0
+ },
+ {
+  "id": "pp_belts",
+  "source": "ep/belts_b.mcap",
+  "cls": "pick-and-place",
+  "t0": 0.0,
+  "t1": 16.7
+ },
+ {
+  "id": "np_storagebox",
+  "source": "ep/np_storagebox.mcap",
+  "cls": "non-prehensile",
+  "t0": 0.0,
+  "t1": 60.0
+ },
+ {
+  "id": "np_cabinet_b",
+  "source": "ep/np_cabinet_b.mcap",
+  "cls": "non-prehensile",
+  "t0": 0.0,
+  "t1": 34.7
+ },
+ {
+  "id": "np_tissue",
+  "source": "ep/np_tissue.mcap",
+  "cls": "non-prehensile",
+  "t0": 0.0,
+  "t1": 45.5
+ },
+ {
+  "id": "np_cabinet_a",
+  "source": "ep/np_cabinet_a.mcap",
+  "cls": "non-prehensile",
+  "t0": 0.0,
+  "t1": 18.9
+ },
+ {
+  "id": "tm_glass_a",
+  "source": "ep/t_glassdoor_a.mcap",
+  "cls": "tool-mediated",
+  "t0": 0.0,
+  "t1": 22.7
+ },
+ {
+  "id": "tm_glass_b",
+  "source": "ep/t_glassdoor_b.mcap",
+  "cls": "tool-mediated",
+  "t0": 0.0,
+  "t1": 26.6
+ },
+ {
+  "id": "tm_conftable",
+  "source": "ep/t_conftable.mcap",
+  "cls": "tool-mediated",
+  "t0": 60.0,
+  "t1": 120.0
+ },
+ {
+  "id": "tm_keyboard",
+  "source": "ep/t_keyboard.mcap",
+  "cls": "tool-mediated",
+  "t0": 30.0,
+  "t1": 60.0
+ }
+]

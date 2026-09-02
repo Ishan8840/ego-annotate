@@ -1,0 +1,46 @@
+==========================================================================
+SCORED 269 captions (qwen-local)  /home/axibo/post-ego/artifacts/captions/captions.jsonl
+  domain packs: {'beverage': 5, 'small_assembly': 3, 'plant_care': 9, 'personal_care': 22, 'kitchen': 30, 'retail_shelf': 200}
+
+  FORMAT
+    atomicity: 202/269 pass (75%)
+    failures by rule: {'A4': 40, 'A3': 31, 'A2': 19, 'A9': 2, 'A6': 1}
+    span band [1.3, 4.0]s: 269/269 in band (0 A1-eligible)
+
+  DIVERSITY
+    uniqueness: 180 unique / 269 = 66.9%
+    most repeated:
+       10x  wipe the dark conference table surface with the cloth using the ri
+        8x  pinch the keyboard surface between thumb and index with the right 
+        6x  pinch the plate between thumb and index with the right hand
+        5x  scrub the black frying pan with the metal scouring pad under runni
+        4x  transport the black frying pan under running water with both hands
+    Heaps fit: types = 1.578*n^0.850 -> projected uniqueness
+       at n=1,000   56%
+       at n=10,000  40%
+       at n=100,000 28%
+
+  GROUNDING (caption vs what pose measured)
+    verb vs measured aperture trend: 68/130 agree (52%), 62 conflict, 139 not testable
+       verb=pinch     fingers=opening  Pinch the coffee cup handle between thumb and index 
+       verb=place     fingers=closing  Place the coffee cup on the saucer with both hands
+       verb=pinch     fingers=opening  Pinch the white solution bottle with the right hand
+       verb=pinch     fingers=opening  Pinch the white solution bottle with both hands on t
+       verb=place     fingers=closing  Place the black frying pan upright in the sink with 
+    rotation measured on 61/269 spans; 14 captions name a direction; 2 contradict it (rule A9)
+    marked uncertain: 0/269 (0%)
+
+  SHAPE
+    words: mean 11.8  median 12  range 8-15
+    density: 28.6 labels/min over 9.4 min captioned
+    by class: {'beverage prep': 5, 'small assembly': 3, 'plant care': 9, 'personal care': 22, 'kitchen cleaning': 30, 'pick-and-place': 80, 'non-prehensile': 67, 'tool-mediated': 53}
+
+  sample captions:
+    [beve   4.2-  6.4s BOTH ] Pinch the coffee cup handle between thumb and index with both hands
+    [beve   6.4-  8.7s BOTH ] Place the coffee cup on the saucer with both hands
+    [beve   8.7- 11.0s RIGHT] Steady the coffee cup on the saucer with the right hand
+    [beve  11.0- 13.2s BOTH ] Stir the coffee in the cup with the wooden stirrer using the right hand
+    [beve  13.2- 16.3s BOTH ] Transport the coffee cup toward the small round table with both hands
+    [smal   0.0-  2.5s BOTH ] Grasp the light blue electric toothbrush handle with both hands
+    [smal   2.5-  4.3s LEFT ] Pinch the white brush head between thumb and index with the left hand
+    [smal   4.3-  6.0s BOTH ] Place the white brush head onto the light blue handle with both hands

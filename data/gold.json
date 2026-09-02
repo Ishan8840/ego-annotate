@@ -1,0 +1,1126 @@
+[
+ {
+  "segment": "np_storagebox",
+  "episode": "np_storagebox",
+  "cls": "non-prehensile",
+  "t0": 0,
+  "t1": 60,
+  "src_fps": 30,
+  "done": true,
+  "events": [
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 0.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 0.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 9,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 9.067,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 11.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 11.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 18.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 19.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 22.067,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 22.067,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 20.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 30.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 30.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 33.067,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 33.067,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 41.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 41.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 45.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 45.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 47.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 48.067,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 54.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 54.733,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 57.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 57.4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   }
+  ]
+ },
+ {
+  "segment": "np_tissue",
+  "episode": "np_tissue",
+  "cls": "non-prehensile",
+  "t0": 0,
+  "t1": 45.5,
+  "src_fps": 30,
+  "done": true,
+  "events": [
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 0.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 2.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 4,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 5.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 7.333,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 8,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 9.333,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 11.333,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 13,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 14,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 18.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 18.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 21,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 24.333,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 31.333,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 31.333,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 32,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 32,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 35.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 35.667,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 37.867,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 37.867,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 42.2,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 42.2,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 43.867,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 45.5,
+    "action": "non-prehensile",
+    "occluded": false,
+    "gloved": false
+   }
+  ]
+ },
+ {
+  "segment": "pp_noodles",
+  "episode": "noodles",
+  "cls": "pick-and-place",
+  "t0": 20,
+  "t1": 80,
+  "src_fps": 30,
+  "done": true,
+  "events": [
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 20,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 20,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 21.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 21.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 23.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 23.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 26.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 26.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 28,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 28,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 30.2,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 30.2,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 31.867,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 32.2,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 34.533,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 34.533,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 36.2,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 36.533,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 37.867,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 37.867,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 39.533,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 39.533,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 41.6,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 41.6,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 42.933,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 42.933,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 45.2,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 45.2,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 46.867,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 46.867,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 48.967,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 48.967,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 50.633,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 50.633,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 53.633,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 53.633,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 55.3,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 55.3,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 58.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 58.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 59.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 59.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 61.733,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 62.4,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 64.733,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 66.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 66.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 68.4,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 69.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 69.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 71.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 71.4,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 73.4,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 74.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 76.067,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 77.733,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 78.4,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 79.4,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   }
+  ]
+ },
+ {
+  "segment": "pp_shampoo",
+  "episode": "shampoo",
+  "cls": "pick-and-place",
+  "t0": 35,
+  "t1": 80,
+  "src_fps": 30,
+  "done": true,
+  "events": [
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 35.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 35.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 37.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 37.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 42.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 42.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 46,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 46.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 50.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 50.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 53,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 54.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 58.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 58.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 60.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 60.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 64.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 65.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 66.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 67,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 69,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 69,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "release",
+    "t": 73,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "release",
+    "t": 73.333,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "R",
+    "type": "contact",
+    "t": 76.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   },
+   {
+    "hand": "L",
+    "type": "contact",
+    "t": 77.667,
+    "action": "pick-and-place",
+    "occluded": false,
+    "gloved": false
+   }
+  ]
+ }
+]
