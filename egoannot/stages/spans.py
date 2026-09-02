@@ -169,6 +169,128 @@ def enforce_band(intervals, t, act, cfg=CFG):
     return kept, dict(split=n_split, merged=n_merged, dropped=n_dropped)
 
 
+# ---------------------------------------------------------------- refinement
+def _minima_times(t, act, prominence):
+    """Times of every local minimum of the activity signal meeting prominence."""
+    idx = local_minima(np.asarray(act, float), prominence)
+    return np.asarray(t, float)[idx] if len(idx) else np.zeros(0)
+
+
+def refine_boundaries(intervals, t, act, cfg=CFG, minima=None):
+    """
+    Nudge each shared interior cut onto a nearby quieter activity minimum.
+
+    A cut used to be final the moment it was made, so the captioner had to
+    describe whatever the measured boundary contained. The vision-only control
+    arm beats this one on verb/aperture agreement precisely because it cuts
+    where the action it describes actually occurs. This recovers some of that
+    freedom without giving up determinism or the duration band.
+
+    For each boundary, candidates are the original cut plus every local minimum
+    of the SAME signal within +/- `boundary_shift_s` that meets the same
+    prominence criterion. Selection is by activity level -- the quietest
+    instant wins, matching what `_split_long` already does -- with ties broken
+    by the smaller move and then by the earlier time, so the choice is fully
+    reproducible from the signal. There is no learned scorer here on purpose.
+
+    A candidate is rejected unless BOTH adjoining spans land inside the band,
+    and unless neither falls below `min(min_gap_s, that span's original
+    duration)` -- so a shift can shorten a span toward the gap floor but never
+    past it, and never makes an already-short span shorter.
+
+    Boundaries are visited left to right, each decision reading the
+    already-committed span on its left and the not-yet-moved boundary on its
+    right, which is what makes the result independent of iteration order.
+    Only boundaries SHARED by two spans move: segment endpoints are definition,
+    not measurement, and a gap edge abuts material the band policy dropped.
+
+    Returns (intervals, provenance, stats). `provenance[i]` describes the
+    boundary between span i-1 and span i, or None where it does not move.
+    """
+    lo, hi = cfg["band"]
+    shift = float(cfg["boundary_shift_s"])
+    min_gap = float(cfg["min_gap_s"])
+    if not cfg.get("boundary_refine", True) or shift <= 0 or len(intervals) < 2:
+        return list(intervals), [None] * (len(intervals) + 1), dict(
+            shifted=0, rejected=0, considered=0, total_delta=0.0)
+    # Ordering can only be preserved if two boundaries closing on each other
+    # cannot cross the shortest legal span.
+    if 2 * shift >= lo:
+        raise ValueError(
+            f"boundary_shift_s={shift} too large for band floor {lo}: "
+            f"2*shift must stay below the floor or spans can invert")
+
+    if minima is None:
+        minima = _minima_times(t, act, cfg["prominence"])
+    t = np.asarray(t, float)
+    act = np.asarray(act, float)
+
+    def level(x):
+        """Activity at time x, from the nearest sample."""
+        if not len(t):
+            return float("inf")
+        return float(act[int(np.clip(np.searchsorted(t, x), 0, len(t) - 1))])
+
+    cur = [list(iv) for iv in intervals]
+    orig_dur = [z - a for a, z in intervals]
+    prov = [None] * (len(intervals) + 1)
+    stats = dict(shifted=0, rejected=0, considered=0, total_delta=0.0)
+
+    for i in range(1, len(cur)):
+        # only a boundary genuinely shared by two spans may move
+        if abs(cur[i - 1][1] - cur[i][0]) > 1e-9:
+            continue
+        origin = float(intervals[i - 1][1])
+        left_start = cur[i - 1][0]
+        right_end = cur[i][1]
+
+        near = minima[np.abs(minima - origin) <= shift] if len(minima) else np.zeros(0)
+        cands = [origin] + [float(x) for x in near if abs(x - origin) > 1e-9]
+        stats["considered"] += len(cands)
+
+        floor_left = min(min_gap, orig_dur[i - 1])
+        floor_right = min(min_gap, orig_dur[i])
+
+        feasible, why = [], set()
+        for c in cands:
+            left_dur, right_dur = c - left_start, right_end - c
+            if not (lo <= left_dur <= hi and lo <= right_dur <= hi):
+                why.add("band")
+                continue
+            if left_dur < floor_left - 1e-9 or right_dur < floor_right - 1e-9:
+                why.add("min_gap")
+                continue
+            feasible.append(c)
+
+        if not feasible:
+            # the original cut is always a candidate, so this only happens when
+            # the original itself is out of band -- leave it exactly as cut.
+            prov[i] = dict(orig=round(origin, 3), final=round(origin, 3), delta=0.0,
+                           n_cand=len(cands), shifted=False,
+                           reason="+".join(sorted(why)) or "no_candidate")
+            stats["rejected"] += 1
+            continue
+
+        best = min(feasible, key=lambda c: (level(c), abs(c - origin), c))
+        moved = abs(best - origin) > 1e-9
+        if moved:
+            cur[i - 1][1] = best
+            cur[i][0] = best
+            stats["shifted"] += 1
+            stats["total_delta"] += abs(best - origin)
+        elif len(feasible) > 1:
+            # other candidates were legal; the original was simply the quietest
+            why = {"original_best"}
+        elif len(cands) > 1:
+            stats["rejected"] += 1      # every alternative was ruled out
+        prov[i] = dict(
+            orig=round(origin, 3), final=round(best, 3),
+            delta=round(best - origin, 3), n_cand=len(cands), shifted=moved,
+            reason=None if moved else ("+".join(sorted(why)) or "no_candidate"))
+
+    return [tuple(iv) for iv in cur], prov, stats
+
+
 # ---------------------------------------------------------------- quality gate
 def rejected_intervals(records, tiers=("T1",)):
     """
@@ -366,7 +488,8 @@ def build(segments=None, out=None, only=None, cfg=CFG,
     candidates = ([json.loads(l) for l in open(events_file)]
                   if os.path.exists(events_file) else [])
 
-    rows, stats = [], dict(split=0, merged=0, dropped=0, gated=0)
+    rows, stats = [], dict(split=0, merged=0, dropped=0, gated=0,
+                           shifted=0, rejected=0, considered=0, total_delta=0.0)
     for seg in segs:
         name = os.path.basename(seg["source"]).rsplit(".", 1)[0]
         try:
@@ -396,9 +519,17 @@ def build(segments=None, out=None, only=None, cfg=CFG,
         else:
             intervals = [(a, z) for a, z in intervals if z - a >= 0.5]
 
+        # Refine before the quality gate, so a gate decision is made on the
+        # span that will actually be captioned.
+        prov = [None] * (len(intervals) + 1)
+        if cfg.get("boundary_refine"):
+            intervals, prov, rstats = refine_boundaries(intervals, t, act, cfg)
+            for k, v in rstats.items():
+                stats[k] += v
+
         bad = bad_by_ep.get(name, [])
         n_seg = 0
-        for a, z in intervals:
+        for k_iv, (a, z) in enumerate(intervals):
             if cfg["quality_gate"] and bad_overlap(a, z, bad) >= cfg["quality_overlap_frac"]:
                 stats["gated"] += 1
                 continue
@@ -427,6 +558,8 @@ def build(segments=None, out=None, only=None, cfg=CFG,
                                      type=k["type"])
                                 for k in candidates
                                 if k["episode"] == name and a <= k["t"] < z],
+                # how this span's own boundaries were placed
+                start_refine=prov[k_iv], end_refine=prov[k_iv + 1],
                 # video-local time, for frame extraction from the segment mp4
                 v_start=round(float(a - t0), 3), v_end=round(float(z - t0), 3)))
             n_seg += 1
@@ -452,6 +585,12 @@ def report(rows, stats=None, out=None):
         print(f"  band policy: {stats['split']} long spans subdivided, "
               f"{stats['merged']} short spans merged, {stats['dropped']} dropped; "
               f"{stats['gated']} spans gated by clip quality")
+        if stats.get("considered"):
+            n_sh = stats["shifted"]
+            mean_d = stats["total_delta"] / n_sh if n_sh else 0.0
+            print(f"  refinement : {n_sh} boundaries moved "
+                  f"(mean |delta| {mean_d:.3f}s), {stats['rejected']} left in place, "
+                  f"{stats['considered']} candidates considered")
     print(f"  duration: median {np.median(d):.2f}s  "
           f"in-band [{lo}, {hi}]: {100 * ((d >= lo) & (d <= hi)).mean():.0f}%  "
           f"({(d < lo).sum()} short, {(d > hi).sum()} long)")

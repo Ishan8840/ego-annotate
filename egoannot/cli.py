@@ -97,6 +97,13 @@ def build_parser():
     sb.add_argument("--signal", choices=["activity", "velocity"], default=None)
     sb.add_argument("--no-band", action="store_true",
                     help="skip duration-band enforcement (rule A1)")
+    sb.add_argument("--no-boundary-refine", action="store_true",
+                    help="leave every cut where it was first made (pre-refinement "
+                         "behaviour, for comparison)")
+    sb.add_argument("--boundary-shift", type=float, default=None,
+                    metavar="SECONDS",
+                    help="half-width of the refinement window (default "
+                         "%(default)s from config)")
     sb.add_argument("--no-quality-gate", action="store_true")
     sb.add_argument("--gate-tiers", nargs="*", default=None, choices=["T1", "T2"])
 
@@ -225,6 +232,10 @@ def main(argv=None):
             cfg["signal"] = args.signal
         if args.no_band:
             cfg["enforce_band"] = False
+        if args.no_boundary_refine:
+            cfg["boundary_refine"] = False
+        if args.boundary_shift is not None:
+            cfg["boundary_shift_s"] = args.boundary_shift
         if args.no_quality_gate:
             cfg["quality_gate"] = False
         if args.gate_tiers is not None:

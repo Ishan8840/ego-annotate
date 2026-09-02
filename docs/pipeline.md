@@ -154,6 +154,23 @@ overlap but need not tile. Measured on this corpus:
 | velocity | off | 293 | 12 | 8 | 11.6 s | 93% |
 | velocity | **on** | 295 | 0 | 0 | 3.9 s | **100%** |
 
+**Boundary refinement.** Cuts are no longer final. Each shared interior
+boundary may move onto a nearby quieter local minimum of the same activity
+signal, within ±`boundary_shift_s`; the original cut is always a candidate.
+Selection is by activity level (quietest wins, matching what `_split_long`
+already does), ties broken by smaller move then earlier time. A candidate is
+rejected unless both adjoining spans land inside the band and neither falls
+below `min(min_gap_s, that span's original duration)`, so a shift can shorten a
+span toward the gap floor but never past it. Boundaries are visited left to
+right, each reading the committed span on its left and the unmoved boundary on
+its right, which is what makes the outcome independent of iteration order.
+
+`boundary_shift_s = 0.4` is a bound, not a fitted value: 2× the events stage's
+jerk-snap window (0.20 s), and constrained by 2·shift < band floor (0.8 < 1.3)
+so spans cannot invert. Provenance for every boundary — original, final, delta,
+candidates considered, rejection reason — lands in the span record as
+`start_refine` / `end_refine`.
+
 **Quality gate.** Spans that sit inside clips the quality stage rejected are
 dropped. Gating defaults to **T1 only**: T1 is a defect finding, while T2 drops
 the top 30% of every episode by construction, so including it removes about a

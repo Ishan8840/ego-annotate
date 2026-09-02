@@ -177,6 +177,20 @@ SPANS_CFG = dict(
     band=(1.3, 4.0),
     enforce_band=True,
     split_prominence_factor=0.35,   # relaxed prominence when subdividing a long span
+    # Boundary refinement. Once cut, a boundary used to be final, and the
+    # captioner had to describe whatever the measured boundary happened to
+    # contain -- which is where the vision-only control arm beats this one on
+    # verb/aperture agreement (79% vs 66%), because it cuts where the action it
+    # describes actually occurs. Each interior cut may now move onto a nearby
+    # quieter minimum of the same activity signal.
+    #
+    # 0.4 s is a bound, not a fitted value. It is 2x the events stage's
+    # jerk-snap window (0.20 s), the scale at which this corpus's own contact
+    # timing is uncertain, and it satisfies 2 * shift < band floor
+    # (0.8 < 1.3) so two boundaries moving toward each other can never merge,
+    # reorder or invert their spans. It also sits well under min_gap_s = 1.7.
+    boundary_refine=True,
+    boundary_shift_s=0.4,
     # Drop spans that overlap clips the quality stage rejected. The quality
     # records existed but no downstream stage ever read them.
     quality_gate=True,

@@ -63,8 +63,9 @@ opening is a detectable error, not an opinion.
    signal**: the max of normalised wrist speed, aperture rate and twist rate.
    Wrist speed alone is the wrong cue — unscrewing a cap barely moves the
    wrist. The duration band is enforced *at cut time*, so the captioner is
-   never marked down for a boundary it did not choose, and spans inside
-   rejected clips are dropped.
+   never marked down for a boundary it did not choose; each cut is then
+   refined onto a nearby quieter minimum, and spans inside rejected clips are
+   dropped.
 4. **caption** — prompts a VLM per batch of spans with the measured facts as
    context. Backends: `stub`, `anthropic`, `openai` (vLLM / SGLang /
    llama.cpp / LM Studio), `qwen-local`.
@@ -122,6 +123,21 @@ But it wins on grounding. Choosing its own boundaries, it cuts where the action 
 describes actually happens; the pose-guided arm must caption whatever the measured
 boundary contains. **That is a real cost of fixed boundaries and it was not
 predicted.** Reproduce with `python -m egoannot baseline compare`.
+
+**Bounded boundary refinement** is the response to that finding: each shared
+interior cut may now move onto a nearby quieter local minimum of the same
+activity signal, within ±`boundary_shift_s` (0.4 s), chosen by activity level
+with deterministic tie-breaks and no learned scorer. A shift is rejected unless
+both adjoining spans stay inside the band and neither falls below
+`min(min_gap_s, its original duration)`; since 2·shift < the band floor,
+boundaries can never merge, reorder or invert. Each boundary records its
+original time, final time, delta, candidate count and rejection reason in
+`start_refine` / `end_refine`. `--no-boundary-refine` reproduces the old
+behaviour.
+
+Its effect on the grounding gap above is **not yet measured** &mdash; that needs a
+rebuild against the `.mcap` corpus, which is not redistributed here. Invariants
+and cost are covered by tests; the table above is still the pre-refinement run.
 
 ## What's honest about it
 

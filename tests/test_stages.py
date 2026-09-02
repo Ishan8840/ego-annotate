@@ -236,3 +236,178 @@ def test_frame_store_plans_deduplicated_indices():
     idx = store.indices_for("fake", 1.0, 3.0, 4)
     assert idx == sorted(set(idx))
     assert all(30 <= i <= 89 for i in idx), idx
+
+
+# ---------------------------------------------------------------- refinement
+def _signal(n=4001, span=40.0, period=1.2):
+    """A synthetic activity signal with regular, prominent minima."""
+    t = np.linspace(0, span, n)
+    return t, np.abs(np.sin(t * period)) + 0.05
+
+
+def _cfg(**kw):
+    return dict(config.SPANS_CFG, **kw)
+
+
+def test_refinement_moves_a_boundary_onto_a_quieter_minimum():
+    t, act = _signal()
+    minima = spans._minima_times(t, act, config.SPANS_CFG["prominence"])
+    assert len(minima) > 4
+    # place a boundary just off a real minimum, with room on both sides
+    m = float(minima[3])
+    intervals = [(m - 2.2, m + 0.25), (m + 0.25, m + 2.4)]
+    out, prov, stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert stats["shifted"] == 1
+    assert prov[1]["shifted"] is True
+    assert abs(out[0][1] - m) < abs(intervals[0][1] - m)      # moved toward it
+    assert out[0][1] == out[1][0]                              # still shared
+    assert abs(prov[1]["delta"]) <= config.SPANS_CFG["boundary_shift_s"] + 1e-9
+
+
+def test_refinement_never_moves_further_than_the_window():
+    t, act = _signal()
+    intervals = [(0.0, 2.0), (2.0, 4.0), (4.0, 6.0), (6.0, 8.0)]
+    out, prov, _ = spans.refine_boundaries(intervals, t, act, _cfg())
+    shift = config.SPANS_CFG["boundary_shift_s"]
+    for p in prov:
+        if p:
+            assert abs(p["delta"]) <= shift + 1e-9, p
+
+
+def test_a_shift_that_would_break_the_band_is_rejected():
+    """
+    The left span is already at the 4.0 s ceiling, so any later boundary is
+    illegal however quiet it is.
+    """
+    t, act = _signal()
+    minima = spans._minima_times(t, act, config.SPANS_CFG["prominence"])
+    m = float(minima[4])
+    lo, hi = config.SPANS_CFG["band"]
+    # left span exactly at the ceiling; the quiet minimum sits 0.18 s to the
+    # RIGHT, so taking it would push the left span past 4.0 s
+    intervals = [(m - 0.18 - hi, m - 0.18), (m - 0.18, m + 2.0)]
+    assert abs((intervals[0][1] - intervals[0][0]) - hi) < 1e-9
+    out, prov, stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert out == [tuple(iv) for iv in intervals]
+    assert prov[1]["shifted"] is False
+    assert "band" in prov[1]["reason"]
+    assert stats["shifted"] == 0
+
+
+def test_a_shift_that_would_violate_min_gap_is_rejected():
+    """
+    Both spans start above min_gap_s, so neither may be shortened past it even
+    though the band floor (1.3 s) would still allow it.
+    """
+    t, act = _signal()
+    minima = spans._minima_times(t, act, config.SPANS_CFG["prominence"])
+    gap = config.SPANS_CFG["min_gap_s"]
+    m = float(minima[5])
+    # right span is exactly at min_gap_s; the quiet minimum lies to the right,
+    # which would take the right span below it
+    intervals = [(m - 2.4, m - 0.22), (m - 0.22, m - 0.22 + gap)]
+    out, prov, stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert prov[1]["shifted"] is False
+    assert "min_gap" in prov[1]["reason"]
+    assert out == [tuple(iv) for iv in intervals]
+
+
+def test_refinement_leaves_every_span_inside_the_band():
+    t, act = _signal(span=60.0, n=6001)
+    intervals = [(x, x + 2.0) for x in np.arange(0.0, 56.0, 2.0)]
+    out, _, _ = spans.refine_boundaries(intervals, t, act, _cfg())
+    lo, hi = config.SPANS_CFG["band"]
+    d = np.array([z - a for a, z in out])
+    assert (d >= lo - 1e-9).all() and (d <= hi + 1e-9).all()
+
+
+def test_refinement_preserves_order_and_sharing():
+    t, act = _signal(span=60.0, n=6001)
+    intervals = [(x, x + 2.0) for x in np.arange(0.0, 56.0, 2.0)]
+    out, _, _ = spans.refine_boundaries(intervals, t, act, _cfg())
+    for (a1, z1), (a2, z2) in zip(out, out[1:]):
+        assert a1 < z1
+        assert abs(z1 - a2) < 1e-9          # boundaries stay shared, never cross
+
+
+def test_refinement_is_idempotent():
+    """Re-running on its own output must change nothing."""
+    t, act = _signal(span=60.0, n=6001)
+    intervals = [(x, x + 2.0) for x in np.arange(0.0, 56.0, 2.0)]
+    once, prov1, stats1 = spans.refine_boundaries(intervals, t, act, _cfg())
+    twice, _, stats2 = spans.refine_boundaries(once, t, act, _cfg())
+    assert twice == once
+    assert stats2["shifted"] == 0
+    assert stats1["shifted"] > 0            # the first pass did do something
+
+
+def test_refinement_is_deterministic_across_runs():
+    t, act = _signal(span=60.0, n=6001)
+    intervals = [(x, x + 2.0) for x in np.arange(0.0, 56.0, 2.0)]
+    a_out, a_prov, a_stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    b_out, b_prov, b_stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert a_out == b_out
+    assert a_prov == b_prov
+    assert a_stats == b_stats
+
+
+def test_refinement_only_moves_boundaries_shared_by_two_spans():
+    """A gap edge abuts material the band policy dropped; it stays put."""
+    t, act = _signal()
+    intervals = [(0.0, 2.0), (5.0, 7.0)]          # not contiguous
+    out, prov, stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert out == [tuple(iv) for iv in intervals]
+    assert stats["shifted"] == 0
+    assert prov[1] is None
+
+
+@pytest.mark.parametrize("off", [
+    dict(boundary_refine=False),          # what --no-boundary-refine sets
+    dict(boundary_shift_s=0.0),           # a zero window
+])
+def test_refinement_can_be_switched_off(off):
+    """Both routes must reproduce the pre-refinement cut exactly."""
+    t, act = _signal()
+    intervals = [(x, x + 2.0) for x in np.arange(0.0, 36.0, 2.0)]
+    baseline, _, base_stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    out, prov, stats = spans.refine_boundaries(intervals, t, act, _cfg(**off))
+    assert out == [tuple(iv) for iv in intervals]
+    assert stats["shifted"] == 0
+    assert all(p is None for p in prov)
+    assert base_stats["shifted"] > 0          # refinement does move these
+
+
+def test_too_large_a_window_is_refused_rather_than_inverting_spans():
+    t, act = _signal()
+    lo, _ = config.SPANS_CFG["band"]
+    with pytest.raises(ValueError, match="invert"):
+        spans.refine_boundaries([(0.0, 2.0), (2.0, 4.0)], t, act,
+                                _cfg(boundary_shift_s=lo / 2 + 0.01))
+
+
+def test_provenance_records_what_happened_at_every_boundary():
+    t, act = _signal(span=40.0)
+    intervals = [(x, x + 2.0) for x in np.arange(0.0, 36.0, 2.0)]
+    _, prov, _ = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert prov[0] is None and prov[-1] is None          # segment endpoints
+    interior = [p for p in prov if p]
+    assert len(interior) == len(intervals) - 1
+    for p in interior:
+        assert set(p) == {"orig", "final", "delta", "n_cand", "shifted", "reason"}
+        assert p["n_cand"] >= 1                          # the original always counts
+        assert (p["reason"] is None) == p["shifted"]
+        assert abs((p["final"] - p["orig"]) - p["delta"]) < 2e-3
+
+
+def test_refinement_declines_to_touch_an_out_of_band_span():
+    """
+    With --no-band a span can be far over the ceiling. Refinement must not
+    silently "fix" it, and must not shift it either: every candidate fails the
+    band check, which is recorded rather than hidden.
+    """
+    t, act = _signal(span=40.0)
+    intervals = [(0.0, 11.6), (11.6, 13.6)]
+    out, prov, stats = spans.refine_boundaries(intervals, t, act, _cfg())
+    assert out == [tuple(iv) for iv in intervals]
+    assert prov[1]["shifted"] is False and prov[1]["reason"] == "band"
+    assert stats["shifted"] == 0
