@@ -1,0 +1,9 @@
+probe set: 151 spans (61 with measured rotation, 90 without)
+Loading weights:   0%|          | 0/750 [00:00<?, ?it/s]Loading weights:   0%|          | 2/750 [00:00<01:02, 12.06it/s]Loading weights:   5%|▍         | 34/750 [00:00<00:04, 154.15it/s]Loading weights:   8%|▊         | 61/750 [00:00<00:03, 194.50it/s]Loading weights:  13%|█▎        | 94/750 [00:00<00:02, 239.27it/s]Loading weights:  17%|█▋        | 127/750 [00:00<00:02, 261.45it/s]Loading weights:  21%|██▏       | 160/750 [00:00<00:02, 277.72it/s]Loading weights:  26%|██▋       | 197/750 [00:00<00:01, 301.07it/s]Loading weights:  31%|███▏      | 235/750 [00:00<00:01, 318.48it/s]Loading weights:  36%|███▌      | 268/750 [00:01<00:01, 316.14it/s]Loading weights:  40%|████      | 302/750 [00:01<00:01, 316.81it/s]Loading weights:  45%|████▍     | 336/750 [00:01<00:01, 321.81it/s]Loading weights:  49%|████▉     | 369/750 [00:01<00:01, 321.05it/s]Loading weights:  64%|██████▍   | 479/750 [00:01<00:00, 548.03it/s]Loading weights: 100%|██████████| 750/750 [00:01<00:00, 493.90it/s]
+loaded Qwen/Qwen3-VL-8B-Instruct on cuda:0
+  dv_coffee         0 judged      2s
+  dv_contactlens    0 judged     11s
+  dv_fryingpan      0 judged     27s
+  dv_plants         0 judged     32s
+  dv_toothbrush     0 judged     34s
+  np_cabinet_a      0 judged     39s

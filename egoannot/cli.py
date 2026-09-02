@@ -113,6 +113,19 @@ def build_parser():
     cp.add_argument("--pack", default="retail_shelf")
 
     # -- score ---------------------------------------------------------
+    b = sub.add_parser("baseline",
+                       help="vision-only control arm: the VLM segments too")
+    bs = b.add_subparsers(dest="cmd", required=True)
+    br = bs.add_parser("run", help="caption with no pose input")
+    br.add_argument("--segments", nargs="*", default=None)
+    br.add_argument("--backend", default="qwen-local",
+                    choices=["stub", "anthropic", "openai", "qwen-local"])
+    br.add_argument("--out", default=None)
+    bc = bs.add_parser("compare", help="head-to-head against the pose-guided arm")
+    bc.add_argument("--pose", default=None)
+    bc.add_argument("--vision", default=None)
+    bc.add_argument("--segments", nargs="*", default=None)
+
     sc = sub.add_parser("score", help="format, diversity and grounding metrics")
     sc.add_argument("captions", nargs="?", default=None)
 
@@ -225,6 +238,14 @@ def main(argv=None):
             print(caption.system_prompt(args.pack))
         else:
             caption.run(args.spans, args.backend, args.out, args.limit)
+        return 0
+
+    if stage == "baseline":
+        from .stages import baseline
+        if args.cmd == "run":
+            baseline.run(args.segments, args.out, args.backend)
+        else:
+            baseline.compare(args.pose, args.vision, args.segments)
         return 0
 
     if stage == "score":

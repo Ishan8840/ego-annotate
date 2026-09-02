@@ -8,7 +8,8 @@ from egoannot import config
 SEG = str(config.SEGMENTS_DIR)
 OUT = str(config.artifact("reports", "ego-annotation-showcase.html"))
 D=json.load(open(os.path.join(str(config.DATA), "showcase_data.json")))
-ids=list(D)
+# `_cmp` carries the pose-guided vs vision-only numbers, not a segment.
+ids=[k for k in D if not k.startswith("_")]
 V={i:"data:video/mp4;base64,"+base64.b64encode(open(f"{SEG}/{i}.mp4","rb").read()).decode() for i in ids}
 O={}
 for i in ids:
@@ -101,6 +102,24 @@ button:hover{border-color:var(--acc);color:var(--acc)}
 .blk.no{background:var(--no)}
 .blk.on{opacity:.95}
 .evt{position:absolute;bottom:4px;width:2px;height:8px;background:var(--acc);opacity:.8}
+.tlab{font-family:var(--m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mut);margin:12px 0 5px}
+.track.vt .blk{background:var(--acc)}
+.track.vt .blk.no{background:var(--no)}
+.arms{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+@media (max-width:820px){.arms{grid-template-columns:1fr}}
+.vs{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:18px}
+.vs th,.vs td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:right}
+.vs th:first-child,.vs td:first-child{text-align:left}
+.vs thead th{font-family:var(--m);font-size:.62rem;text-transform:uppercase;
+  letter-spacing:.14em;color:var(--mut);font-weight:500}
+.vs td.w{color:var(--ok);font-weight:600}
+.vs td.l{color:var(--no)}
+.vs tr.hi td{background:var(--surf2)}
+.vs .u{font-family:var(--m);font-size:.78rem}
+.note{background:var(--surf);border:1px solid var(--line);border-left:3px solid var(--acc);
+  border-radius:0 9px 9px 0;padding:15px 18px;margin-top:18px}
+.note b{color:var(--acc)}
 .head{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);z-index:3}
 .legend{display:flex;flex-wrap:wrap;gap:15px;margin-top:11px}
 .legend span{font-family:var(--m);font-size:.63rem;color:var(--mut);display:flex;
@@ -163,11 +182,11 @@ BODY=r'''<div class="w">
   pinching</b> come from <b>3D pose measurement</b> — never guessed. Every label is
   machine-checked against a per-domain spec, and the ones that fail are shown failing.</p>
   <div class="nums">
-    <div><div class="n">74</div><div class="k">labels</div></div>
-    <div><div class="n">29.8<i>/min</i></div><div class="k">density</div></div>
+    <div><div class="n">69</div><div class="k">labels</div></div>
+    <div><div class="n">27.5<i>/min</i></div><div class="k">density</div></div>
     <div><div class="n">77<i>%</i></div><div class="k">unique</div></div>
-    <div><div class="n">82<i>%</i></div><div class="k">pass spec</div></div>
-    <div><div class="n">1.5<i>× realtime</i></div><div class="k">one RTX 4090</div></div>
+    <div><div class="n">87<i>%</i></div><div class="k">pass spec</div></div>
+    <div><div class="n">1.3<i>× realtime</i></div><div class="k">one RTX 4090</div></div>
     <div><div class="n">5</div><div class="k">domains</div></div>
   </div>
 </header>
@@ -195,12 +214,15 @@ BODY=r'''<div class="w">
         <label class="tog"><input type="checkbox" id="skel"> hand pose</label>
         <label class="tog"><input type="checkbox" id="ev" checked> contact events</label>
       </div>
+      <div class="tlab">pose-guided spans &mdash; boundaries measured</div>
       <div class="track" id="track"><div class="head" id="head"></div></div>
+      <div class="tlab">vision-only spans &mdash; the same model choosing its own boundaries</div>
+      <div class="track vt" id="trackv"><div class="head" id="headv"></div></div>
       <div class="legend">
         <span><i class="sw" style="background:var(--ok)"></i> passes spec</span>
         <span><i class="sw" style="background:var(--no)"></i> fails spec</span>
-        <span><i class="sw" style="background:var(--acc)"></i> contact event</span>
-        <span>click the bar to seek</span>
+        <span><i class="sw" style="background:var(--acc)"></i> contact event / vision span</span>
+        <span>click either bar to seek</span>
       </div>
     </div>
     <div class="panel">
@@ -242,6 +264,24 @@ BODY=r'''<div class="w">
       is 1.7–2.6 s, inside the spec band.</p>
     </div>
   </div>
+</section>
+
+<section id="versus">
+  <div class="shead">
+    <h2>Against a vision-only baseline</h2>
+    <p>The premise of this pipeline is that pose should supply span boundaries and
+    handedness, and the model only the language. That was an assumption, so here is the
+    control arm: the <b>same 8B model, same rules, same verb list, same footage</b>, shown
+    frames and asked to segment the clip itself and name the acting hand. It was given a
+    <b>larger frame budget</b> than the pose-guided arm &mdash; 384 frames against 276 &mdash;
+    so it is not handicapped.</p>
+  </div>
+  <table class="vs">
+    <thead><tr><th>metric</th><th>pose-guided</th><th>vision-only</th><th>&nbsp;</th></tr></thead>
+    <tbody id="vsbody"></tbody>
+  </table>
+  <div class="note" id="vsnote"></div>
+  <div class="arms" id="vsarms"></div>
 </section>
 
 <section id="tradeoff">
@@ -332,6 +372,7 @@ BODY=r'''<div class="w">
 
 JS=r'''<script>
 const D=__D__, V=__V__, O=__O__;
+const CMP=D._cmp; delete D._cmp;
 const ids=Object.keys(D);
 const BN=[[0,1],[0,5],[0,9],[0,13],[0,17],[5,9],[9,13],[13,17],[1,2],[2,3],[3,4],
  [5,6],[6,7],[7,8],[9,10],[10,11],[11,12],[13,14],[14,15],[15,16],[17,18],[18,19],[19,20]];
@@ -362,18 +403,86 @@ function table(){
     T.appendChild(r);
   });
 }
-function track(){
-  const T=$("track"); [...T.querySelectorAll(".blk,.evt")].forEach(n=>n.remove());
-  D[cur].caps.forEach((x,i)=>{
+function fill(el,caps){
+  [...el.querySelectorAll(".blk,.evt")].forEach(n=>n.remove());
+  caps.forEach(x=>{
     const e=document.createElement("div");
     e.className="blk"+(x.ok?"":" no");
     e.style.left=pc(x.a)+"%"; e.style.width=Math.max(.5,pc(x.b-x.a))+"%";
-    T.appendChild(e);
+    e.title=x.a.toFixed(1)+"-"+x.b.toFixed(1)+"s  "+x.t;
+    el.appendChild(e);
   });
+}
+function track(){
+  const T=$("track");
+  fill(T, D[cur].caps);
+  fill($("trackv"), D[cur].capsv||[]);
   if($("ev").checked) D[cur].ev.forEach(g=>{
     const e=document.createElement("div"); e.className="evt";
     e.style.left=pc(g.t)+"%"; e.title=g.ty+" "+g.h; T.appendChild(e);
   });
+}
+function vstable(){
+  const P=CMP.pose, X=CMP.vision, T=$("vsbody");
+  const pct=x=>(100*x).toFixed(0)+"%";
+  const R=[
+    ["labels produced", P.n, X.n, P.n>X.n?1:-1],
+    ["labels / min of video", P.density.toFixed(1), X.density.toFixed(1), 1],
+    ["labels / min, first 16s of a clip", P.head_density.toFixed(1), X.head_density.toFixed(1), 0, 1],
+    ["labels / min, after 16s", P.tail_density.toFixed(1), X.tail_density.toFixed(1), 1, 1],
+    ["median span", P.median_dur.toFixed(2)+"s", X.median_dur.toFixed(2)+"s", 0],
+    ["longest span (p90)", P.p90_dur.toFixed(2)+"s", X.p90_dur.toFixed(2)+"s", 0],
+    ["passes the atomicity spec", pct(P.atomicity), pct(X.atomicity), 1, 1],
+    ["unique captions", pct(P.uniqueness), pct(X.uniqueness), 1],
+    ["spans inside the 1.3-4.0s band", pct(P.in_band), pct(X.in_band), 1, 1],
+    ["overlapping labels", P.overlaps, X.overlaps, 0],
+    ["hand matches measured pose", "supplied", pct(X.hand_agree), 1, 1],
+    ["verb matches measured aperture", pct(P.grounding), pct(X.grounding), -1, 1],
+  ];
+  T.innerHTML="";
+  R.forEach(([k,a,b,dir,hi])=>{
+    const r=document.createElement("tr");
+    if(hi) r.className="hi";
+    const ca=dir>0?"w":(dir<0?"l":""), cb=dir>0?"l":(dir<0?"w":"");
+    r.innerHTML='<td>'+k+'</td><td class="u '+ca+'">'+a+'</td>'+
+      '<td class="u '+cb+'">'+b+'</td><td class="u" style="color:var(--mut)">'+
+      (dir>0?"pose":(dir<0?"vision":"\u2014"))+'</td>';
+    T.appendChild(r);
+  });
+  $("vsnote").innerHTML=
+    "<b>Two findings, pulling opposite ways.</b> The vision-only arm cannot hold a "+
+    "duration band it was told to hold &mdash; "+pct(1-X.in_band)+" of its spans fall "+
+    "outside 1.3&ndash;4.0s, which is every one of its "+(X.fails.A1||0)+" spec failures "+
+    "under that rule &mdash; and it disagrees with the measured acting hand on "+
+    pct(1-X.hand_agree)+" of labels. Worse, it front-loads: "+
+    X.head_density.toFixed(0)+" labels/min in the first 16 seconds of a clip, then "+
+    X.tail_density.toFixed(1)+" after, emitting a single 16-second \"action\" per window. "+
+    "The pose-guided arm is flat at "+P.head_density.toFixed(0)+" and "+
+    P.tail_density.toFixed(0)+".<br><br>But the vision-only arm's <b>verbs agree better "+
+    "with the measured finger aperture</b> ("+pct(X.grounding)+" vs "+pct(P.grounding)+
+    ", n&asymp;28 each). Choosing its own boundaries, it cuts where the action it wants "+
+    "to describe actually happens; the pose-guided arm has to caption whatever the "+
+    "measured boundary contains. That is a real cost of fixed boundaries, and it is not "+
+    "what we expected to find.";
+}
+function arms(){
+  const A=$("vsarms"), d=D[cur];
+  const col=(title,caps,sub)=>{
+    const box=document.createElement("div"); box.className="panel";
+    let h='<div class="ph"><div class="ey">'+sub+'</div><div class="h">'+title+'</div></div><div class="rows">';
+    (caps||[]).forEach(x=>{
+      h+='<div class="row"><div class="tc"><span>'+x.a.toFixed(1)+'\u2013'+x.b.toFixed(1)+
+        's</span><span><i class="dot'+(x.ok?'':' no')+'"></i> '+x.h.toLowerCase()+
+        (x.ph&&x.ph!==x.h?' <span style="color:var(--no)">(measured '+x.ph.toLowerCase()+')</span>':'')+
+        ' \u00b7 '+x.v+'</span></div><div class="tx">'+x.t+'</div>'+
+        (x.ok?'':'<span class="er">'+x.err.join(" \u00b7 ")+'</span>')+'</div>';
+    });
+    box.innerHTML=h+'</div>';
+    return box;
+  };
+  A.innerHTML="";
+  A.appendChild(col(d.task+" \u2014 pose-guided", d.caps, (d.caps||[]).length+" labels"));
+  A.appendChild(col(d.task+" \u2014 vision-only", d.capsv, (d.capsv||[]).length+" labels"));
 }
 function rows(){
   const R=$("rows"); R.innerHTML="";
@@ -417,14 +526,14 @@ function draw(){
       ctx.fillStyle=col; P.forEach(p=>{if(p){ctx.beginPath();ctx.arc(p[0],p[1],1.9,0,6.3);ctx.fill();}});
     });
   }
-  $("head").style.left=pc(t)+"%";
+  $("head").style.left=pc(t)+"%"; $("headv").style.left=pc(t)+"%";
   requestAnimationFrame(draw);
 }
 function load(id){
   cur=id; last=-2; v.src=V[id]; v.load();
   $("ptitle").textContent=D[id].task;
   $("ppack").textContent=D[id].pack.replace(/_/g," ")+" vocabulary";
-  chips(); track(); rows();
+  chips(); track(); rows(); arms();
 }
 $("play").onclick=()=>{ if(v.paused){v.play();$("play").innerHTML="❙❙&nbsp; Pause";}
                         else{v.pause();$("play").innerHTML="▶&nbsp; Play";} };
@@ -437,8 +546,9 @@ function jump(dir){
   if(a.length) v.currentTime=(dir>0?Math.min(...a):Math.max(...a))+.04;
 }
 $("next").onclick=()=>jump(1); $("prev").onclick=()=>jump(-1);
-$("track").onclick=e=>{const r=$("track").getBoundingClientRect();
-  v.currentTime=Math.max(0,Math.min(dur()-.05,dur()*(e.clientX-r.left)/r.width));};
+["track","trackv"].forEach(id=>$(id).onclick=e=>{
+  const r=$(id).getBoundingClientRect();
+  v.currentTime=Math.max(0,Math.min(dur()-.05,dur()*(e.clientX-r.left)/r.width));});
 $("ev").onchange=track; $("skel").onchange=()=>{};
 document.addEventListener("keydown",e=>{
   if(e.target.tagName==="INPUT") return;
@@ -446,7 +556,7 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="ArrowRight"){e.preventDefault();jump(1);}
   else if(e.key==="ArrowLeft"){e.preventDefault();jump(-1);}
 });
-table(); load(ids[0]); requestAnimationFrame(draw);
+table(); vstable(); load(ids[0]); requestAnimationFrame(draw);
 </script>
 '''
 JS=JS.replace("__D__",json.dumps(D,separators=(",",":")))

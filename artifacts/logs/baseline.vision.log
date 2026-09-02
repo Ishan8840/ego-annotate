@@ -1,0 +1,18 @@
+Loading weights:   0%|          | 0/750 [00:00<?, ?it/s]Loading weights:   0%|          | 1/750 [00:00<01:39,  7.56it/s]Loading weights:   5%|▍         | 35/750 [00:00<00:03, 179.53it/s]Loading weights:   8%|▊         | 61/750 [00:00<00:03, 212.59it/s]Loading weights:  14%|█▎        | 103/750 [00:00<00:02, 283.01it/s]Loading weights:  18%|█▊        | 136/750 [00:00<00:02, 297.49it/s]Loading weights:  22%|██▏       | 167/750 [00:00<00:01, 301.21it/s]Loading weights:  27%|██▋       | 202/750 [00:00<00:01, 310.16it/s]Loading weights:  31%|███▏      | 236/750 [00:00<00:01, 314.25it/s]Loading weights:  36%|███▌      | 268/750 [00:00<00:01, 310.67it/s]Loading weights:  40%|████      | 302/750 [00:01<00:01, 313.47it/s]Loading weights:  45%|████▍     | 336/750 [00:01<00:01, 314.59it/s]Loading weights:  50%|████▉     | 373/750 [00:01<00:01, 328.80it/s]Loading weights:  67%|██████▋   | 501/750 [00:01<00:00, 607.52it/s]Loading weights:  98%|█████████▊| 733/750 [00:01<00:00, 1111.96it/s]Loading weights: 100%|██████████| 750/750 [00:01<00:00, 501.33it/s] 
+loaded Qwen/Qwen3-VL-8B-Instruct on cuda:0
+  dv_coffee       window   0.0- 16.0s (32 frames) -> 12 actions
+  dv_coffee       window  16.0- 17.7s (4 frames) ->  1 actions
+  dv_toothbrush   window   0.0-  6.0s (12 frames) ->  5 actions
+  dv_plants       window   0.0- 16.0s (32 frames) -> 12 actions
+  dv_plants       window  16.0- 20.5s (9 frames) ->  1 actions
+  dv_contactlens  window   0.0- 16.0s (32 frames) -> 12 actions
+  dv_contactlens  window  16.0- 32.0s (32 frames) ->  1 actions
+  dv_contactlens  window  32.0- 46.4s (29 frames) ->  1 actions
+  dv_fryingpan    window   0.0- 16.0s (32 frames) -> 12 actions
+  dv_fryingpan    window  16.0- 32.0s (32 frames) ->  1 actions
+  dv_fryingpan    window  32.0- 48.0s (32 frames) ->  1 actions
+  dv_fryingpan    window  48.0- 60.0s (24 frames) ->  1 actions
+
+60 actions from 12 calls over 151s of video in 118s
+  density 23.9 actions/min  frame store peak 0.7 MB
+  wrote artifacts/captions/baseline_vision.jsonl

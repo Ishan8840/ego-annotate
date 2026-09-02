@@ -114,6 +114,33 @@ Batch size is measured, not assumed — 5 spans per call beats 1 on atomicity
 (75% vs 67%), uniqueness (66.9% vs 56.1%) and length discipline (0 vs 15
 over-long captions) at identical throughput.
 
+## Tested against a vision-only baseline
+
+The premise &mdash; that pose should supply boundaries and handedness &mdash; was an
+assumption until it was measured. `python -m egoannot baseline run` is the control
+arm: the same 8B model, same rules, same verb list, same footage, shown frames and
+asked to segment the clip itself. It gets a *larger* frame budget (384 vs 276) so
+it is not handicapped. On five domains, 151 s:
+
+| | pose-guided | vision-only |
+|---|---|---|
+| passes the atomicity spec | **87%** | 63% |
+| unique captions | **77%** | 62% |
+| spans inside the 1.3–4.0 s band | **100%** | 68% |
+| labels/min, first 16 s of a clip | 26.6 | 45.4 |
+| labels/min, after 16 s | **28.3** | 5.2 |
+| hand matches measured pose | supplied | 67% |
+| verb matches measured aperture | 66% | **79%** |
+
+The vision-only arm front-loads badly: it annotates the opening of each clip at
+45/min, then emits a single 16-second "action" per window thereafter. It also
+disagrees with the measured acting hand on a third of its labels.
+
+But it wins on grounding. Choosing its own boundaries, it cuts where the action it
+describes actually happens; the pose-guided arm must caption whatever the measured
+boundary contains. **That is a real cost of fixed boundaries and it was not
+predicted.** Reproduce with `python -m egoannot baseline compare`.
+
 ## What's honest about it
 
 - **Contact events are not ground truth.** Three independent checks failed to

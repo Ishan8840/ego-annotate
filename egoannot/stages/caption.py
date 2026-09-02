@@ -112,14 +112,20 @@ def build_user(batch, context, episode_task, frames, cfg=CFG):
 class Stub:
     """No model; exercises the whole pipeline so everything else is verified."""
     name = "stub"
+    TEXT = "Grasp the cardboard box on the shelf with the right hand"
 
     def __call__(self, system, parts, batch):
         out = []
         for span in batch:
             out.append(dict(
-                span_id=span["span_id"],
-                text="Grasp the cardboard box on the shelf with the right hand",
+                span_id=span["span_id"], text=self.TEXT,
                 verb="grasp", noun="cardboard box", visibility="FULL"))
+        # `last_raw` lets the vision-only arm, which reads raw text and needs
+        # timestamps it proposed itself, run without a model too.
+        self.last_raw = "\n".join(json.dumps(dict(
+            start_ts=2.0 * i, end_ts=2.0 * i + 2.0, hand="RIGHT", text=self.TEXT,
+            verb="grasp", noun="cardboard box", visibility="FULL"))
+            for i in range(3))
         return out, dict(stub=True)
 
 
