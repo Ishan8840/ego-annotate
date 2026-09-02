@@ -91,7 +91,7 @@ episode selector instead of a clip filter — measured drop rates ran from 0%
 (`test`, `cart_wipes`) to 75% (`belts_a`, which lost every clip it had),
 because optical-flow magnitude is scene-dependent.
 
-Details, including the limits of T3 on this corpus: [`docs/quality.md`](docs/quality.md).
+Details, including the limits of T3 on this corpus: [`docs/quality.md`](quality.md).
 
 ### 2. events — contact/release and actionness
 
@@ -112,7 +112,7 @@ scanning with quiet hands counts as inspecting rather than idle:
 run and none confirms that detected events coincide with real contact; against
 the human gold set the detector sits at F1 0.02–0.09. They are a candidate
 proposal layer, which is why nothing downstream conditions a caption on them.
-The full negative result is in [`docs/events.md`](docs/events.md).
+The full negative result is in [`docs/events.md`](events.md).
 
 The "closed"/"open" state gate now carries absolute caps and a usability flag.
 Percentiles alone have no grounding: measured on this corpus, p30 "closed" is
@@ -229,7 +229,7 @@ verb-noun core, A4 field/text consistency, A5 enums, A6 banned phrasing, A7
 imperative tense, A8 no overlap, A9 no contradiction of a measurement.
 
 The full rule table and the reasoning behind each is in
-[`docs/labeling_spec.md`](docs/labeling_spec.md).
+[`docs/labeling_spec.md`](labeling_spec.md).
 
 `python -m egoannot lint` runs the self-test: curated positives must all pass,
 curated negatives must all fail, **and every exemplar shipped in the prompt
