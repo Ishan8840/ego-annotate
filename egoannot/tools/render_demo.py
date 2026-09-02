@@ -7,8 +7,12 @@ This is the visual QA view for the pipeline's output -- it makes span
 boundaries, hand assignment and caption timing inspectable at a glance -- and
 it doubles as the README demo.
 
-    python -m egoannot demo --segments dv_coffee dv_plants --out demo.mp4
-    python -m egoannot demo --segments dv_coffee --gif demo.gif --seconds 12
+    python -m egoannot demo --segments pp_shampoo np_storagebox --out demo.mp4
+    python -m egoannot demo --segments pp_shampoo:1.9:10 --gif demo.gif
+
+A segment may carry its own window as `id:start` or `id:start:duration`, in
+clip-local seconds, so a demo can open on the moment that shows the pipeline
+working rather than on whatever the clip happens to begin with.
 """
 from __future__ import annotations
 
@@ -39,7 +43,7 @@ LEFT_HAND = (212, 160, 74)      # amber
 RIGHT_HAND = (120, 200, 130)    # green
 ACCENT = (196, 168, 86)
 
-PANEL_H = 132
+PANEL_H = 150
 BAR_H = 26
 
 
@@ -101,8 +105,17 @@ def _timeline(panel, spans, t, x0, y0, width, active):
     cv2.line(panel, (x, y0 - 9), (x, y0 + 9), INK, 2, cv2.LINE_AA)
 
 
-def _frames_for_segment(sid, captions, seconds=None):
-    """Yield composited BGR frames for one segment."""
+def parse_spec(spec):
+    """`id`, `id:start` or `id:start:duration` -> (id, start, duration)."""
+    parts = str(spec).split(":")
+    sid = parts[0]
+    start = float(parts[1]) if len(parts) > 1 and parts[1] else 0.0
+    duration = float(parts[2]) if len(parts) > 2 and parts[2] else None
+    return sid, start, duration
+
+
+def _frames_for_segment(sid, captions, seconds=None, start=0.0):
+    """Yield composited BGR frames for one segment window."""
     import cv2
     meta = json.load(open(os.path.join(str(config.SEGMENTS_DIR), sid + ".json")))
     path = os.path.join(str(config.SEGMENTS_DIR), sid + ".mp4")
@@ -119,7 +132,10 @@ def _frames_for_segment(sid, captions, seconds=None):
         if not ok:
             break
         t_local = i / fps
-        if seconds and t_local > seconds:
+        i += 1
+        if t_local < start:
+            continue
+        if seconds and t_local - start > seconds:
             break
         t_abs = t0 + t_local
         k = int(round(t_local * ov_fps))
@@ -149,11 +165,13 @@ def _frames_for_segment(sid, captions, seconds=None):
                 facts.append(active["fingers"])
             if active.get("rotation"):
                 facts.append(active["rotation"])
-            _put(panel, " | ".join(facts), (12, 90), 0.36, MUTED)
+            # Wrap rather than let a long fact list run off the panel edge.
+            for n, line in enumerate(_wrap(" | ".join(facts), 66)[:2]):
+                _put(panel, line, (12, 92 + 15 * n), 0.34, MUTED)
         else:
             _put(panel, "(no span)", (12, 46), 0.46, MUTED)
 
-        _timeline(panel, spans, t_abs, 12, PANEL_H - 16, w - 24, active)
+        _timeline(panel, spans, t_abs, 12, PANEL_H - 14, w - 24, active)
 
         bar = np.full((BAR_H, w, 3), PANEL, np.uint8)
         _put(bar, "hands: left", (12, 18), 0.34, LEFT_HAND)
@@ -161,7 +179,6 @@ def _frames_for_segment(sid, captions, seconds=None):
         _put(bar, "text: VLM   spans + hand + aperture: pose",
              (166, 18), 0.34, MUTED)
         yield np.vstack([bar, frame, panel])
-        i += 1
     cap.release()
 
 
@@ -169,11 +186,12 @@ def render(segments, out, seconds=None, gif=None, fps=None,
            gif_fps=8, gif_width=430, gif_colors=64):
     """Composite one or more segments into a single annotated clip."""
     captions = [json.loads(l) for l in open(config.CAPTIONS)]
+    specs = [parse_spec(x) for x in segments]
     first = json.load(open(os.path.join(str(config.SEGMENTS_DIR),
-                                        segments[0] + ".json")))
+                                        specs[0][0] + ".json")))
     import cv2
     probe = cv2.VideoCapture(os.path.join(str(config.SEGMENTS_DIR),
-                                          segments[0] + ".mp4"))
+                                          specs[0][0] + ".mp4"))
     src_fps = fps or float(probe.get(cv2.CAP_PROP_FPS) or 30.0)
     probe.release()
     w = first["w"]
@@ -187,8 +205,9 @@ def render(segments, out, seconds=None, gif=None, fps=None,
            "-pix_fmt", "yuv420p", "-movflags", "+faststart", out]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     n = 0
-    for sid in segments:
-        for frame in _frames_for_segment(sid, captions, seconds):
+    for sid, start, duration in specs:
+        for frame in _frames_for_segment(sid, captions,
+                                         duration or seconds, start):
             proc.stdin.write(frame.tobytes())
             n += 1
     proc.stdin.close()

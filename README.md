@@ -6,9 +6,11 @@ episodes — head camera, 21-joint hand pose, calibration — and it produces
 
 ![Annotated egocentric episode](assets/demo.gif)
 
-*Hand skeleton reprojected from the shipped pose; caption and the measured
-fields below it. Full 48-second version across three domains:
-[`assets/demo.mp4`](assets/demo.mp4).*
+*One shelf-stocking cycle, cut into four atomic actions — grasp, transport,
+place, release. Hand skeleton is reprojected from the shipped pose; the caption
+and the measured fields sit below it, with span boundaries on the timeline.
+Longer 52-second version across three domains — pick-and-place, non-prehensile,
+personal care: [`assets/demo.mp4`](assets/demo.mp4).*
 
 ## The idea
 
@@ -64,7 +66,7 @@ python -m egoannot quality measure
 python -m egoannot spans   build
 python -m egoannot caption run --backend qwen-local
 python -m egoannot score
-python -m egoannot demo --segments dv_plants --gif demo.gif
+python -m egoannot demo --segments pp_shampoo:1.9:10 --gif demo.gif
 ```
 
 Every path and threshold is in [`egoannot/config.py`](egoannot/config.py), each
@@ -83,6 +85,15 @@ local Qwen3-VL-8B:
 | Duration band | **100%** in band, 0 violations |
 | Grounding | 52% verb/aperture agreement (48% is the chance floor) |
 | Throughput | 0.62 spans/s, 1.3× realtime on one RTX 4090 |
+
+Both demo clips above are reproducible from the committed artifacts:
+
+```bash
+python -m egoannot demo --segments pp_shampoo:1.9:10.2 --gif assets/demo.gif \
+    --gif-fps 7 --gif-width 400 --gif-colors 48
+python -m egoannot demo --segments pp_shampoo:1.9:20 np_storagebox:0:16 \
+    dv_contactlens:0:16 --out assets/demo.mp4
+```
 
 Batch size is measured, not assumed — 5 spans per call beats 1 on atomicity
 (75% vs 67%), uniqueness (66.9% vs 56.1%) and length discipline (0 vs 15
