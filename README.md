@@ -206,27 +206,28 @@ against an unvalidated reference, the correct stream looks like the broken one.
 
 **How the placement is fixed.** Out of the box the estimator puts hands about
 20% too far away. Its joints and its 2D anchors are both good; only the
-camera-space translation it hangs them on is wrong — so that one component is
-discarded and recomputed. Re-solving it per frame — fitting the root-relative joints
-onto the model's own anchors through the known intrinsics, using no ground
-truth at all — brings the estimated pose to **parity with the shipped
-annotation** on the stereo pair that neither source owns:
+camera-space translation it hangs them on is wrong, so that component is
+discarded and recomputed by fitting the joints onto the model's own anchors
+through the known intrinsics — no ground truth involved. That cuts absolute
+wrist error against ARCTIC mocap from 50.7 mm to 19.3 mm.
 
-| | estimated | shipped |
-|---|---|---|
-| stereo within 5 cm | 47% | 48% |
-| stereo correlation | **+0.359** | +0.299 |
-| stereo MAE | 0.129 m | **0.115 m** |
-| wrist jitter (world frame) | **2.13 mm/frame²** | 2.61 mm/frame² |
+**On EgoStandard the shipped annotation is still the better of the two.**
+Scored against MediaPipe — an independent detector that informs neither
+stream — the shipped pose lands 20.3 px from the detected hands and the
+estimate 44.2 px, with the shipped pose winning on all 8 episodes. The
+estimate's hands also project ~21% too large (1.21x the detected span,
+against the shipped pose's 1.00x), which is visible as skeletons overshooting
+the fingers.
 
-So it matches on coverage, shape, aperture, orientation and within-5 cm, wins
-on correlation, and remains 12% behind on absolute depth error.
+That contradicts what the stereo referee suggested (47% vs 48% within 5 cm,
+i.e. parity) and shows the referee is too weak to resolve this: ~40%
+disparity coverage, and the shipped pose only satisfies it 48% of the time.
+It also overturns an earlier conclusion here that the shipped annotation was
+13% too small about hand size — that inference assumed the estimator's
+ARCTIC-validated scale accuracy carried over to EgoStandard, and it does not.
 
-It is also marginally smoother than the annotation — 2.13 against
-2.61 mm/frame² of wrist jitter in the world frame, a 1.2x edge. (An earlier
-revision claimed 12x; that was measured in the camera frame, where our own
-round trip cancels the extrinsics and the shipped pose does not, so the
-comparison flattered us. `docs/pose.md` records why.)
+So: validated and strong on ARCTIC, and **not yet a replacement for the
+shipped annotation on EgoStandard**.
 
 Known limits, the conversion bugs that nearly went unnoticed, and why one
 resolution knob is a trap: [`docs/pose.md`](docs/pose.md).

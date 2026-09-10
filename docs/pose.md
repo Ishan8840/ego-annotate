@@ -154,10 +154,25 @@ Three arms, on identical 1280 px predictions (`pose compare`):
 | *shipped* | — | — | — | — | *0.115 m* | *+0.299* | *48%* |
 
 PnP solves 100% of frames at 0.9–2.1 px reprojection residual and reaches
-**parity with the shipped annotation on the independent referee**: 47% within
-5 cm against 48%, and a better correlation with measured stereo depth. Median
-absolute error stays 12% higher, and the residual is depth alone — lateral
-error drops to ~9 mm while |dz| stays at 50 mm.
+what looks like parity on the stereo referee: 47% within 5 cm against 48%.
+
+**That reading does not survive a better referee.** Scored against MediaPipe
+— an independent 2D detector that informs neither stream — the shipped pose
+sits 20.3 px from the detected hands and the estimate 44.2 px, with the
+shipped pose ahead on all 8 episodes. The stereo pair is simply too weak to
+resolve this: ~40% disparity coverage on these scenes, and the shipped pose
+itself only satisfies it 48% of the time. A test that both sources half-fail
+cannot rank them.
+
+| EgoStandard, vs MediaPipe | shipped | estimated |
+|---|---|---|
+| 2D joint error | **20.3 px** | 44.2 px |
+| projected hand span / detected | **1.00x** | 1.21x |
+
+The estimate's hands project about 21% too large, which is what "the skeleton
+overshoots the fingers" looks like when measured. On EgoStandard the shipped
+annotation is the better pose, and this stage is not yet a replacement for
+it.
 
 The depth scalar is *worse* than doing nothing at this resolution. At 1280 the
 raw bias is already near zero, so fitting one overcorrects. Resolution and
@@ -272,13 +287,18 @@ estimator predicts 90-93 mm on ARCTIC and 94-99 mm on EgoStandard (a
 different operator); the shipped EgoStandard pose says 81-87 mm, smaller than
 any of them.
 
-So the estimator is right about hand size and **the shipped EgoStandard
-annotation is the one that is wrong**, by about 13%. Two consequences:
+That inference was **wrong**, and the assumption flagged below is why. It
+requires the estimator's ARCTIC-validated scale accuracy to carry over to
+EgoStandard, and MediaPipe says it does not: on EgoStandard the shipped
+pose's hands match the detected span at 1.00x while the estimate's run 1.21x
+too large. The estimator is accurate about hand size on ARCTIC and
+over-predicts it here. Two consequences, now reversed:
 
-* `hand_scale` should be left at 1.0. Setting it to 0.877 does not correct an
-  error — it corrupts a correct hand size to match a biased reference. The
-  apparent aperture improvement it bought (11.6 -> 9.47 mm) was agreement with
-  a biased annotation, not accuracy.
+* `hand_scale` around 1/1.21 = 0.83 is probably right on this corpus after
+  all, close to the 0.877 first fitted against the shipped pose. The aperture
+  improvement it bought (11.6 -> 9.47 mm) now looks like a real gain rather
+  than agreement with a biased reference. It has not been re-measured since
+  this reversal.
 * The depth bias is +6.2 mm against truth, against the ~70 mm measured on
   EgoStandard before PnP. An estimator that is near-unbiased on real ground
   truth makes the EgoStandard residual more likely a property of that corpus's
@@ -351,12 +371,12 @@ and not the uncorrected default.
 
 ### What this does not establish
 
-**Parity is on two of three stereo measures, not all three.** With PnP
-placement the estimate matches the shipped pose on within-5 cm (47% vs 48%)
-and beats it on correlation (+0.359 vs +0.299), but median absolute error
-stays 12% higher (0.129 vs 0.115 m). Calling it "as accurate" is fair for
-coverage, shape, aperture, orientation and temporal stability; on absolute
-depth it is close but still behind.
+**On EgoStandard the shipped annotation is more accurate.** The stereo
+referee suggested parity; an independent 2D detector says the shipped pose is
+about twice as close to the hands (20.3 px against 44.2), on every episode.
+The stage is validated against mocap on ARCTIC and is a working annotator for
+footage with no labels at all -- but on this corpus it does not replace what
+already ships.
 
 **The referee is a noisy ruler.** Disparity coverage runs ~40% on these
 scenes, and the shipped pose only reaches 53% within 5 cm against it, so part
