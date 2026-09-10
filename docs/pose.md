@@ -278,6 +278,28 @@ So for absolute hand position — the thing that matters for placing a hand
 relative to an object — this pipeline is meaningfully ahead of the released
 model. For articulation it is a wash.
 
+### The 2D referee is itself validated
+
+MediaPipe is used above to rank two poses on a corpus with no ground truth,
+which is only sound if it is accurate. On ARCTIC, where mocap exists, it
+lands 14.8 px from the true joints -- its own noise floor -- and this
+pipeline lands 20.2 px, barely worse than truth. Both hand-size ratios sit at
+1.0. So on footage where the stage works, the referee says so.
+
+That makes the cross-domain picture clean, and EgoStandard is itself the
+held-out test: ACE never trained on it, and its camera and scenes are nothing
+like ARCTIC's lab.
+
+| corpus | ours vs MediaPipe | hand size |
+|---|---|---|
+| ARCTIC (subject held out, domain familiar) | 20.2 px | 1.01x |
+| EgoStandard (never seen) | 44.2 px | 1.21x |
+
+Roughly a 2x degradation, consistent with the estimator's own published drop
+on HOI4D -- its only fully held-out benchmark -- from 15.26 mm in-domain to
+23.0 mm zero-shot. Benchmark rank does not transfer across domains, and the
+ARCTIC number predicts performance on ARCTIC-like footage only.
+
 ### This overturns the hand-size conclusion
 
 Against true joints the estimator's hand scale is **1.010** — within 1%,
