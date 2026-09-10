@@ -233,6 +233,36 @@ its full test set, this is a median over on-screen frames of 8 sequences. The
 claim is that the pipeline reaches published-quality accuracy, not that it
 beats the published numbers.
 
+### Does this improve on the estimator, or just reimplement it?
+
+The estimator has its own translation decode (MANO + mixed-PnP). This project
+never used it — the importer was built around the auxiliary `direct` heads
+while MANO was still an unmet licence blocker, and the choice was never
+revisited once that cleared. So "our PnP beats raw" was measured against the
+estimator's *secondary* read, not its headline one.
+
+Scored properly, on the same ARCTIC frames:
+
+| read | MPJPE | PA-MPJPE | wrist |
+|---|---|---|---|
+| ACE primary (MANO + mixed-PnP) | **11.6 mm** | 6.9 mm | 50.7 mm |
+| **this pipeline** (direct + PnP) | 12.3 mm | **6.5 mm** | **19.3 mm** |
+| MANO articulation + our PnP | 12.4 mm | 6.9 mm | 22.4 mm |
+
+The contribution is **placement: 50.7 -> 19.3 mm, 2.6x better**, at a cost of
+0.7 mm of wrist-aligned MPJPE. Their MANO articulation is slightly the better
+of the two; our metric placement is much better.
+
+Mixing them does not help. Feeding MANO's joints through our PnP is worse on
+every column, for two reasons: the solve re-fits rotation and its
+image-derived orientation is worse than MANO's, and the direct 3D head agrees
+with the direct 2D head more closely than MANO's joints do, both being reads
+off the same decoder branch.
+
+So for absolute hand position — the thing that matters for placing a hand
+relative to an object — this pipeline is meaningfully ahead of the released
+model. For articulation it is a wash.
+
 ### This overturns the hand-size conclusion
 
 Against true joints the estimator's hand scale is **1.010** — within 1%,
