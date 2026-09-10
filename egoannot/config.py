@@ -176,6 +176,15 @@ FEATURES = dict(
 
 # ---------------------------------------------------------------- stage: spans
 SPANS_CFG = dict(
+    # Which hand pose the stage reads: the annotation shipped in the mcap,
+    # or one estimated from the head camera (docs/pose.md). The two agree on
+    # finger configuration (12.3 mm) and not on placement (91 mm), so this
+    # is a real fork, not a formality.
+    pose_source="shipped",   # "shipped" | "ace"
+    # Estimated pose reaches parity with the shipped annotation on the stereo
+    # referee (47% vs 48% within 5 cm) only with per-frame PnP placement; the
+    # model's own translation gives 28%. See docs/pose.md.
+    pose_placement="pnp",    # "pnp" | "scale" | "raw"
     signal="activity",       # "activity" | "velocity"
     min_gap_s=1.7,           # minimum separation between detected boundaries
     prominence=0.14,         # trough prominence on the normalised activity signal

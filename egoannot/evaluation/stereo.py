@@ -160,7 +160,8 @@ def make_sgbm(w):
         preFilterCap=63, mode=cv2.StereoSGBM_MODE_SGBM_3WAY), nd
 
 
-def validate(path, every_s=2.0, scale=0.5, max_frames=80):
+def validate(path, every_s=2.0, scale=0.5, max_frames=80, hands=None,
+             label="shipped"):
     """
     Does the shipped hand pose land where the image says the hand is?
 
@@ -171,8 +172,15 @@ def validate(path, every_s=2.0, scale=0.5, max_frames=80):
     pose is not registered to the imagery and proximity-from-pose is invalid.
     """
     S = read_stereo(path)
+    if hands is not None:
+        # Score an alternative pose source through the IDENTICAL test. The
+        # stereo measurement, the rectification and the sampling are all
+        # untouched -- only which hand is projected changes -- so the two
+        # sources are directly comparable and neither one defines the answer.
+        S["hands"] = hands
     name = os.path.basename(path)
     rows, cov = [], []
+    name = f"{name}[{label}]"
     sgbm = None
     EL = S["E"]["left"]
     HR, HL = S["hands"]["right"], S["hands"]["left"]
@@ -239,7 +247,7 @@ def validate(path, every_s=2.0, scale=0.5, max_frames=80):
     print("  |error| within 2/5/10/20 cm: " + "  ".join(f"{100*x:.0f}%" for x in within))
     corr = float(np.corrcoef(zp, zs)[0, 1]) if len(zp) > 3 and zp.std() > 1e-6 else float("nan")
     print(f"  correlation(z_pose, z_stereo) = {corr:+.3f}")
-    return dict(name=name, n=len(ok), median_err=float(np.median(d)),
+    return dict(name=name, label=label, n=len(ok), median_err=float(np.median(d)),
                 mae=float(np.abs(d).mean()), corr=corr,
                 within_5cm=within[1], within_10cm=within[2],
                 coverage=float(np.mean(cov)), rows=rows)

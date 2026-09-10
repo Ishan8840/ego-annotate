@@ -38,6 +38,7 @@ import numpy as np
 from .. import config
 from ..core.geometry import quat_to_R
 from ..core.mcap_io import read_episode
+from ..pose import read as pose_read
 from ..core.signal import gradient, local_minima, smooth, speed, window
 
 CFG = config.SPANS_CFG
@@ -528,7 +529,8 @@ def build(segments=None, out=None, only=None, cfg=CFG,
         name = os.path.basename(seg["source"]).rsplit(".", 1)[0]
         needs_video = str(cfg.get("signal", "activity")).startswith("rgb_")
         try:
-            ep = read_episode(config.episode_path(name), want_video=needs_video)
+            ep = pose_read(config.episode_path(name), cfg.get("pose_source", "shipped"),
+                           want_video=needs_video)
         except FileNotFoundError as e:
             print("MISSING", e)
             continue

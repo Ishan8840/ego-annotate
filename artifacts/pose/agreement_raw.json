@@ -1,0 +1,786 @@
+[
+ {
+  "episode": "fill_and_boil_water_in_kettl",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 22.77,
+  "hands": {
+   "left": {
+    "frames": 681,
+    "coverage": 1.0,
+    "placement_mm": 72.49494104768556,
+    "shape_frac_of_hand": 0.20668011187333865,
+    "shape_mm": 17.731510968668964,
+    "hand_scale_mm": 85.79204948863043,
+    "aperture_mae_mm": 35.94394559200092,
+    "aperture_corr": 0.13430651413482228,
+    "aperture_mine_p50_mm": 72.97456871312022,
+    "aperture_shipped_p50_mm": 34.49105958644099,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 11.16003821098204,
+      "median_abs": 11.16003821098204
+     },
+     "y_down": {
+      "median_signed": -47.31477431098742,
+      "median_abs": 47.31477431098742
+     },
+     "z_depth": {
+      "median_signed": 32.19387833428272,
+      "median_abs": 32.19387833428272
+     }
+    },
+    "wrist_dist_mm": 60.654083475440544,
+    "depth_mine_mm": 351.35775804519653,
+    "depth_shipped_mm": 317.5107708757586,
+    "orientation_deg": {
+     "raw_median": 95.01413332433589,
+     "after_constant_offset_median": 9.24552928448897,
+     "after_constant_offset_p90": 18.41288439521706,
+     "offset_deg": 93.58241884546256,
+     "n": 681
+    },
+    "pck2d": {
+     "n": 14301,
+     "px_p50": 126.88669615026433,
+     "px_p95": 188.50985387747195,
+     "pck": 0.4273827005104538,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 681,
+    "coverage": 1.0,
+    "placement_mm": 118.43074010710473,
+    "shape_frac_of_hand": 0.11928842395669269,
+    "shape_mm": 10.19071071834554,
+    "hand_scale_mm": 85.4291629309366,
+    "aperture_mae_mm": 7.717877631208231,
+    "aperture_corr": 0.7421089200046954,
+    "aperture_mine_p50_mm": 44.33825420025104,
+    "aperture_shipped_p50_mm": 40.345103426538635,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -44.43090522725106,
+      "median_abs": 44.43090522725106
+     },
+     "y_down": {
+      "median_signed": -66.91921091484775,
+      "median_abs": 66.91921091484775
+     },
+     "z_depth": {
+      "median_signed": 58.2232134790468,
+      "median_abs": 58.2232134790468
+     }
+    },
+    "wrist_dist_mm": 105.12354473556083,
+    "depth_mine_mm": 400.55605769157427,
+    "depth_shipped_mm": 343.90055388834617,
+    "orientation_deg": {
+     "raw_median": 157.65377566523952,
+     "after_constant_offset_median": 8.142159677773346,
+     "after_constant_offset_p90": 17.318973000974676,
+     "offset_deg": 156.05537477466024,
+     "n": 681
+    },
+    "pck2d": {
+     "n": 14301,
+     "px_p50": 214.16693454105953,
+     "px_p95": 276.69712180692187,
+     "pck": 0.0,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "install_the_phone_case_onto",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 31.0,
+  "hands": {
+   "left": {
+    "frames": 929,
+    "coverage": 1.0,
+    "placement_mm": 70.59072351295838,
+    "shape_frac_of_hand": 0.2245728765625901,
+    "shape_mm": 19.86738888515691,
+    "hand_scale_mm": 88.46744434970795,
+    "aperture_mae_mm": 15.647440886684777,
+    "aperture_corr": 0.8730660608124705,
+    "aperture_mine_p50_mm": 69.41231523423818,
+    "aperture_shipped_p50_mm": 52.94364960688512,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 2.8960810744083494,
+      "median_abs": 7.801890528382524
+     },
+     "y_down": {
+      "median_signed": -32.14702160980676,
+      "median_abs": 32.14702160980676
+     },
+     "z_depth": {
+      "median_signed": 46.81396242372962,
+      "median_abs": 46.81396242372962
+     }
+    },
+    "wrist_dist_mm": 60.44171208952546,
+    "depth_mine_mm": 262.57115602493286,
+    "depth_shipped_mm": 214.71705543297512,
+    "orientation_deg": {
+     "raw_median": 99.59104541991827,
+     "after_constant_offset_median": 19.787898659615067,
+     "after_constant_offset_p90": 26.001300585526863,
+     "offset_deg": 98.4330862080137,
+     "n": 929
+    },
+    "pck2d": {
+     "n": 19509,
+     "px_p50": 152.52820858756988,
+     "px_p95": 206.20692164719372,
+     "pck": 0.12860730944692195,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 929,
+    "coverage": 1.0,
+    "placement_mm": 92.10610478044572,
+    "shape_frac_of_hand": 0.1487117371046045,
+    "shape_mm": 13.000583004249092,
+    "hand_scale_mm": 87.42136441150562,
+    "aperture_mae_mm": 8.580418166240065,
+    "aperture_corr": 0.9157666172042145,
+    "aperture_mine_p50_mm": 45.22909198281037,
+    "aperture_shipped_p50_mm": 43.53248972179222,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -33.098762630513576,
+      "median_abs": 33.098762630513576
+     },
+     "y_down": {
+      "median_signed": -48.35471009719372,
+      "median_abs": 48.35471009719372
+     },
+     "z_depth": {
+      "median_signed": 48.11293863416466,
+      "median_abs": 48.11293863416466
+     }
+    },
+    "wrist_dist_mm": 75.2026187411216,
+    "depth_mine_mm": 285.85487604141235,
+    "depth_shipped_mm": 240.0596809756399,
+    "orientation_deg": {
+     "raw_median": 156.47711513373426,
+     "after_constant_offset_median": 16.277946166381163,
+     "after_constant_offset_p90": 23.464877657389714,
+     "offset_deg": 158.27543612785246,
+     "n": 929
+    },
+    "pck2d": {
+     "n": 19509,
+     "px_p50": 232.24405065435613,
+     "px_p95": 298.19410081947757,
+     "pck": 0.0,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "refill_badminton_shuttlecock",
+  "axis": 1.0,
+  "src_fps": 25.0,
+  "duration_s": 31.52,
+  "hands": {
+   "left": {
+    "frames": 789,
+    "coverage": 1.0,
+    "placement_mm": 67.32773645572252,
+    "shape_frac_of_hand": 0.2020981955696427,
+    "shape_mm": 16.8271202471421,
+    "hand_scale_mm": 83.26210059098518,
+    "aperture_mae_mm": 5.31681816760791,
+    "aperture_corr": 0.9726196011928975,
+    "aperture_mine_p50_mm": 60.571424974649645,
+    "aperture_shipped_p50_mm": 60.29426316829025,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 7.993713096746721,
+      "median_abs": 7.993713096746721
+     },
+     "y_down": {
+      "median_signed": -34.87667415681946,
+      "median_abs": 34.87667415681946
+     },
+     "z_depth": {
+      "median_signed": 38.09498945656053,
+      "median_abs": 38.09498945656053
+     }
+    },
+    "wrist_dist_mm": 54.78477001295079,
+    "depth_mine_mm": 344.8380231857301,
+    "depth_shipped_mm": 305.76174975876495,
+    "orientation_deg": {
+     "raw_median": 102.08181438249925,
+     "after_constant_offset_median": 8.591343224637452,
+     "after_constant_offset_p90": 13.311513288164072,
+     "offset_deg": 101.89946523993466,
+     "n": 789
+    },
+    "pck2d": {
+     "n": 16569,
+     "px_p50": 110.61427494993293,
+     "px_p95": 143.83013364137068,
+     "pck": 0.6622004949001147,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 789,
+    "coverage": 1.0,
+    "placement_mm": 91.77027460720092,
+    "shape_frac_of_hand": 0.13660399593778544,
+    "shape_mm": 11.360489982333624,
+    "hand_scale_mm": 83.16367239175855,
+    "aperture_mae_mm": 8.723454037813863,
+    "aperture_corr": 0.9498180394160166,
+    "aperture_mine_p50_mm": 64.74617495603596,
+    "aperture_shipped_p50_mm": 59.782123287332006,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -31.20103552508158,
+      "median_abs": 31.20103552508158
+     },
+     "y_down": {
+      "median_signed": -41.0983341157404,
+      "median_abs": 41.0983341157404
+     },
+     "z_depth": {
+      "median_signed": 46.63324264461033,
+      "median_abs": 46.63324264461033
+     }
+    },
+    "wrist_dist_mm": 70.74769001119914,
+    "depth_mine_mm": 363.1832003593446,
+    "depth_shipped_mm": 314.96232623619966,
+    "orientation_deg": {
+     "raw_median": 169.08829892723514,
+     "after_constant_offset_median": 8.828099809282564,
+     "after_constant_offset_p90": 15.671368270538572,
+     "offset_deg": 168.6421025078257,
+     "n": 789
+    },
+    "pck2d": {
+     "n": 16569,
+     "px_p50": 156.77059293403101,
+     "px_p95": 190.42381883757133,
+     "pck": 0.05184380469551572,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "residual_adhesive_removal_fr",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 27.3,
+  "hands": {
+   "left": {
+    "frames": 817,
+    "coverage": 1.0,
+    "placement_mm": 114.51633137927962,
+    "shape_frac_of_hand": 0.15601037025133777,
+    "shape_mm": 12.7184097246791,
+    "hand_scale_mm": 81.5228460519021,
+    "aperture_mae_mm": 19.514356618310902,
+    "aperture_corr": 0.7501302944498964,
+    "aperture_mine_p50_mm": 41.50885316050723,
+    "aperture_shipped_p50_mm": 22.88014947766238,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 14.980245112931541,
+      "median_abs": 14.980245112931541
+     },
+     "y_down": {
+      "median_signed": -39.35752153918524,
+      "median_abs": 39.35752153918524
+     },
+     "z_depth": {
+      "median_signed": 102.07699091022138,
+      "median_abs": 102.07699091022138
+     }
+    },
+    "wrist_dist_mm": 110.9114330650554,
+    "depth_mine_mm": 464.1105234622954,
+    "depth_shipped_mm": 365.82718860222496,
+    "orientation_deg": {
+     "raw_median": 101.08100660570223,
+     "after_constant_offset_median": 10.545904998698614,
+     "after_constant_offset_p90": 16.64652546083811,
+     "offset_deg": 101.30290805401003,
+     "n": 817
+    },
+    "pck2d": {
+     "n": 17157,
+     "px_p50": 118.4875216737704,
+     "px_p95": 148.88997399790563,
+     "pck": 0.5415865244506616,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 817,
+    "coverage": 1.0,
+    "placement_mm": 134.40195696065064,
+    "shape_frac_of_hand": 0.11082778723772939,
+    "shape_mm": 9.032098242179291,
+    "hand_scale_mm": 81.49669356074952,
+    "aperture_mae_mm": 11.087842633976875,
+    "aperture_corr": 0.7885849862920047,
+    "aperture_mine_p50_mm": 27.500511105382618,
+    "aperture_shipped_p50_mm": 19.57136529930308,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -27.45365433887663,
+      "median_abs": 27.45365433887663
+     },
+     "y_down": {
+      "median_signed": -39.591755364390664,
+      "median_abs": 39.591755364390664
+     },
+     "z_depth": {
+      "median_signed": 110.59390237491984,
+      "median_abs": 110.59390237491984
+     }
+    },
+    "wrist_dist_mm": 120.19174352260174,
+    "depth_mine_mm": 462.6551270484924,
+    "depth_shipped_mm": 360.4335831003028,
+    "orientation_deg": {
+     "raw_median": 165.52626550201583,
+     "after_constant_offset_median": 8.08153658355364,
+     "after_constant_offset_p90": 15.539395738789251,
+     "offset_deg": 166.44544276181077,
+     "n": 817
+    },
+    "pck2d": {
+     "n": 17157,
+     "px_p50": 141.1371795704178,
+     "px_p95": 195.23784481376734,
+     "pck": 0.16104214023430669,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "return_the_coat_rack",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 11.37,
+  "hands": {
+   "left": {
+    "frames": 341,
+    "coverage": 1.0,
+    "placement_mm": 65.97319410419648,
+    "shape_frac_of_hand": 0.14144849315011712,
+    "shape_mm": 12.441907745882418,
+    "hand_scale_mm": 87.96069547423329,
+    "aperture_mae_mm": 12.045524510596225,
+    "aperture_corr": 0.6458965564447733,
+    "aperture_mine_p50_mm": 38.53256416620718,
+    "aperture_shipped_p50_mm": 27.119977485563638,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 20.22553565492659,
+      "median_abs": 20.22553565492659
+     },
+     "y_down": {
+      "median_signed": -40.9950644950226,
+      "median_abs": 40.9950644950226
+     },
+     "z_depth": {
+      "median_signed": -7.24886089484833,
+      "median_abs": 8.074225277221958
+     }
+    },
+    "wrist_dist_mm": 49.99834241855702,
+    "depth_mine_mm": 351.853311061859,
+    "depth_shipped_mm": 362.7549236294883,
+    "orientation_deg": {
+     "raw_median": 91.28637544810603,
+     "after_constant_offset_median": 7.897612473950659,
+     "after_constant_offset_p90": 14.056713445630471,
+     "offset_deg": 90.7680510019719,
+     "n": 341
+    },
+    "pck2d": {
+     "n": 7161,
+     "px_p50": 117.59361478112005,
+     "px_p95": 148.7389471090262,
+     "pck": 0.5603965926546571,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 341,
+    "coverage": 1.0,
+    "placement_mm": 74.55438415184742,
+    "shape_frac_of_hand": 0.12519672238906288,
+    "shape_mm": 10.930075433819326,
+    "hand_scale_mm": 87.30320626256525,
+    "aperture_mae_mm": 9.996793616139453,
+    "aperture_corr": 0.371770095214553,
+    "aperture_mine_p50_mm": 31.569334194615593,
+    "aperture_shipped_p50_mm": 29.586774609328305,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -19.62723634616996,
+      "median_abs": 19.62723634616996
+     },
+     "y_down": {
+      "median_signed": -42.74853093108985,
+      "median_abs": 42.74853093108985
+     },
+     "z_depth": {
+      "median_signed": 13.403967871788158,
+      "median_abs": 16.950296872515814
+     }
+    },
+    "wrist_dist_mm": 52.25038809575971,
+    "depth_mine_mm": 353.16616296768194,
+    "depth_shipped_mm": 353.08790711619815,
+    "orientation_deg": {
+     "raw_median": 167.44260582819868,
+     "after_constant_offset_median": 9.737903922556942,
+     "after_constant_offset_p90": 20.018459954522395,
+     "offset_deg": 168.31320275126376,
+     "n": 341
+    },
+    "pck2d": {
+     "n": 7161,
+     "px_p50": 121.23774578933377,
+     "px_p95": 199.0327153331758,
+     "pck": 0.4894567797793604,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "take_out_the_file_folder",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 11.8,
+  "hands": {
+   "left": {
+    "frames": 353,
+    "coverage": 1.0,
+    "placement_mm": 50.588713330609366,
+    "shape_frac_of_hand": 0.17403521936345828,
+    "shape_mm": 14.624508438815157,
+    "hand_scale_mm": 84.03188892091876,
+    "aperture_mae_mm": 10.91771293319237,
+    "aperture_corr": 0.9132971650297412,
+    "aperture_mine_p50_mm": 74.19499170227012,
+    "aperture_shipped_p50_mm": 71.16069082127419,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 19.277225960864826,
+      "median_abs": 19.277225960864826
+     },
+     "y_down": {
+      "median_signed": -23.692369314976965,
+      "median_abs": 23.692369314976965
+     },
+     "z_depth": {
+      "median_signed": -17.28066059804495,
+      "median_abs": 19.22975652421949
+     }
+    },
+    "wrist_dist_mm": 47.63096692605086,
+    "depth_mine_mm": 403.53339910507225,
+    "depth_shipped_mm": 422.2333850191442,
+    "orientation_deg": {
+     "raw_median": 97.03085338905265,
+     "after_constant_offset_median": 8.95433569885319,
+     "after_constant_offset_p90": 15.98612933307684,
+     "offset_deg": 97.47103476258816,
+     "n": 353
+    },
+    "pck2d": {
+     "n": 7413,
+     "px_p50": 68.75144881776053,
+     "px_p95": 126.87977486275248,
+     "pck": 0.9112370160528801,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 353,
+    "coverage": 1.0,
+    "placement_mm": 72.04839751122867,
+    "shape_frac_of_hand": 0.16172648425393582,
+    "shape_mm": 13.576280758083652,
+    "hand_scale_mm": 83.94593858790421,
+    "aperture_mae_mm": 15.597141894548944,
+    "aperture_corr": 0.7796152843821497,
+    "aperture_mine_p50_mm": 87.8567152293875,
+    "aperture_shipped_p50_mm": 77.76152857704452,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -34.963806165579925,
+      "median_abs": 34.963806165579925
+     },
+     "y_down": {
+      "median_signed": -38.060885016660386,
+      "median_abs": 38.060885016660386
+     },
+     "z_depth": {
+      "median_signed": 7.347821840081592,
+      "median_abs": 18.542282666248855
+     }
+    },
+    "wrist_dist_mm": 66.33652961640824,
+    "depth_mine_mm": 418.44314336776756,
+    "depth_shipped_mm": 402.4714505529298,
+    "orientation_deg": {
+     "raw_median": 174.24910803503332,
+     "after_constant_offset_median": 10.060735354246436,
+     "after_constant_offset_p90": 22.626286618178053,
+     "offset_deg": 175.25786465062222,
+     "n": 353
+    },
+    "pck2d": {
+     "n": 7413,
+     "px_p50": 103.09061118628998,
+     "px_p95": 160.57341154211605,
+     "pck": 0.7152300013489815,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "wipe_speaker",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 26.53,
+  "hands": {
+   "left": {
+    "frames": 797,
+    "coverage": 1.0,
+    "placement_mm": 59.43925197391014,
+    "shape_frac_of_hand": 0.16487773287959143,
+    "shape_mm": 13.90699317078243,
+    "hand_scale_mm": 84.34730752944846,
+    "aperture_mae_mm": 14.730122126190729,
+    "aperture_corr": 0.8771582998098376,
+    "aperture_mine_p50_mm": 64.75066251432315,
+    "aperture_shipped_p50_mm": 47.2436394922225,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 8.728050139758887,
+      "median_abs": 8.833038579608589
+     },
+     "y_down": {
+      "median_signed": -37.65713849333077,
+      "median_abs": 37.65713849333077
+     },
+     "z_depth": {
+      "median_signed": 17.874851182481944,
+      "median_abs": 18.299268028203862
+     }
+    },
+    "wrist_dist_mm": 48.85507393278965,
+    "depth_mine_mm": 339.8808836936954,
+    "depth_shipped_mm": 323.3367936779391,
+    "orientation_deg": {
+     "raw_median": 105.68270466289411,
+     "after_constant_offset_median": 10.339952858219537,
+     "after_constant_offset_p90": 18.122102438729783,
+     "offset_deg": 106.00586785148148,
+     "n": 797
+    },
+    "pck2d": {
+     "n": 16737,
+     "px_p50": 100.71554107451196,
+     "px_p95": 177.2714233790808,
+     "pck": 0.6298619824341279,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   },
+   "right": {
+    "frames": 797,
+    "coverage": 1.0,
+    "placement_mm": 95.36917584708267,
+    "shape_frac_of_hand": 0.14486098312383974,
+    "shape_mm": 12.238809531495136,
+    "hand_scale_mm": 84.48658022049804,
+    "aperture_mae_mm": 15.043427000914729,
+    "aperture_corr": 0.3933307244616804,
+    "aperture_mine_p50_mm": 48.15703281084205,
+    "aperture_shipped_p50_mm": 49.23214194494409,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -55.45827984173641,
+      "median_abs": 55.45827984173641
+     },
+     "y_down": {
+      "median_signed": -51.357465502261896,
+      "median_abs": 51.357465502261896
+     },
+     "z_depth": {
+      "median_signed": 21.01305245863688,
+      "median_abs": 23.115123190323494
+     }
+    },
+    "wrist_dist_mm": 78.87285459992339,
+    "depth_mine_mm": 360.2121770381931,
+    "depth_shipped_mm": 341.4139160968816,
+    "orientation_deg": {
+     "raw_median": 175.49162024623436,
+     "after_constant_offset_median": 15.353491151234666,
+     "after_constant_offset_p90": 35.59535066726149,
+     "offset_deg": 178.81720463761636,
+     "n": 797
+    },
+    "pck2d": {
+     "n": 16737,
+     "px_p50": 174.24575415528693,
+     "px_p95": 254.6748085772619,
+     "pck": 0.07641751807372886,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ },
+ {
+  "episode": "wipe_the_inside_door_handle",
+  "axis": 1.0,
+  "src_fps": 30.0,
+  "duration_s": 11.07,
+  "hands": {
+   "left": {
+    "frames": 333,
+    "coverage": 1.0,
+    "placement_mm": 74.86869372784066,
+    "shape_frac_of_hand": 0.1689041759225297,
+    "shape_mm": 13.955302114525196,
+    "hand_scale_mm": 82.62259990932954,
+    "aperture_mae_mm": 16.02085059777931,
+    "aperture_corr": 0.9580133675600494,
+    "aperture_mine_p50_mm": 98.82633961489682,
+    "aperture_shipped_p50_mm": 80.46806899998866,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": 13.115600372496857,
+      "median_abs": 13.115600372496857
+     },
+     "y_down": {
+      "median_signed": 12.41079181726587,
+      "median_abs": 15.038425919060321
+     },
+     "z_depth": {
+      "median_signed": 45.52942299871721,
+      "median_abs": 45.52942299871721
+     }
+    },
+    "wrist_dist_mm": 50.083324684526985,
+    "depth_mine_mm": 291.42314195632946,
+    "depth_shipped_mm": 245.94078734106435,
+    "orientation_deg": {
+     "raw_median": 95.97123119134065,
+     "after_constant_offset_median": 9.64333641325629,
+     "after_constant_offset_p90": 14.448920489619262,
+     "offset_deg": 96.16174675873273,
+     "n": 333
+    },
+    "pck2d": {
+     "n": 6993,
+     "px_p50": 112.26182254041544,
+     "px_p95": 190.47859568931787,
+     "pck": 0.5451165451165452,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 0.9872729872729873
+   },
+   "right": {
+    "frames": 333,
+    "coverage": 1.0,
+    "placement_mm": 93.03312038534676,
+    "shape_frac_of_hand": 0.17846058396487463,
+    "shape_mm": 14.445821197899402,
+    "hand_scale_mm": 80.94684455984557,
+    "aperture_mae_mm": 7.877842155747767,
+    "aperture_corr": 0.6552921617891944,
+    "aperture_mine_p50_mm": 14.458602443292314,
+    "aperture_shipped_p50_mm": 19.557669653582856,
+    "wrist_axis_mm": {
+     "x_right": {
+      "median_signed": -28.056937803962942,
+      "median_abs": 28.056937803962942
+     },
+     "y_down": {
+      "median_signed": -20.710857581477935,
+      "median_abs": 20.710857581477935
+     },
+     "z_depth": {
+      "median_signed": 72.8203017325888,
+      "median_abs": 72.8203017325888
+     }
+    },
+    "wrist_dist_mm": 79.75145752848826,
+    "depth_mine_mm": 366.932272911072,
+    "depth_shipped_mm": 298.3291990044858,
+    "orientation_deg": {
+     "raw_median": 173.90883816526016,
+     "after_constant_offset_median": 18.867724368645327,
+     "after_constant_offset_p90": 29.450068992314783,
+     "offset_deg": 176.25902173815845,
+     "n": 333
+    },
+    "pck2d": {
+     "n": 6993,
+     "px_p50": 124.2954761922072,
+     "px_p95": 164.02933361097905,
+     "pck": 0.4372944372944373,
+     "thresh_px": 120.5
+    },
+    "in_frame_mine": 1.0,
+    "in_frame_shipped": 1.0
+   }
+  }
+ }
+]

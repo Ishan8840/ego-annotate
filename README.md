@@ -165,6 +165,71 @@ checkable, not boundaries that are better:
 Full numbers, caveats and a reproduction script:
 [`docs/heldout_refinement.md`](docs/heldout_refinement.md).
 
+## The pose itself can now be replaced
+
+Everything above treats the shipped 21-joint hand pose as an input. It can
+instead be **estimated from the head camera's own imagery** — no annotation
+required, so the same pipeline runs on egocentric video that ships no pose at
+all.
+
+<table>
+<tr>
+<td width="50%"><img src="assets/pose-vs-groundtruth.gif" width="100%" alt="Estimated hand pose against mocap ground truth on ARCTIC"></td>
+<td width="50%"><img src="assets/pose-vs-shipped.gif" width="100%" alt="Estimated hand pose against the shipped annotation on EgoStandard"></td>
+</tr>
+<tr>
+<td><b>Against ground truth.</b> ARCTIC subject s05, held out from the
+estimator's training. Amber is mocap; teal is recovered from RGB alone.
+<b>12.3 mm MPJPE, 6.5 mm PA-MPJPE.</b></td>
+<td><b>Against the shipped annotation.</b> EgoStandard. The two track the same
+fingers and disagree on placement by ~57 mm &mdash; and the stereo pair says
+neither is clearly right.</td>
+</tr>
+</table>
+
+```bash
+python -m egoannot pose run     --all   # RGB -> 21 joints -> world frame
+python -m egoannot pose eval    --all   # agreement with the shipped pose
+python -m egoannot pose stereo  --all   # both sources vs the stereo referee
+python -m egoannot pose viewer          # scrubbable side-by-side HTML viewer
+python -m egoannot spans build --pose ace     # drive the pipeline off it
+```
+
+**Accuracy is measured against truth, not against the incumbent.** On ARCTIC
+s05 — native mocap MANO labels, and the split the estimator's own paper holds
+out — 8 sequences and ~5,900 frames give **12.3 mm MPJPE** and **6.5 mm
+PA-MPJPE**, against the 15.26 and 7.47 that paper reports. Per-hand MPJPE runs
+8.6&ndash;17.0 mm across 16 hands.
+
+That distinction earned its keep. Measured only against EgoStandard's shipped
+pose, the estimate looked 14% wrong about hand size; measured against mocap it
+is correct to **1%**, so the shipped annotation is the one off by ~13%. Judged
+against an unvalidated reference, the correct stream looks like the broken one.
+
+**How the placement is fixed.** Out of the box the estimator puts hands about
+20% too far away. Its joints and its 2D anchors are both good; only the
+camera-space translation it hangs them on is wrong — so that one component is
+discarded and recomputed. Re-solving it per frame — fitting the root-relative joints
+onto the model's own anchors through the known intrinsics, using no ground
+truth at all — brings the estimated pose to **parity with the shipped
+annotation** on the stereo pair that neither source owns:
+
+| | estimated | shipped |
+|---|---|---|
+| stereo within 5 cm | 47% | 48% |
+| stereo correlation | **+0.359** | +0.299 |
+| stereo MAE | 0.129 m | **0.115 m** |
+
+So it matches on coverage, shape, aperture, orientation and within-5 cm, wins
+on correlation, and remains 12% behind on absolute depth error.
+
+It is also **12x smoother than the annotation** (0.10 against 1.23 mm/frame²
+of wrist jitter), which matters because `features` differentiates this signal
+for speed, acceleration and jerk, and the span boundaries are cut from it.
+
+Known limits, the conversion bugs that nearly went unnoticed, and why one
+resolution knob is a trap: [`docs/pose.md`](docs/pose.md).
+
 ## What's honest about it
 
 - **Contact events are not ground truth.** Three independent checks failed to
@@ -315,4 +380,5 @@ with a comment saying where the number came from.
 - [`docs/events.md`](docs/events.md) — the event detector and its negative results
 - [`docs/labeling_spec.md`](docs/labeling_spec.md) — what an atomic caption is, and why
 - [`docs/heldout_refinement.md`](docs/heldout_refinement.md) — boundary refinement measured on held-out episodes, and the null result
+- [`docs/pose.md`](docs/pose.md) — hand pose estimated from RGB, and how it compares with the shipped annotation
 - [`docs/survey_followups.md`](docs/survey_followups.md) — a real RGB boundary baseline, standard dense-captioning metrics, and PIQE

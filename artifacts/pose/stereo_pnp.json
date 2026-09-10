@@ -1,0 +1,178 @@
+[
+ {
+  "name": "fill_and_boil_water_in_kettl.mcap[shipped]",
+  "label": "shipped",
+  "n": 62,
+  "median_err": 0.004883424613302739,
+  "mae": 0.08359304198610619,
+  "corr": -0.009153772522331734,
+  "within_5cm": 0.5967741935483871,
+  "within_10cm": 0.7258064516129032,
+  "coverage": 0.5866880515318015
+ },
+ {
+  "name": "fill_and_boil_water_in_kettl.mcap[ace]",
+  "label": "ace",
+  "n": 63,
+  "median_err": 0.07480367494945361,
+  "mae": 0.13370174222546174,
+  "corr": 0.0990275904471682,
+  "within_5cm": 0.25396825396825395,
+  "within_10cm": 0.5396825396825397,
+  "coverage": 0.5866880515318015
+ },
+ {
+  "name": "install_the_phone_case_onto.mcap[shipped]",
+  "label": "shipped",
+  "n": 78,
+  "median_err": -0.009971055074045485,
+  "mae": 0.06478894693434041,
+  "corr": 0.29590644669375726,
+  "within_5cm": 0.7307692307692307,
+  "within_10cm": 0.8461538461538461,
+  "coverage": 0.3862084437140241
+ },
+ {
+  "name": "install_the_phone_case_onto.mcap[ace]",
+  "label": "ace",
+  "n": 81,
+  "median_err": 0.030258095303544008,
+  "mae": 0.12373679693790242,
+  "corr": 0.22603838814814817,
+  "within_5cm": 0.5802469135802469,
+  "within_10cm": 0.8024691358024691,
+  "coverage": 0.3862084437140241
+ },
+ {
+  "name": "refill_badminton_shuttlecock.mcap[shipped]",
+  "label": "shipped",
+  "n": 81,
+  "median_err": -0.016125474361297965,
+  "mae": 0.13893050354755584,
+  "corr": 0.3624017257318572,
+  "within_5cm": 0.4567901234567901,
+  "within_10cm": 0.6172839506172839,
+  "coverage": 0.386964858058608
+ },
+ {
+  "name": "refill_badminton_shuttlecock.mcap[ace]",
+  "label": "ace",
+  "n": 79,
+  "median_err": 0.04542575736492285,
+  "mae": 0.1626885845594712,
+  "corr": 0.49420020718808644,
+  "within_5cm": 0.45569620253164556,
+  "within_10cm": 0.620253164556962,
+  "coverage": 0.386964858058608
+ },
+ {
+  "name": "residual_adhesive_removal_fr.mcap[shipped]",
+  "label": "shipped",
+  "n": 83,
+  "median_err": -0.018942493361610913,
+  "mae": 0.0414731596563934,
+  "corr": 0.5565737802432787,
+  "within_5cm": 0.7710843373493976,
+  "within_10cm": 0.927710843373494,
+  "coverage": 0.4397726157770801
+ },
+ {
+  "name": "residual_adhesive_removal_fr.mcap[ace]",
+  "label": "ace",
+  "n": 79,
+  "median_err": 0.003622689421241332,
+  "mae": 0.054092237053043654,
+  "corr": 0.4855534282303184,
+  "within_5cm": 0.7974683544303798,
+  "within_10cm": 0.8734177215189873,
+  "coverage": 0.4397726157770801
+ },
+ {
+  "name": "return_the_coat_rack.mcap[shipped]",
+  "label": "shipped",
+  "n": 33,
+  "median_err": -0.05106974169487055,
+  "mae": 0.14631251933868025,
+  "corr": -0.14957397498648375,
+  "within_5cm": 0.3939393939393939,
+  "within_10cm": 0.7878787878787878,
+  "coverage": 0.4883761637667887
+ },
+ {
+  "name": "return_the_coat_rack.mcap[ace]",
+  "label": "ace",
+  "n": 33,
+  "median_err": 0.0021836502010318948,
+  "mae": 0.11448352985313962,
+  "corr": 0.12692756993575338,
+  "within_5cm": 0.48484848484848486,
+  "within_10cm": 0.8484848484848485,
+  "coverage": 0.4883761637667887
+ },
+ {
+  "name": "take_out_the_file_folder.mcap[shipped]",
+  "label": "shipped",
+  "n": 29,
+  "median_err": 0.08936574396357061,
+  "mae": 0.20592383306148854,
+  "corr": 0.5196759941148349,
+  "within_5cm": 0.2413793103448276,
+  "within_10cm": 0.41379310344827586,
+  "coverage": 0.36631729815323566
+ },
+ {
+  "name": "take_out_the_file_folder.mcap[ace]",
+  "label": "ace",
+  "n": 34,
+  "median_err": 0.15234774397001852,
+  "mae": 0.23811020456298498,
+  "corr": 0.5979439072755913,
+  "within_5cm": 0.17647058823529413,
+  "within_10cm": 0.35294117647058826,
+  "coverage": 0.36631729815323566
+ },
+ {
+  "name": "wipe_speaker.mcap[shipped]",
+  "label": "shipped",
+  "n": 69,
+  "median_err": -0.0028521163854121068,
+  "mae": 0.14204296865909324,
+  "corr": 0.10082869844821783,
+  "within_5cm": 0.21739130434782608,
+  "within_10cm": 0.42028985507246375,
+  "coverage": 0.41797777542969844
+ },
+ {
+  "name": "wipe_speaker.mcap[ace]",
+  "label": "ace",
+  "n": 71,
+  "median_err": 0.02004516251906663,
+  "mae": 0.1673972270054469,
+  "corr": 0.30972120604140946,
+  "within_5cm": 0.38028169014084506,
+  "within_10cm": 0.5633802816901409,
+  "coverage": 0.41797777542969844
+ },
+ {
+  "name": "wipe_the_inside_door_handle.mcap[shipped]",
+  "label": "shipped",
+  "n": 32,
+  "median_err": -0.037225328000557306,
+  "mae": 0.09114734483161281,
+  "corr": 0.30247993986958005,
+  "within_5cm": 0.5,
+  "within_10cm": 0.78125,
+  "coverage": 0.3894857963217338
+ },
+ {
+  "name": "wipe_the_inside_door_handle.mcap[ace]",
+  "label": "ace",
+  "n": 33,
+  "median_err": -0.015693179268720103,
+  "mae": 0.05613121918197509,
+  "corr": 0.40809361774552105,
+  "within_5cm": 0.6666666666666666,
+  "within_10cm": 0.8484848484848485,
+  "coverage": 0.3894857963217338
+ }
+]

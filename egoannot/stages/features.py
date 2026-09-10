@@ -24,6 +24,7 @@ import numpy as np
 
 from .. import config
 from ..core.mcap_io import read_episode
+from ..pose import read as pose_read
 from ..core.signal import gradient, pct_rank, speed, window
 
 CFG = config.FEATURES
@@ -79,8 +80,8 @@ def kinematics(t, P, fps, cfg=CFG):
     return (np.interp(t, tv, v), np.interp(t, tv, a), np.interp(t, tv, j))
 
 
-def episode_features(path, pca=None, cfg=CFG):
-    ep = read_episode(path, want_video=False)
+def episode_features(path, pca=None, cfg=CFG, pose_source="shipped"):
+    ep = pose_read(path, pose_source, want_video=False)
     fps = ep["src_fps"]
     bad = {round(b[0], 3): b[1] for b in ep["badf"]}
     out = {}
@@ -120,12 +121,12 @@ def episode_features(path, pca=None, cfg=CFG):
     return meta, out
 
 
-def fit(paths, out=None, cfg=CFG):
+def fit(paths, out=None, cfg=CFG, pose_source="shipped"):
     """Global closure PCA, so PC1 means the same thing in every episode."""
     out = str(out or config.CLOSURE_PCA)
     blocks = []
     for path in paths:
-        ep = read_episode(path, want_video=False)
+        ep = pose_read(path, pose_source, want_video=False)
         for side in ("left", "right"):
             J = ep[f"/pose/{side}_hand_joints"]
             if len(J) < 8:
@@ -159,7 +160,7 @@ def fit(paths, out=None, cfg=CFG):
     print(f"  PC1 sign chosen so higher = more closed (sign={sign:+.0f})")
 
 
-def build(paths, outdir=None, cfg=CFG):
+def build(paths, outdir=None, cfg=CFG, pose_source="shipped"):
     outdir = str(outdir or config.FEATURES_DIR)
     os.makedirs(outdir, exist_ok=True)
     pca_path = str(config.CLOSURE_PCA)
@@ -168,7 +169,7 @@ def build(paths, outdir=None, cfg=CFG):
     pca = dict(np.load(pca_path))
     metas = []
     for i, path in enumerate(paths, 1):
-        meta, F = episode_features(path, pca, cfg)
+        meta, F = episode_features(path, pca, cfg, pose_source)
         np.savez_compressed(
             os.path.join(outdir, meta["episode"] + ".npz"),
             **{f"{s}__{k}": v for s, f in F.items() for k, v in f.items()})

@@ -67,6 +67,7 @@ def build_parser():
     es = e.add_subparsers(dest="cmd", required=True)
     em = es.add_parser("measure", help="write events, spans and summaries")
     _add_episode_args(em)
+    em.add_argument("--pose", default="shipped", choices=["shipped", "ace"])
     em.add_argument("--out", default=None)
     ec = es.add_parser("calibrate", help="pooled actionness percentiles")
     _add_episode_args(ec)
@@ -76,11 +77,68 @@ def build_parser():
     fs = f.add_subparsers(dest="cmd", required=True)
     ff = fs.add_parser("fit", help="fit the global closure PCA")
     _add_episode_args(ff)
+    ff.add_argument("--pose", default="shipped", choices=["shipped", "ace"])
     fb = fs.add_parser("build", help="write per-episode feature archives")
     _add_episode_args(fb)
+    fb.add_argument("--pose", default="shipped", choices=["shipped", "ace"])
     fb.add_argument("--out", default=None)
     fa = fs.add_parser("auc", help="univariate discriminability vs gold")
     fa.add_argument("--features", default=None)
+
+    # -- pose ----------------------------------------------------------
+    po = sub.add_parser("pose", help="estimate hand pose from RGB instead of "
+                                     "reading the shipped annotation")
+    pos = po.add_subparsers(dest="cmd", required=True)
+    pe = pos.add_parser("export", help="mcap -> mp4 + cam.json for an estimator")
+    _add_episode_args(pe)
+    pe.add_argument("--out", default=None)
+    pr = pos.add_parser("run", help="run ACE-Ego-Hand and lift it to world frame")
+    _add_episode_args(pr)
+    pr.add_argument("--encode-w", type=int, default=832,
+                    help="width the VAE encodes at (default %(default)s). "
+                         "Measured on 8 episodes at 672/832/1280: 832 gives "
+                         "the best aperture agreement, which is the scalar "
+                         "events and spans actually read. 1280 places hands "
+                         "better; see docs/pose.md")
+    pr.add_argument("--chunk", type=int, default=241,
+                    help="frames VAE-encoded at once; halved automatically on "
+                         "CUDA OOM")
+    pr.add_argument("--overlap", type=int, default=81,
+                    help="frames of shared context between chunks (one "
+                         "training window)")
+    pr.add_argument("--per-episode", action="store_true",
+                    help="old path: one subprocess per episode, whole-clip "
+                         "encode, no chunking")
+    pr.add_argument("--mode", default="tiled", choices=["tiled", "full"],
+                    help="tiled: 22-latent windows (the benchmark setting); "
+                         "full: one forward over the whole clip")
+    pr.add_argument("--max-frames", type=int, default=0)
+    pr.add_argument("--force", action="store_true",
+                    help="re-run episodes that already have predictions")
+    pv = pos.add_parser("eval", help="agreement against the shipped pose")
+    _add_episode_args(pv)
+    pv.add_argument("--source", default="ace")
+    pw = pos.add_parser("viewer", help="build a single-page HTML viewer that "
+                                       "draws both pose sources on the footage")
+    pw.add_argument("--fps", type=float, default=12.0,
+                    help="playback frame rate (default %(default)s). Playback "
+                         "is real-time either way -- this trades smoothness "
+                         "against file size, not speed")
+    pw.add_argument("--width", type=int, default=440)
+    pw.add_argument("--seconds", type=float, default=None,
+                    help="cap each episode at this many seconds")
+    pw.add_argument("--out", default=None)
+    pc = pos.add_parser("compare", help="placement arms (raw / scale / pnp) "
+                                       "on identical predictions")
+    _add_episode_args(pc)
+    pc.add_argument("--modes", nargs="*", default=None,
+                    choices=["raw", "scale", "pnp"])
+    pc.add_argument("--no-stereo", action="store_true")
+    pst = pos.add_parser("stereo", help="score both pose sources against "
+                                        "stereo depth, the referee neither owns")
+    _add_episode_args(pst)
+    pst.add_argument("--every", type=float, default=2.0)
+    pst.add_argument("--scale", type=float, default=0.5)
 
     # -- segments ------------------------------------------------------
     sg = sub.add_parser("segments", help="render review clips with pose overlays")
@@ -109,6 +167,8 @@ def build_parser():
                     metavar="SECONDS",
                     help="half-width of the refinement window (default "
                          "%(default)s from config)")
+    sb.add_argument("--pose", default=None, choices=["shipped", "ace"],
+                    help="hand pose source (default %(default)s from config)")
     sb.add_argument("--no-quality-gate", action="store_true")
     sb.add_argument("--gate-tiers", nargs="*", default=None, choices=["T1", "T2"])
 
@@ -217,7 +277,7 @@ def main(argv=None):
     if stage == "events":
         from .stages import events
         if args.cmd == "measure":
-            events.measure(_episodes(args), args.out)
+            events.measure(_episodes(args), args.out, pose_source=args.pose)
         else:
             events.calibrate_actionness(_episodes(args))
         return 0
@@ -225,11 +285,42 @@ def main(argv=None):
     if stage == "features":
         from .stages import features
         if args.cmd == "fit":
-            features.fit(_episodes(args))
+            features.fit(_episodes(args), pose_source=args.pose)
         elif args.cmd == "build":
-            features.build(_episodes(args), args.out)
+            features.build(_episodes(args), args.out,
+                           pose_source=args.pose)
         else:
             features.auc(args.features)
+        return 0
+
+    if stage == "pose":
+        if args.cmd == "export":
+            from .pose import export as pose_export
+            pose_export.export_all(_episodes(args), args.out)
+        elif args.cmd == "run":
+            from .pose import run as pose_run
+            if args.per_episode:
+                pose_run.run(_episodes(args), args.encode_w, args.mode,
+                             args.max_frames, skip_existing=not args.force)
+            else:
+                pose_run.run_batch(_episodes(args), args.encode_w, args.chunk,
+                                   args.overlap, args.mode,
+                                   skip_existing=not args.force)
+        elif args.cmd == "viewer":
+            from .tools import build_pose_viewer
+            build_pose_viewer.build(args.fps, args.width, args.out,
+                                    args.seconds)
+        elif args.cmd == "compare":
+            from .pose import compare
+            from .pose.compare import MODES
+            compare.run(_episodes(args), tuple(args.modes or MODES),
+                        with_stereo=not args.no_stereo)
+        elif args.cmd == "stereo":
+            from .pose import stereo_check
+            stereo_check.compare(_episodes(args), args.every, args.scale)
+        else:
+            from .pose import evaluate
+            evaluate.report(_episodes(args), args.source)
         return 0
 
     if stage == "segments":
@@ -248,6 +339,8 @@ def main(argv=None):
             cfg["boundary_refine"] = False
         if args.boundary_shift is not None:
             cfg["boundary_shift_s"] = args.boundary_shift
+        if args.pose:
+            cfg["pose_source"] = args.pose
         if args.no_quality_gate:
             cfg["quality_gate"] = False
         if args.gate_tiers is not None:

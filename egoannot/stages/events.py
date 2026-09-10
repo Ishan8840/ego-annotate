@@ -30,6 +30,7 @@ import numpy as np
 
 from .. import config
 from ..core.mcap_io import read_episode
+from ..pose import read as pose_read
 from ..core.signal import angular_speed, gradient, runs, smooth, speed, window
 
 CFG = config.EVENTS
@@ -320,12 +321,12 @@ def state_spans(act, min_s=0.0):
     return out
 
 
-def calibrate_actionness(paths, cfg=CFG):
+def calibrate_actionness(paths, cfg=CFG, pose_source="shipped"):
     """Pool features across episodes so thresholds are percentiles, not guesses."""
     acc = {k: [] for k in ("v_hand", "ap_rate", "w_head", "v_torso", "reach_rate")}
     n_ub = 0
     for path in paths:
-        ep = read_episode(path, want_video=False)
+        ep = pose_read(path, pose_source, want_video=False)
         f = features(ep, cfg)
         if f is None:
             continue
@@ -400,8 +401,8 @@ def velocity_troughs(ep, prom=0.06, min_gap=1.5, cfg=CFG):
     return tv[idx] if len(idx) else np.zeros(0)
 
 
-def episode_analysis(path, cfg=CFG):
-    ep = read_episode(path, want_video=False)
+def episode_analysis(path, cfg=CFG, pose_source="shipped"):
+    ep = pose_read(path, pose_source, want_video=False)
     name = ep["name"]
     duration = ep["duration_s"]
 
@@ -452,12 +453,12 @@ def episode_analysis(path, cfg=CFG):
     return records, spans, summary, held
 
 
-def measure(paths, out=None, cfg=CFG, write=True):
+def measure(paths, out=None, cfg=CFG, write=True, pose_source="shipped"):
     out = str(out or config.EVENTS_RECORDS)
     all_events, all_spans, summaries = [], [], []
     for i, path in enumerate(paths, 1):
         try:
-            ev, sp, s, _ = episode_analysis(path, cfg)
+            ev, sp, s, _ = episode_analysis(path, cfg, pose_source)
             all_events += ev
             all_spans += [dict(episode=s["episode"], **x) for x in sp]
             summaries.append(s)

@@ -21,11 +21,19 @@ def need_episode(name):
 
 
 def need_segment(sid):
-    """Skip rather than error when the segment definitions omit this id."""
+    """
+    Skip rather than error when this segment cannot be built here.
+
+    Two ways it cannot: the definitions may not carry the id, or they may
+    carry it and point at an episode this corpus does not hold -- which is
+    the case whenever a held-out corpus is mounted in place of the dev one.
+    Checking only the id turned that second case into a failure.
+    """
     import json
-    ids = {s["id"] for s in json.load(open(config.SEGMENT_DEFS))}
-    if sid not in ids:
+    segs = {s["id"]: s for s in json.load(open(config.SEGMENT_DEFS))}
+    if sid not in segs:
         pytest.skip(f"segment definitions have no {sid!r}")
+    need_episode(segs[sid]["source"].split("/")[-1].rsplit(".", 1)[0])
     return sid
 
 

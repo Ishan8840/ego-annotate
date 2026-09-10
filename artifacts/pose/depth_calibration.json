@@ -1,0 +1,50 @@
+[
+ {
+  "episode": "fill_and_boil_water_in_kettl",
+  "scale": 0.85,
+  "px_before": 15.766340711150047,
+  "px_after": 9.132292428004957
+ },
+ {
+  "episode": "install_the_phone_case_onto",
+  "scale": 0.73,
+  "px_before": 31.972296680789945,
+  "px_after": 8.360295766567742
+ },
+ {
+  "episode": "refill_badminton_shuttlecock",
+  "scale": 0.825,
+  "px_before": 14.060303893941551,
+  "px_after": 7.928122600113285
+ },
+ {
+  "episode": "residual_adhesive_removal_fr",
+  "scale": 0.815,
+  "px_before": 12.352980815235178,
+  "px_after": 7.15335667284479
+ },
+ {
+  "episode": "return_the_coat_rack",
+  "scale": 1.08,
+  "px_before": 10.666058699421349,
+  "px_after": 10.039903935452276
+ },
+ {
+  "episode": "take_out_the_file_folder",
+  "scale": 0.8200000000000001,
+  "px_before": 13.546119905588657,
+  "px_after": 6.427001170719709
+ },
+ {
+  "episode": "wipe_speaker",
+  "scale": 0.835,
+  "px_before": 15.286472744209888,
+  "px_after": 10.008820705530944
+ },
+ {
+  "episode": "wipe_the_inside_door_handle",
+  "scale": 0.72,
+  "px_before": 28.639965530431283,
+  "px_after": 11.960831369887183
+ }
+]

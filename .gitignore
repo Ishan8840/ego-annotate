@@ -14,3 +14,21 @@ __pycache__/
 
 # integration-test scratch output
 /artifacts/**/_test_*
+
+# pose stage build products: regenerable from the mcaps and the estimator,
+# and far too large for git (clips alone are ~360 MB). The measurement JSONs
+# beside them ARE tracked -- they are the findings, not the intermediates.
+/artifacts/pose/clips/
+/artifacts/pose/raw/
+/artifacts/pose/raw_672/
+/artifacts/pose/world*/
+/artifacts/arctic/clips/
+/artifacts/arctic/raw/
+/artifacts/arctic/world/
+# transient plumbing that records absolute machine paths
+/artifacts/pose/batch_manifest.json
+/artifacts/pose/batch_report.json
+/artifacts/pose/run.json
+/artifacts/pose/ace_k_nomano.yml
+/artifacts/arctic/manifest.json
+/artifacts/arctic/report.json
