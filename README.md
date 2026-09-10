@@ -174,16 +174,14 @@ all.
 
 <table>
 <tr>
-<td width="50%"><img src="assets/pose-vs-groundtruth.gif" width="100%" alt="Estimated hand pose against mocap ground truth on ARCTIC"></td>
-<td width="50%"><img src="assets/pose-vs-shipped.gif" width="100%" alt="Estimated hand pose against the shipped annotation on EgoStandard"></td>
+<td width="50%"><img src="assets/pose-egostandard-a.gif" width="100%" alt="Estimated hand pose on an EgoStandard episode"></td>
+<td width="50%"><img src="assets/pose-egostandard-b.gif" width="100%" alt="Estimated hand pose on a second EgoStandard episode"></td>
 </tr>
 <tr>
-<td><b>Against ground truth.</b> ARCTIC subject s05, held out from the
-estimator's training. Amber is mocap; teal is recovered from RGB alone.
-<b>12.3 mm MPJPE, 6.5 mm PA-MPJPE.</b></td>
-<td><b>Against the shipped annotation.</b> EgoStandard. The two track the same
-fingers and disagree on placement by ~57 mm &mdash; and the stereo pair says
-neither is clearly right.</td>
+<td><b>Installing a phone case.</b> Both hands, 21 joints each, recovered from
+the head camera alone &mdash; the shipped annotation is not read at any point.</td>
+<td><b>Refilling shuttlecocks.</b> Same weights, no retuning. Hands are tracked
+through occlusion and never swap identity: the slots are fixed, not detected.</td>
 </tr>
 </table>
 
