@@ -174,14 +174,14 @@ all.
 
 <table>
 <tr>
-<td width="50%"><img src="assets/pose-egostandard-a.gif" width="100%" alt="Estimated hand pose on an EgoStandard episode"></td>
-<td width="50%"><img src="assets/pose-egostandard-b.gif" width="100%" alt="Estimated hand pose on a second EgoStandard episode"></td>
+<td width="50%"><img src="assets/pose-egostandard-a.gif" width="100%" alt="Estimated hand pose while wiping a door handle"></td>
+<td width="50%"><img src="assets/pose-egostandard-b.gif" width="100%" alt="Estimated hand pose during residual adhesive removal"></td>
 </tr>
 <tr>
-<td><b>Installing a phone case.</b> Both hands, 21 joints each, recovered from
-the head camera alone &mdash; the shipped annotation is not read at any point.</td>
-<td><b>Refilling shuttlecocks.</b> Same weights, no retuning. Hands are tracked
-through occlusion and never swap identity: the slots are fixed, not detected.</td>
+<td><b>Wiping a door handle.</b> Both hands, 21 joints each, recovered from the
+head camera alone &mdash; the shipped annotation is not read at any point.</td>
+<td><b>Removing residual adhesive.</b> Same weights, no retuning. The two hands
+never swap identity, because the slots are fixed rather than detected.</td>
 </tr>
 </table>
 
