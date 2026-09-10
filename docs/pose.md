@@ -287,20 +287,28 @@ annotation is the one that is wrong**, by about 13%. Two consequences:
 This is why agreement is not accuracy: measured against the shipped pose alone,
 the correct stream looks like the broken one.
 
-### The estimate is 12x smoother than the annotation
+### Smoothness: marginally better, not the order of magnitude first reported
 
-Median second difference of the camera-frame wrist, in mm/frame^2:
+An earlier version of this document claimed the estimate was 12x smoother
+than the annotation. That number was measured in the CAMERA frame and is an
+artefact of how it was taken. Our pose is predicted in camera frame and
+rotated to world with the shipped extrinsics, so measuring it back in camera
+frame cancels that transform exactly and returns the raw network output. The
+shipped pose is native world-frame, so the same round trip adds the
+extrinsics' own jitter to it. The comparison comes out 12:1 because one side
+carried camera noise and the other had it algebraically removed.
 
-| PnP | raw | shipped |
-|---|---|---|
-| 0.10 | 0.03 | **1.23** |
+Measured on each stream's own timebase in the world frame -- which is the
+frame `features.py` reads for wrist speed, acceleration and jerk -- the
+median second difference of the wrist is:
 
-This matters more than it looks. `features.py` derives wrist speed,
-acceleration and jerk from this signal, and the span boundaries are cut at
-troughs in an activity signal built on them, so the shipped pose's jitter
-propagates into every boundary decision. It also rules out temporal smoothing
-as a way to close the remaining depth gap — the estimate is already the
-smooth one.
+| | shipped | estimated | ratio |
+|---|---|---|---|
+| wrist jitter, mm/frame² | 2.61 | 2.13 | **1.2x** |
+
+Per-episode the ratio runs 1.0x to 2.3x. The estimate is slightly the smoother
+of the two, and that is all. Any claim resting on temporal stability should
+use this figure.
 
 ### Hand orientation agrees to ~13°, once the frames are reconciled
 

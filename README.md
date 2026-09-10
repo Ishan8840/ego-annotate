@@ -217,13 +217,16 @@ annotation** on the stereo pair that neither source owns:
 | stereo within 5 cm | 47% | 48% |
 | stereo correlation | **+0.359** | +0.299 |
 | stereo MAE | 0.129 m | **0.115 m** |
+| wrist jitter (world frame) | **2.13 mm/frame²** | 2.61 mm/frame² |
 
 So it matches on coverage, shape, aperture, orientation and within-5 cm, wins
 on correlation, and remains 12% behind on absolute depth error.
 
-It is also **12x smoother than the annotation** (0.10 against 1.23 mm/frame²
-of wrist jitter), which matters because `features` differentiates this signal
-for speed, acceleration and jerk, and the span boundaries are cut from it.
+It is also marginally smoother than the annotation — 2.13 against
+2.61 mm/frame² of wrist jitter in the world frame, a 1.2x edge. (An earlier
+revision claimed 12x; that was measured in the camera frame, where our own
+round trip cancels the extrinsics and the shipped pose does not, so the
+comparison flattered us. `docs/pose.md` records why.)
 
 Known limits, the conversion bugs that nearly went unnoticed, and why one
 resolution knob is a trap: [`docs/pose.md`](docs/pose.md).
