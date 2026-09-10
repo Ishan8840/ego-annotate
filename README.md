@@ -174,15 +174,15 @@ all.
 
 <table>
 <tr>
-<td width="50%"><img src="assets/pose-arctic-a.gif" width="100%" alt="Estimated hand pose against mocap ground truth, capsule machine"></td>
-<td width="50%"><img src="assets/pose-arctic-b.gif" width="100%" alt="Estimated hand pose against mocap ground truth, ketchup bottle"></td>
+<td width="50%"><img src="assets/pose-arctic-a.gif" width="100%" alt="Estimated hand pose on ARCTIC, capsule machine"></td>
+<td width="50%"><img src="assets/pose-arctic-b.gif" width="100%" alt="Estimated hand pose on ARCTIC, ketchup bottle"></td>
 </tr>
 <tr>
-<td><b>Against mocap, 9.7 mm.</b> ARCTIC subject s05, held out from the
-estimator's training. Green is motion capture; teal is recovered from RGB
-alone.</td>
-<td><b>Against mocap, 12.3 mm.</b> Same weights, no retuning. Where the teal
-hides the green, the two agree to within a few millimetres.</td>
+<td><b>Capsule machine.</b> ARCTIC subject s05, held out from the estimator's
+training. Both hands, 21 joints each, recovered from RGB alone &mdash; 9.7 mm
+MPJPE against the mocap ground truth this sequence ships.</td>
+<td><b>Ketchup bottle.</b> Same weights, no retuning. 12.3 mm MPJPE, with the
+hands tracked through the bottle occluding them.</td>
 </tr>
 </table>
 
