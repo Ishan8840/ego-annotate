@@ -23,6 +23,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+from pathlib import Path
 
 import numpy as np
 
@@ -232,8 +233,7 @@ BODY = r'''
 <header>
   <div class="eyebrow">egoannot &middot; pose</div>
   <h1>Two hands, two sources</h1>
-  <p class="sub">The same hands, described twice: <b style="color:var(--shipped-ink)">the pose
-  annotated in the mcap</b> and <b style="color:var(--ace-ink)">the pose estimated from
+  <p class="sub">The same hands, described twice: <b style="color:var(--shipped-ink)">the reference pose</b> and <b style="color:var(--ace-ink)">the pose estimated from
   the head camera</b>. Both are reprojected through the same shipped intrinsics,
   extrinsics and measured optical-axis sign, so any gap you see on screen is the two
   poses differing &mdash; not two different cameras.</p>
@@ -256,7 +256,7 @@ BODY = r'''
       </div>
       <div class="controls" style="margin-top:8px">
         <button id="t-shipped" aria-pressed="true">
-          <span class="swatch" style="background:var(--shipped-ink)"></span>shipped</button>
+          <span class="swatch" style="background:var(--shipped-ink)"></span><span id="refname">reference</span></button>
         <button id="t-ace" aria-pressed="true">
           <span class="swatch" style="background:var(--ace-ink)"></span>estimated</button>
         <button id="t-ace_raw" aria-pressed="false">
@@ -271,7 +271,7 @@ BODY = r'''
                   gap:12px;flex-wrap:wrap">
         <h2>Grasp aperture &mdash; thumb tip to index tip</h2>
         <div class="legend">
-          <span><span class="swatch" style="background:var(--shipped-ink)"></span>shipped</span>
+          <span><span class="swatch" style="background:var(--shipped-ink)"></span><span class="refname2">reference</span></span>
           <span><span class="swatch" style="background:var(--ace-ink)"></span>estimated</span>
         </div>
       </div>
@@ -291,7 +291,7 @@ BODY = r'''
       <div class="rule"></div>
       <div class="eyebrow">this frame &middot; right hand</div>
       <div class="readout" style="margin-top:8px">
-        <span class="k">aperture, shipped</span><span class="v" id="ap-s">&mdash;</span>
+        <span class="k">aperture, reference</span><span class="v" id="ap-s">&mdash;</span>
         <span class="k">aperture, estimated</span><span class="v" id="ap-a">&mdash;</span>
         <span class="k">difference</span><span class="v" id="ap-d">&mdash;</span>
         <span class="k">wrist separation</span><span class="v" id="wr-d">&mdash;</span>
@@ -321,6 +321,7 @@ BODY = r'''
 
 <script>
 const DATA = __PAYLOAD__;
+const REF = DATA.reference_label || 'reference';
 const $ = id => document.getElementById(id);
 const cv = $("cv"), ctx = cv.getContext("2d");
 const tc = $("trace"), tctx = tc.getContext("2d");
@@ -525,32 +526,117 @@ tc.addEventListener("click", e => {
   t0 = 0; $("scrub").value = fi; draw(); trace();
 });
 matchMedia("(prefers-color-scheme:dark)").addEventListener("change", () => { draw(); trace(); });
+document.getElementById("refname").textContent = REF;
+for (const e of document.querySelectorAll(".refname2")) e.textContent = REF;
 loadEpisode(0);
 </script>
 '''
 
 
+def arctic_payload(seq: str, play_fps: float, width: int,
+                   seconds: float | None = None) -> dict | None:
+    """
+    One ARCTIC sequence, with mocap ground truth as the reference stream.
+
+    ARCTIC is where this stage is validated, so the viewer's comparison is
+    against real ground truth rather than another estimate. Predictions and
+    truth both already live in the camera frame, so no extrinsics are
+    involved and nothing here depends on an estimated world pose.
+    """
+    import cv2
+    from .. import config as _c
+    root = Path(os.environ.get("ARCTIC_ROOT", "/home/axibo/ego-data/arctic"))
+    gt_p = root / "gt" / f"{seq}.npz"
+    pred_p = _c.ARTIFACTS / "arctic" / "world" / f"{seq}.npz"
+    clip = _c.ARTIFACTS / "arctic" / "clips" / f"{seq}.mp4"
+    if not (gt_p.exists() and pred_p.exists() and clip.exists()):
+        print(f"  skip {seq}: needs gt, prediction and clip")
+        return None
+    g, z = np.load(gt_p), np.load(pred_p)
+    K = np.asarray(g["K_full"], float) * 0.3
+
+    cap = cv2.VideoCapture(str(clip))
+    src_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    src_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    disp_h = int(round(src_h * (width / src_w) / 2) * 2)
+    step = max(1, int(round(30.0 / float(play_fps))))
+    limit = total if seconds is None else min(total, int(seconds * 30) + 1)
+    idx = np.arange(0, limit, step)
+    want, frames, i = set(int(x) for x in idx), [], 0
+    while True:
+        ok, f = cap.read()
+        if not ok or i > max(want):
+            break
+        if i in want:
+            f = cv2.resize(f, (width, disp_h), interpolation=cv2.INTER_AREA)
+            enc, buf = cv2.imencode(".jpg", f, [cv2.IMWRITE_JPEG_QUALITY, QUALITY])
+            if enc:
+                frames.append(base64.b64encode(buf).decode())
+        i += 1
+    cap.release()
+    sx, sy = width / (2800 * 0.3), disp_h / (2000 * 0.3)
+
+    def to2d(J):
+        zz = np.clip(J[:, 2], 1e-6, None)
+        return [[_round((K[0, 0] * J[j, 0] / zz[j] + K[0, 2]) * sx),
+                 _round((K[1, 1] * J[j, 1] / zz[j] + K[1, 2]) * sy)]
+                for j in range(len(J))]
+
+    rec = dict(name=seq, task=seq.replace("_", " "), w=width, h=disp_h,
+               src_fps=30.0, play_fps=round(30.0 / step, 2),
+               duration=round(total / 30.0, 1),
+               times=[round(float(x) / 30.0, 3) for x in idx],
+               frames=frames, joints={}, aperture={})
+    for src, arr in (("shipped", g), ("ace", z)):     # "shipped" slot = truth
+        rec["joints"][src], rec["aperture"][src] = {}, {}
+        for side in ("left", "right"):
+            J = (arr[f"{side}_cam"] if src == "shipped"
+                 else arr[f"{side}_hand_joints"])
+            J = J[idx[idx < len(J)]]
+            rec["joints"][src][side] = [to2d(J[k]) for k in range(len(J))]
+            rec["aperture"][src][side] = [
+                _round(float(np.linalg.norm(J[k, 4] - J[k, 8])) * 1000)
+                for k in range(len(J))]
+    return rec
+
+
 def build(play_fps: float = 12.0, width: int = 440, out=None,
-          seconds: float | None = None, quality: int = 52) -> str:
+          seconds: float | None = None, quality: int = 52,
+          source: str = "egostandard") -> str:
     out = str(out or config.artifact("reports", "pose-viewer.html"))
-    root = config.corpus()
-    paths = sorted(root.glob("*.mcap")) + sorted((root / "ep").glob("*.mcap"))
     eps = []
-    for p in paths:
-        print(f"  {p.stem}", flush=True)
-        rec = episode_payload(p, play_fps, width, seconds)
-        if rec:
-            eps.append(rec)
+    if source == "arctic":
+        seqs = sorted(p.stem for p in
+                      (config.ARTIFACTS / "arctic" / "world").glob("*.npz"))
+        for sq in seqs:
+            print(f"  {sq}", flush=True)
+            rec = arctic_payload(sq, play_fps, width, seconds)
+            if rec:
+                eps.append(rec)
+    else:
+        root = config.corpus()
+        paths = sorted(root.glob("*.mcap")) + sorted((root / "ep").glob("*.mcap"))
+        for p in paths:
+            print(f"  {p.stem}", flush=True)
+            rec = episode_payload(p, play_fps, width, seconds)
+            if rec:
+                eps.append(rec)
     if not eps:
         raise SystemExit("no episodes with both a clip and a prediction")
 
     agree = {}
-    ap = config.ARTIFACTS / "pose" / "agreement.json"
+    ap = (config.ARTIFACTS / "arctic" / "accuracy.json" if source == "arctic"
+          else config.ARTIFACTS / "pose" / "agreement.json")
     if ap.exists():
-        for r in json.load(open(ap)):
-            agree[r["episode"]] = r
+        blob = json.load(open(ap))
+        for r in (blob["sequences"] if isinstance(blob, dict) else blob):
+            agree[r.get("episode") or r.get("seq")] = r
 
-    payload = json.dumps(dict(episodes=eps, agreement=agree, bones=BONES),
+    payload = json.dumps(dict(episodes=eps, agreement=agree, bones=BONES,
+                              reference_label=("mocap ground truth"
+                                               if source == "arctic"
+                                               else "shipped annotation")),
                          separators=(",", ":"))
     html = HEAD + BODY.replace("__PAYLOAD__", payload)
     os.makedirs(os.path.dirname(out), exist_ok=True)

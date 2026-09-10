@@ -128,6 +128,10 @@ def build_parser():
     pw.add_argument("--seconds", type=float, default=None,
                     help="cap each episode at this many seconds")
     pw.add_argument("--out", default=None)
+    pw.add_argument("--source", default="arctic",
+                    choices=["arctic", "egostandard"],
+                    help="which corpus to build from (default %(default)s, "
+                         "where the stage is validated against ground truth)")
     pc = pos.add_parser("compare", help="placement arms (raw / scale / pnp) "
                                        "on identical predictions")
     _add_episode_args(pc)
@@ -309,7 +313,7 @@ def main(argv=None):
         elif args.cmd == "viewer":
             from .tools import build_pose_viewer
             build_pose_viewer.build(args.fps, args.width, args.out,
-                                    args.seconds)
+                                    args.seconds, source=args.source)
         elif args.cmd == "compare":
             from .pose import compare
             from .pose.compare import MODES
