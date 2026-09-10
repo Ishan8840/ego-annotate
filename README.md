@@ -174,14 +174,15 @@ all.
 
 <table>
 <tr>
-<td width="50%"><img src="assets/pose-egostandard-a.gif" width="100%" alt="Estimated hand pose while wiping a door handle"></td>
-<td width="50%"><img src="assets/pose-egostandard-b.gif" width="100%" alt="Estimated hand pose during residual adhesive removal"></td>
+<td width="50%"><img src="assets/pose-arctic-a.gif" width="100%" alt="Estimated hand pose against mocap ground truth, capsule machine"></td>
+<td width="50%"><img src="assets/pose-arctic-b.gif" width="100%" alt="Estimated hand pose against mocap ground truth, ketchup bottle"></td>
 </tr>
 <tr>
-<td><b>Wiping a door handle.</b> Both hands, 21 joints each, recovered from the
-head camera alone &mdash; the shipped annotation is not read at any point.</td>
-<td><b>Removing residual adhesive.</b> Same weights, no retuning. The two hands
-never swap identity, because the slots are fixed rather than detected.</td>
+<td><b>Against mocap, 9.7 mm.</b> ARCTIC subject s05, held out from the
+estimator's training. Green is motion capture; teal is recovered from RGB
+alone.</td>
+<td><b>Against mocap, 12.3 mm.</b> Same weights, no retuning. Where the teal
+hides the green, the two agree to within a few millimetres.</td>
 </tr>
 </table>
 
