@@ -290,15 +290,30 @@ That makes the cross-domain picture clean, and EgoStandard is itself the
 held-out test: ACE never trained on it, and its camera and scenes are nothing
 like ARCTIC's lab.
 
-| corpus | ours vs MediaPipe | hand size |
-|---|---|---|
-| ARCTIC (subject held out, domain familiar) | 20.2 px | 1.01x |
-| EgoStandard (never seen) | 44.2 px | 1.21x |
+Pixel errors are only comparable within one corpus -- the three differ in
+resolution by more than 2x -- so they are normalised by image diagonal here.
+A third corpus, EgoEMG (webcam ego rig, mocap ground truth, also never in the
+estimator's training), was added to separate domain effects from resolution:
 
-Roughly a 2x degradation, consistent with the estimator's own published drop
-on HOI4D -- its only fully held-out benchmark -- from 15.26 mm in-domain to
-23.0 mm zero-shot. Benchmark rank does not transfer across domains, and the
-ARCTIC number predicts performance on ARCTIC-like footage only.
+| corpus | image | 2D error | % of diagonal | hand size |
+|---|---|---|---|---|
+| ARCTIC (subject held out, domain familiar) | 840x600 | 20.2 px | 1.96% | 1.01x |
+| EgoStandard (unseen) | 1920x1456 | 44.2 px | 1.83% | 1.21x |
+| EgoEMG (unseen) | 1280x720 | 21.7 px | 1.48% | 1.33x |
+
+**2D localisation is roughly domain-invariant** at 1.5-2% of the diagonal.
+An earlier revision of this document read the raw pixel figures as a 2x
+degradation on EgoStandard; that was resolution, not domain.
+
+What does degrade out of domain is hand SIZE -- 1.01x in-domain against
+1.21x and 1.33x on unseen corpora -- and shape accuracy: PA-MPJPE goes from
+6.5 mm on ARCTIC to **16.4 mm on EgoEMG**, a 2.5x drop, consistent with the
+estimator's own published fall from 15.26 mm in-domain to 23.0 mm zero-shot
+on HOI4D.
+
+The EgoStandard comparison against its shipped annotation is unaffected by
+any of this, because it is a same-image comparison: 0.84% of diagonal for the
+shipped pose against 1.83% for the estimate.
 
 ### This overturns the hand-size conclusion
 

@@ -1,0 +1,30 @@
+{
+ "note": "ACE K-free on EgoEMG, 3 episodes x 60s, scored frame-invariantly",
+ "pa_mpjpe_mm": {
+  "ep0_left": 18.8,
+  "ep0_right": 17.2,
+  "ep1_left": 15.8,
+  "ep1_right": 16.9,
+  "ep2_left": 14.3,
+  "ep2_right": 15.4,
+  "median": 16.4
+ },
+ "mediapipe_2d": {
+  "ep0_px": 21.7,
+  "ep1_px": 18.9,
+  "ep2_px": 25.2,
+  "median_px": 21.7,
+  "median_size_ratio": 1.33,
+  "image": [
+   1280,
+   720
+  ],
+  "pct_of_diagonal": 1.48
+ },
+ "caveats": [
+  "intrinsics do not ship and could not be solved consistently (fx 138 vs fy 263)",
+  "mocap_webcam_transform is 4x3; neither w2c nor c2w convention resolved",
+  "their wrist->middle-MCP is 60 mm vs MANO 90 mm, so joint definitions differ",
+  "PA-MPJPE absorbs scale and rotation but not per-joint definition offsets"
+ ]
+}
