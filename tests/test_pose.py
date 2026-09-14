@@ -325,3 +325,70 @@ def test_orient_offset_can_be_disabled():
     on = to_world(p, f, 1.0, orient_offset=True)["/pose/right_hand_quat"]
     off = to_world(p, f, 1.0, orient_offset=False)["/pose/right_hand_quat"]
     assert not np.allclose(on[:, 1:], off[:, 1:])
+
+
+# -- fusion: articulation from one source, placement from the image ---------
+
+def _fuse_fixture(n=8, depth=0.42):
+    """Known camera-frame hands, their true anchors, and the articulation."""
+    rng = np.random.default_rng(7)
+    intr = {"fx": 500.0, "fy": 500.0, "cx": 320.0, "cy": 240.0,
+            "image_width": 640, "image_height": 480}
+    true = rng.normal(0, 0.03, (n, 21, 3)) + np.array([0.01, 0.0, depth])
+    u = intr["fx"] * true[..., 0] / true[..., 2] + intr["cx"]
+    v = intr["fy"] * true[..., 1] / true[..., 2] + intr["cy"]
+    anchors = np.stack([u, v], -1)
+    return true, anchors, intr
+
+
+def test_place_recovers_a_hand_from_its_anchors():
+    from egoannot.pose.fuse import place
+    true, anchors, intr = _fuse_fixture()
+    rel = true - true[:, :1]
+    out, st = place(rel, anchors, intr)
+    assert st["rate"] == 1.0 and st["reproj_px"] < 2.0, st
+    assert np.allclose(out, true, atol=2e-3)
+
+
+def test_place_is_indifferent_to_where_the_articulation_came_from():
+    """The whole point: EMG joints and vision joints go through the same solve."""
+    from egoannot.pose.fuse import place
+    true, anchors, intr = _fuse_fixture()
+    rel = true - true[:, :1]
+    a, _ = place(rel, anchors, intr)
+    b, _ = place(rel + 0.0, anchors, intr)          # same shape, other "source"
+    assert np.allclose(a, b)
+
+
+def test_place_leaves_unsolvable_frames_untouched():
+    from egoannot.pose.fuse import place
+    true, anchors, intr = _fuse_fixture()
+    rel = true - true[:, :1]
+    anchors = anchors.copy()
+    anchors[3] = np.nan
+    out, st = place(rel, anchors, intr)
+    assert st["solved"] == len(rel) - 1
+    assert np.allclose(out[3], rel[3])              # input returned, not guessed
+
+
+def test_angles_need_their_own_hand_model():
+    """Angles from one skeleton through another's kinematics look fine and are wrong."""
+    from egoannot.pose.fuse import articulation_from_angles
+    with pytest.raises(ValueError, match="hand model"):
+        articulation_from_angles(np.zeros((4, 20)), None)
+
+
+def test_gate_blanks_low_confidence_and_keeps_the_timebase():
+    from egoannot.pose.confidence import gate
+    n = 6
+    arrays = {"/pose/right_hand_joints": np.ones((n, 21, 3)),
+              "/pose/right_hand": np.ones((n, 4)),
+              "/pose/right_hand_quat": np.ones((n, 5))}
+    conf = {"right": np.array([0.01, 0.01, 0.9, np.nan, np.inf, 0.02])}
+    out = gate(arrays, conf, threshold=0.05)
+    keep = [0, 1, 3, 5]                  # nan is "unknown", not gated
+    drop = [2, 4]                        # over threshold, and referee-saw-nothing
+    assert np.isfinite(out["/pose/right_hand_joints"][keep]).all()
+    assert np.isnan(out["/pose/right_hand_joints"][drop]).all()
+    assert len(out["/pose/right_hand"]) == n          # timebase intact
+    assert out["_gate"]["right"]["gated"] == 2

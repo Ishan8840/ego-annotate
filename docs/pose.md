@@ -453,3 +453,56 @@ argument for surviving occlusion. Chunk size halves on CUDA OOM.
 Throughput at 832 is ~17 fps on one RTX 4090, ~7 fps at 1280 — 34% of that
 cost is the overlap, re-encoding shared frames. Peak host RAM during model
 load is 24.3 GB, which is the real constraint on a 31 GB machine, not VRAM.
+
+## Fusing another articulation source (EMG)
+
+`pose/fuse.py` separates the two things a hand pose needs, because they are
+not best measured the same way:
+
+* **articulation** -- EMG reads muscle rather than picture, so it survives
+  occlusion and frames where the hand leaves view, which is most of what makes
+  manipulation footage hard. It has no idea where the arm is.
+* **placement** -- only the image knows. `place()` solves the rigid pose that
+  puts a given root-relative hand onto 2D anchors, per frame.
+
+`place()` is the same PnP solve the vision path uses on its own translation,
+factored out because nothing in it cares where the joints came from. EMG
+joints and vision joints go through identical code; a test asserts that.
+
+One trap it refuses to paper over: EMG models emit *angles*, not positions --
+20 per hand for EgoEMG, 22 for UmeTrack -- and those are only meaningful
+through the skeleton they were fitted with. `articulation_from_angles`
+therefore requires the model's own forward kinematics rather than assuming
+one, because feeding angles through the wrong skeleton yields a
+plausible-looking hand that is wrong in a way no downstream metric detects.
+
+## Confidence, and what it cannot do
+
+`pose/confidence.py` scores each frame by how far this pipeline's reprojected
+joints sit from an independent detector's, as a fraction of the image
+diagonal so the number means the same at any resolution.
+
+**As a quality signal it works, weakly.** On ARCTIC it correlates with true
+MPJPE at rank +0.23, and dropping the worst-agreeing quarter of frames moves
+median error from 11.5 to 11.0 mm -- a 4% gain for a 25% cut.
+
+**As an absence detector it does not work, and neither does anything else
+tried.** Two approaches were measured and both failed:
+
+| approach | precision | recall |
+|---|---|---|
+| referee disagreement | 9% | 100% |
+| geometric: is the prediction off-screen? | — | **0%** |
+
+The referee cannot distinguish its own misses from true absences: MediaPipe
+routinely finds one hand in a frame where two are visible, so "the detector
+looked and saw nothing here" is not evidence. And the geometric test fails
+outright because **the estimator never predicts an off-screen hand** -- 0% in
+every ARCTIC sequence, against 8-39% of frames where ground truth says the
+hand is gone. It does not merely claim presence; it actively places
+hallucinated hands inside the frame.
+
+So the visibility gap noted elsewhere in this document is **not** closeable
+post-hoc. It needs a model whose presence head is honest -- MINT publishes
+one; the estimator used here reports 1.0 on every frame of every corpus
+measured.
