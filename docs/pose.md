@@ -476,6 +476,21 @@ therefore requires the model's own forward kinematics rather than assuming
 one, because feeding angles through the wrong skeleton yields a
 plausible-looking hand that is wrong in a way no downstream metric detects.
 
+**Demonstrated, by walking into it.** Running EgoEMG's released joint angles
+through UmeTrack's *generic* hand model and placing them with `place()` gives
+56.2 mm PA-MPJPE against mocap, where the vision path on the same frames
+gives 16.4 mm. The solve itself is fine -- 82-99% of frames converge -- and
+the articulation is not the problem either. The generic skeleton is: its MCP
+distances run 1.39x to 2.11x the subject's, and the ratio differs per finger,
+so it is wrong *proportions* rather than a uniform scale, which is exactly
+what a scale-invariant metric cannot absorb.
+
+EgoEMG's angles were fitted against per-subject hand models indexed by
+`episode_beta_idx`, and **those models are not in the release**. So the fusion
+cannot be demonstrated on their data. It is not a blocker for footage where
+the operators' hands can be measured or fitted -- which is the case for
+anyone capturing their own.
+
 ## Confidence, and what it cannot do
 
 `pose/confidence.py` scores each frame by how far this pipeline's reprojected
