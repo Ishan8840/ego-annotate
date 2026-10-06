@@ -1,0 +1,10 @@
+{
+  "clips": 11,
+  "visual_dimensions": 15,
+  "dimension_filter": true,
+  "evidence_caveats": true,
+  "video_playback": true,
+  "video_width": 768,
+  "seek_time_s": 0.899571,
+  "javascript_errors": []
+}

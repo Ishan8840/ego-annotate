@@ -1,0 +1,278 @@
+{
+  "requested": 22,
+  "captioned": 22,
+  "valid": 19,
+  "missing_span_ids": [],
+  "coverage": 1.0,
+  "elapsed_s": 76.95110154151917,
+  "frame_store_peak_bytes": 626881,
+  "planned_frames": 88,
+  "config": {
+    "max_retries": 1,
+    "frames_per_span": 4,
+    "spans_per_call": 5,
+    "context_n": 4,
+    "context_mode": "sequential",
+    "free_text": false,
+    "jpeg_quality": 80,
+    "anthropic_model": "claude-opus-5",
+    "openai_base": "http://127.0.0.1:8000/v1",
+    "openai_model": "Qwen/Qwen2.5-VL-7B-Instruct",
+    "qwen_model": "/workspace/ego-annotate/models/models--Qwen--Qwen3-VL-8B-Instruct/snapshots/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "temperature": 0.4,
+    "greedy": true
+  },
+  "attempts": [
+    {
+      "segment": "clip-000000",
+      "attempt": 0,
+      "requested": [
+        "clip-000000#000.000",
+        "clip-000000#002.967"
+      ],
+      "usage": {
+        "input_tokens": 7300,
+        "output_tokens": 129,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000000#000.000\", \"text\": \"Grasp the white plastic spoon lying on the table with the right hand\", \"verb\": \"grasp\", \"noun\": \"spoon\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000000#002.967\", \"text\": \"Rotate the white plastic spoon clockwise with both hands\", \"verb\": \"rotate\", \"noun\": \"spoon\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000000#002.967"
+      ]
+    },
+    {
+      "segment": "clip-000000",
+      "attempt": 1,
+      "requested": [
+        "clip-000000#002.967"
+      ],
+      "usage": {
+        "input_tokens": 4551,
+        "output_tokens": 64,
+        "n_images": 4
+      },
+      "raw": "{\"span_id\": \"clip-000000#002.967\", \"text\": \"Rotate the wooden spoon clockwise with both hands above the table\", \"verb\": \"rotate\", \"noun\": \"spoon\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-000001",
+      "attempt": 0,
+      "requested": [
+        "clip-000001#000.000",
+        "clip-000001#002.067"
+      ],
+      "usage": {
+        "input_tokens": 7294,
+        "output_tokens": 133,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000001#000.000\", \"text\": \"Place the remote control on the dark table with the right hand\", \"verb\": \"place\", \"noun\": \"remote control\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000001#002.067\", \"text\": \"Grasp the white bottle with both hands and twist the cap counter-clockwise\", \"verb\": \"grasp\", \"noun\": \"bottle\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000001#002.067"
+      ]
+    },
+    {
+      "segment": "clip-000001",
+      "attempt": 1,
+      "requested": [
+        "clip-000001#002.067"
+      ],
+      "usage": {
+        "input_tokens": 4557,
+        "output_tokens": 65,
+        "n_images": 4
+      },
+      "raw": "{\"span_id\": \"clip-000001#002.067\", \"text\": \"Twist the white bottle cap counter-clockwise with both hands\", \"verb\": \"twist\", \"noun\": \"cap\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000001#002.067"
+      ]
+    },
+    {
+      "segment": "clip-000006",
+      "attempt": 0,
+      "requested": [
+        "clip-000006#000.000",
+        "clip-000006#001.967"
+      ],
+      "usage": {
+        "input_tokens": 7296,
+        "output_tokens": 124,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000006#000.000\", \"text\": \"Grasp the keyboard on the desk with both hands\", \"verb\": \"grasp\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000006#001.967\", \"text\": \"Release the keyboard on the desk with the right hand\", \"verb\": \"release\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000006#000.000"
+      ]
+    },
+    {
+      "segment": "clip-000006",
+      "attempt": 1,
+      "requested": [
+        "clip-000006#000.000"
+      ],
+      "usage": {
+        "input_tokens": 4548,
+        "output_tokens": 68,
+        "n_images": 4
+      },
+      "raw": "{\"span_id\": \"clip-000006#000.000\", \"text\": \"Grasp the keyboard on the desk with both hands using the right index finger\", \"verb\": \"grasp\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-000007",
+      "attempt": 0,
+      "requested": [
+        "clip-000007#000.000",
+        "clip-000007#003.033"
+      ],
+      "usage": {
+        "input_tokens": 7292,
+        "output_tokens": 128,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000007#000.000\", \"text\": \"Type on the keyboard with both hands while seated at the desk\", \"verb\": \"type\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000007#003.033\", \"text\": \"Release the mouse with the right hand after using it on the desk\", \"verb\": \"release\", \"noun\": \"mouse\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-000008",
+      "attempt": 0,
+      "requested": [
+        "clip-000008#000.000",
+        "clip-000008#003.133"
+      ],
+      "usage": {
+        "input_tokens": 7290,
+        "output_tokens": 133,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000008#000.000\", \"text\": \"Type on the keyboard with both hands while holding the mouse with the right hand\", \"verb\": \"type\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000008#003.133\", \"text\": \"Type on the keyboard with both hands while holding the mouse with the right hand\", \"verb\": \"type\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-000100",
+      "attempt": 0,
+      "requested": [
+        "clip-000100#000.000",
+        "clip-000100#002.233"
+      ],
+      "usage": {
+        "input_tokens": 7313,
+        "output_tokens": 133,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000100#000.000\", \"text\": \"Grasp the carton of orange juice on the round table with the right hand\", \"verb\": \"grasp\", \"noun\": \"carton\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000100#002.233\", \"text\": \"Rotate the carton of orange juice clockwise with both hands\", \"verb\": \"rotate\", \"noun\": \"carton\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-000200",
+      "attempt": 0,
+      "requested": [
+        "clip-000200#000.000",
+        "clip-000200#003.033"
+      ],
+      "usage": {
+        "input_tokens": 7290,
+        "output_tokens": 140,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000200#000.000\", \"text\": \"Grasp the dark-handled potato masher above the wooden bowl with the left hand\", \"verb\": \"grasp\", \"noun\": \"potato masher\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000200#003.033\", \"text\": \"Withdraw the potato masher from the wooden bowl with the left hand\", \"verb\": \"withdraw\", \"noun\": \"potato masher\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-000500",
+      "attempt": 0,
+      "requested": [
+        "clip-000500#000.000",
+        "clip-000500#002.633"
+      ],
+      "usage": {
+        "input_tokens": 7302,
+        "output_tokens": 130,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000500#000.000\", \"text\": \"Grasp the wooden bowl with both hands and lift it upward\", \"verb\": \"grasp\", \"noun\": \"bowl\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000500#002.633\", \"text\": \"Lift the wooden bowl higher with both hands toward the camera\", \"verb\": \"lift\", \"noun\": \"bowl\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000500#000.000"
+      ]
+    },
+    {
+      "segment": "clip-000500",
+      "attempt": 1,
+      "requested": [
+        "clip-000500#000.000"
+      ],
+      "usage": {
+        "input_tokens": 4561,
+        "output_tokens": 62,
+        "n_images": 4
+      },
+      "raw": "{\"span_id\": \"clip-000500#000.000\", \"text\": \"Lift the wooden bowl upward with both hands\", \"verb\": \"lift\", \"noun\": \"bowl\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000500#000.000"
+      ]
+    },
+    {
+      "segment": "clip-000700",
+      "attempt": 0,
+      "requested": [
+        "clip-000700#000.000",
+        "clip-000700#002.233"
+      ],
+      "usage": {
+        "input_tokens": 7294,
+        "output_tokens": 127,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-000700#000.000\", \"text\": \"Pinch the dark rectangular object with both hands while fingers close\", \"verb\": \"pinch\", \"noun\": \"object\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-000700#002.233\", \"text\": \"Release the dark rectangular object with both hands toward the table\", \"verb\": \"release\", \"noun\": \"object\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000700#000.000"
+      ]
+    },
+    {
+      "segment": "clip-000700",
+      "attempt": 1,
+      "requested": [
+        "clip-000700#000.000"
+      ],
+      "usage": {
+        "input_tokens": 4553,
+        "output_tokens": 65,
+        "n_images": 4
+      },
+      "raw": "{\"span_id\": \"clip-000700#000.000\", \"text\": \"Pinch the dark rectangular object with both hands as fingers close\", \"verb\": \"pinch\", \"noun\": \"object\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": [
+        "clip-000700#000.000"
+      ]
+    },
+    {
+      "segment": "clip-001000",
+      "attempt": 0,
+      "requested": [
+        "clip-001000#000.000",
+        "clip-001000#002.167"
+      ],
+      "usage": {
+        "input_tokens": 7306,
+        "output_tokens": 138,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-001000#000.000\", \"text\": \"Grasp the rectangular milk carton with both hands on the wooden table\", \"verb\": \"grasp\", \"noun\": \"milk carton\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-001000#002.167\", \"text\": \"Rotate the milk carton counter-clockwise with both hands over the cup\", \"verb\": \"rotate\", \"noun\": \"milk carton\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    },
+    {
+      "segment": "clip-001100",
+      "attempt": 0,
+      "requested": [
+        "clip-001100#000.000",
+        "clip-001100#003.333"
+      ],
+      "usage": {
+        "input_tokens": 7295,
+        "output_tokens": 126,
+        "n_images": 8
+      },
+      "raw": "{\"span_id\": \"clip-001100#000.000\", \"text\": \"Steady the keyboard on the wooden desk with both hands\", \"verb\": \"steady\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}\n{\"span_id\": \"clip-001100#003.333\", \"text\": \"Type on the keyboard with both hands on the wooden desk\", \"verb\": \"type\", \"noun\": \"keyboard\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "remaining": []
+    }
+  ]
+}

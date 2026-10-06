@@ -385,3 +385,29 @@ with a comment saying where the number came from.
 - [`docs/heldout_refinement.md`](docs/heldout_refinement.md) — boundary refinement measured on held-out episodes, and the null result
 - [`docs/pose.md`](docs/pose.md) — hand pose estimated from RGB, and how it compares with the shipped annotation
 - [`docs/survey_followups.md`](docs/survey_followups.md) — a real RGB boundary baseline, standard dense-captioning metrics, and PIQE
+
+## HOT3D-Clips
+
+Native HOT3D clips can now drive dense annotation with their UmeTrack hand
+annotations. The importer preserves capture timing, world coordinates and
+fisheye calibration; captioning records validation failures, bounded retries
+and coverage. See [the HOT3D workflow and benchmark](docs/hot3d.md).
+
+## Dataset quality summary
+
+Use `python -m egoannot quality analyze <video-directory> --out artifacts/quality`
+for a descriptive report with measurements, duplicate detection and timestamped
+evidence. Add `--visual qwen-local` for sampled visual observations across
+visibility, actions and collection quality. This report does not assign
+acceptance labels or an overall quality score. See [dataset quality analysis](docs/dataset-quality.md).
+
+
+## Ego annotation and quality film
+
+The unbranded 30-second color demo focuses on dense annotations: generated captions,
+action/object labels, source-aligned timestamps, ego-video quality evidence and a combined visual-quality estimate,
+with a blue theme and a soft ambient soundtrack.
+It uses two EPIC-KITCHENS excerpts and retains the raw model output in
+[`artifacts/rgb_benchmark`](artifacts/rgb_benchmark). Build instructions and source
+credits are in [`demo/README.txt`](demo/README.txt). The final MP4 and silent
+version are generated under `artifacts/demo/`.

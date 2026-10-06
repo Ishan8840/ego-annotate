@@ -1,0 +1,130 @@
+{
+  "original": {
+    "n": 22,
+    "atomicity": 0.6818181818181818,
+    "uniqueness": 1.0,
+    "grounding_agree": 0.46153846153846156,
+    "out_of_band": 0,
+    "heaps": {
+      "K": 1.0,
+      "b": 1.0000000000000002
+    },
+    "density": 24.0,
+    "fails": {
+      "A2": 3,
+      "A3": 4,
+      "A4": 1
+    }
+  },
+  "first_pass": {
+    "n": 22,
+    "atomicity": 0.7727272727272727,
+    "uniqueness": 0.9545454545454546,
+    "grounding_agree": 0.45454545454545453,
+    "out_of_band": 0,
+    "heaps": {
+      "K": 1.0717335013620484,
+      "b": 0.9627816862805183
+    },
+    "density": 24.0,
+    "fails": {
+      "A2": 2,
+      "A3": 3
+    },
+    "coverage": 1.0,
+    "elapsed_s": 64.02778601646423,
+    "calls": 11,
+    "retry_calls": 0
+  },
+  "repaired": {
+    "n": 22,
+    "atomicity": 0.8636363636363636,
+    "uniqueness": 0.9545454545454546,
+    "grounding_agree": 0.45454545454545453,
+    "out_of_band": 0,
+    "heaps": {
+      "K": 1.0717335013620484,
+      "b": 0.9627816862805183
+    },
+    "density": 24.0,
+    "fails": {
+      "A3": 3
+    },
+    "coverage": 1.0,
+    "elapsed_s": 76.95110154151917,
+    "calls": 16,
+    "retry_calls": 5
+  },
+  "protocol": {
+    "model": "Qwen/Qwen3-VL-8B-Instruct",
+    "greedy": true,
+    "quality_gate": false,
+    "corpus": "/workspace/ego-annotate/artifacts/hot3d/corpus_full",
+    "segments": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments.json",
+    "note": "Format and pose consistency are proxies, not human semantic accuracy.",
+    "model_revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "original_commit": "412fb0aaba6742bdaab57bcb7669628db327df91",
+    "display_rotation_clockwise_deg": 90
+  },
+  "additional_sequences": {
+    "original": {
+      "n": 12,
+      "atomicity": 0.75,
+      "uniqueness": 1.0,
+      "grounding_agree": 0.375,
+      "out_of_band": 0,
+      "heaps": null,
+      "density": 24.0,
+      "fails": {
+        "A2": 1,
+        "A3": 2
+      }
+    },
+    "first_pass": {
+      "n": 12,
+      "atomicity": 0.8333333333333334,
+      "uniqueness": 1.0,
+      "grounding_agree": 0.3333333333333333,
+      "out_of_band": 0,
+      "heaps": null,
+      "density": 24.0,
+      "fails": {
+        "A3": 2
+      }
+    },
+    "repaired": {
+      "n": 12,
+      "atomicity": 0.8333333333333334,
+      "uniqueness": 1.0,
+      "grounding_agree": 0.3333333333333333,
+      "out_of_band": 0,
+      "heaps": null,
+      "density": 24.0,
+      "fails": {
+        "A3": 2
+      }
+    }
+  },
+  "dataset": {
+    "clips": 11,
+    "frames": 1650,
+    "duration_s": 54.999999996,
+    "sequences": 8,
+    "participants": 5,
+    "revision": "30fe9674782f32e1e5edba98476b6ff4300132c5"
+  },
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0+cu128",
+    "transformers": "4.57.6",
+    "numpy": "1.26.4",
+    "scipy": "1.16.3",
+    "hand-tracking-toolkit": "0.1"
+  },
+  "source_sha256": {
+    "egoannot/stages/caption.py": "14a7aaa6292d2252cbcfcf70071fc7552b81c02a667ed2f53942dd55c760ed4d",
+    "egoannot/stages/spans.py": "9baaad364ddeb6a33167ecc28f247b04daa098b9bebfb93c08a9800d2d653840",
+    "egoannot/core/hot3d.py": "a967b348d4ceb48fe00b1888ae69f19275bac9cf8f1f7bddb5862dfe4d0df226",
+    "egoannot/labels/domains.py": "eb2534e527ef414758c58a49840870e59ff2c451c7a66a554f04ad96c73bc5ec"
+  }
+}

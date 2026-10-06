@@ -411,3 +411,124 @@ def test_refinement_declines_to_touch_an_out_of_band_span():
     assert out == [tuple(iv) for iv in intervals]
     assert prov[1]["shifted"] is False and prov[1]["reason"] == "band"
     assert stats["shifted"] == 0
+
+
+def test_mixed_ids_never_relabel_a_correct_reordered_caption():
+    raw = '\n'.join(json.dumps(o) for o in [
+        dict(span_id='a#2', text='last'), dict(span_id='bad', text='unknown'),
+        dict(span_id='a#0', text='first')])
+    got = caption.parse_objects(raw, _batch())
+    assert [(o['span_id'], o['text']) for o in got] == [('a#0', 'first'), ('a#2', 'last')]
+
+
+def test_conflicting_duplicate_ids_are_not_silently_overwritten():
+    raw = '\n'.join(json.dumps(dict(span_id=sid, text=text)) for sid, text in
+                    [('a#0', 'x'), ('a#0', 'y'), ('a#1', 'z')])
+    assert caption.parse_objects(raw, _batch()) == [dict(span_id='a#1', text='z')]
+
+
+def test_unhashable_model_id_does_not_crash_caption_binding():
+    assert caption.parse_objects('{"span_id":[],"text":"bad"}', _batch(1)) == []
+
+
+def test_caption_prompt_includes_the_domain_verbs_the_linter_accepts():
+    assert 'pour' in caption.system_prompt('beverage')
+    assert 'scrub' in caption.system_prompt('kitchen')
+
+
+def test_json_strings_can_contain_braces():
+    raw = json.dumps(dict(span_id='a#0', text='Move the box marked {A}'))
+    assert caption.parse_objects(raw, _batch(1))[0]['text'].endswith('{A}')
+
+
+def test_missing_frame_never_substitutes_a_different_action():
+    from egoannot.core.video import SegmentFrames
+    store = SegmentFrames('.')
+    store._fps['fake'] = 30
+    store._frames['fake'] = {0: b'jpeg'}
+    with pytest.raises(RuntimeError, match='missing requested frame'):
+        store.get(dict(segment='fake', v_start=2, v_end=4), 4)
+
+
+def test_model_string_false_is_not_treated_as_true():
+    obj = dict(text='text', verb='grasp', noun='box', visibility='FULL', uncertain='false')
+    with pytest.raises(ValueError, match='JSON boolean'):
+        caption._label(obj, {}, 'retail_shelf', 'fake')
+
+
+def test_caption_retries_only_failed_spans_and_records_coverage(tmp_path, monkeypatch):
+    class Frames:
+        bytes_peak = 0
+        def __init__(self, *a): pass
+        def plan(self, spans, n): return {'s': 8}
+        def get(self, span, n): return [b'jpeg'] * n
+        def release(self, segment): pass
+
+    calls = []
+    good = 'Grasp the cardboard box on the shelf with the right hand'
+    class Engine:
+        name = 'fake'
+        def __call__(self, system, parts, batch):
+            calls.append([s['span_id'] for s in batch])
+            return [dict(span_id=s['span_id'], text=good if len(calls) > 1 or s['span_id']=='a#0'
+                         else 'Grasp box', verb='grasp', noun='box', visibility='FULL')
+                    for s in batch], {}
+    monkeypatch.setattr(caption, 'SegmentFrames', Frames)
+    monkeypatch.setitem(caption.BACKENDS, 'fake', Engine)
+    source, out = tmp_path/'spans.jsonl', tmp_path/'caps.jsonl'
+    rows = [dict(span_id=f'a#{i}', segment='s', episode='ep', cls='manipulation',
+                 start_ts=2*i, end_ts=2*i+2, duration=2, hand='RIGHT', wrist_speed=0.1,
+                 v_start=2*i, v_end=2*i+2) for i in range(2)]
+    source.write_text('\n'.join(json.dumps(r) for r in rows))
+    got = caption.run(source, 'fake', out, cfg=dict(config.CAPTION, max_retries=1))
+    assert calls == [['a#0', 'a#1'], ['a#1']]
+    assert len(got) == 2 and all(not c['validation_errors'] for c in got)
+    report = json.loads((tmp_path/'caps.jsonl.run.json').read_text())
+    assert report['coverage'] == 1 and report['valid'] == 2
+
+
+def test_extended_fingers_are_not_reported_as_wrapped():
+    t = np.arange(100) / 10
+    J = np.zeros((100, 21, 3))
+    for k, digit in enumerate(spans.DIGITS):
+        J[:, spans.MCP[digit]] = [k * 0.02, 0.1, 0]
+        J[:, spans.TIP[digit]] = J[:, spans.MCP[digit]] + [0, 0.01, 0]
+        J[90:, spans.TIP[digit]] = J[90:, spans.MCP[digit]] + [0, 0.1, 0]
+    ep = {'/pose/right_hand': np.column_stack([t, J[:, 0]]), '/pose/right_hand_joints': J}
+    assert spans.finger_state(ep, 'right', 9, 10) != 'whole hand wrapped'
+
+
+def test_rotation_direction_respects_positive_camera_forward_axis():
+    t = np.linspace(0, 2, 30)
+    angle = np.linspace(0, np.pi / 2, len(t))
+    Q = np.column_stack([t, np.cos(angle/2), np.zeros((len(t), 2)), np.sin(angle/2)])
+    J = np.zeros((len(t), 21, 3))
+    J[:, spans.MIDDLE_MCP, 2] = 0.1
+    ep = {'/pose/right_hand_quat': Q, '/pose/right_hand_joints': J,
+          'extr': np.column_stack([t, np.zeros((len(t), 3)), np.ones(len(t)), np.zeros((len(t), 3))]),
+          'camera_forward_axis': 1}
+    assert spans.rotation(ep, 'right', 0, 2.1) == 'clockwise'
+    ep['camera_forward_axis'] = -1
+    assert spans.rotation(ep, 'right', 0, 2.1) == 'counter-clockwise'
+
+
+def test_absent_hand_is_not_inferred_from_a_static_observed_hand():
+    A = np.column_stack([np.arange(20)/10, np.zeros((20, 3))])
+    ep = {'/pose/left_hand': np.zeros((0, 4)), '/pose/right_hand': A}
+    assert spans.dominant_hand(ep, 0, 2) == 'RIGHT'
+    assert spans.dominant_hand(ep, 3, 5) == 'NEITHER'
+    assert spans.acting_sides('NEITHER') == []
+
+
+def test_nested_model_reply_preserves_ids_and_recovers_real_repairs():
+    raw = json.dumps({'captions': {
+        'a#1': dict(span_id='a#1', text='second'),
+        'a#0': dict(span_id='a#0', text='first')}})
+    got = caption.parse_objects(raw, _batch(2))
+    assert [(o['span_id'], o['text']) for o in got] == [('a#0', 'first'), ('a#1', 'second')]
+
+
+def test_general_prompt_does_not_seed_repeated_object_captions():
+    prompt = caption.system_prompt('general_manipulation')
+    assert 'Type on the laptop keyboard' not in prompt
+    assert 'The verb must be one of:' in prompt and 'type' in prompt

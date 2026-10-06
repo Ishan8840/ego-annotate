@@ -1,0 +1,9 @@
+# Install a CUDA-compatible torch/torchvision pair separately for VLM inference.
+-r requirements.txt
+scipy>=1.10
+pillow>=10
+transformers>=4.57,<5
+accelerate>=1
+pytest>=8
+# Official UmeTrack forward kinematics; no MANO assets required.
+hand-tracking-toolkit @ git+https://github.com/facebookresearch/hand_tracking_toolkit.git@bc628e9286c18444b47a0971a89d075ea6f00747

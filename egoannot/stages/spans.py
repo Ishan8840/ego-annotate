@@ -363,6 +363,16 @@ def dominant_hand(ep, a, z, cfg=CFG):
         return float(np.linalg.norm(np.diff(A[m, 1:4], axis=0), axis=1).sum()) \
             if m.sum() > 2 else 0.0
 
+    observed = []
+    for side in ("left", "right"):
+        A = ep[f"/pose/{side}_hand"]
+        good = (A[:, 0] >= a) & (A[:, 0] < z) & np.isfinite(A[:, 1:4]).all(axis=1)
+        if good.sum() >= 3:
+            observed.append(side)
+    if len(observed) == 1:
+        return observed[0].upper()
+    if not observed:
+        return "NEITHER"
     left = path_len(ep["/pose/left_hand"])
     right = path_len(ep["/pose/right_hand"])
     ratio = cfg["dominant_ratio"]
@@ -375,6 +385,8 @@ def dominant_hand(ep, a, z, cfg=CFG):
 
 def acting_sides(hand):
     """Which hand's signals describe the action, most-likely first."""
+    if hand == "NEITHER":
+        return []
     if hand == "LEFT":
         return ["left"]
     if hand == "RIGHT":
@@ -450,7 +462,10 @@ def rotation(ep, side, a, z, cfg=CFG):
     coherence = abs(net_hand) / max(total_hand, 1e-9)
     if degrees < cfg["rotation_min_deg"] or coherence < cfg["rotation_min_coherence"]:
         return None
-    return "clockwise" if net_cam < 0 else "counter-clockwise"
+    # OpenCV/HOT3D cameras look along +Z (x right, y down), where positive
+    # rotation projects clockwise. Legacy MCAP cameras use the opposite axis.
+    clockwise = net_cam * ep.get("camera_forward_axis", -1) > 0
+    return "clockwise" if clockwise else "counter-clockwise"
 
 
 def finger_state(ep, side, a, z, cfg=CFG):
@@ -483,8 +498,8 @@ def finger_state(ep, side, a, z, cfg=CFG):
     # mutually exclusive: a hand cannot be pinching AND wrapped around something
     if pinched:
         return "thumb-index pinch"
-    if len(extended) >= 4:
-        return "whole hand wrapped"
+    # Large MCP-to-tip distances mean extended fingers, not a closed grasp.
+    # Pose alone also cannot establish that an object is inside the hand.
     if set(extended) in ({"index"}, {"index", "thumb"}):
         return "index finger extended"
     return None          # a partial spread of digits is not worth naming
@@ -580,7 +595,9 @@ def build(segments=None, out=None, only=None, cfg=CFG,
                 duration=round(float(z - a), 3),
                 # pose-derived, authoritative -- never asked of the model
                 boundary_signal=cfg.get("signal", "activity"),
-                hand=hand, acting_side=sides[0],
+                pose_source=ep.get("meta", {}).get("pose_source", cfg.get("pose_source", "shipped")),
+                camera_modality=("monochrome" if ep.get("meta", {}).get("device") == "Quest3" else None),
+                hand=hand, acting_side=sides[0] if sides else None,
                 rotation=rot, fingers=fingers,
                 aperture_mm=(ap or {}).get("aperture_mm"),
                 aperture_end_mm=(ap or {}).get("aperture_end_mm"),

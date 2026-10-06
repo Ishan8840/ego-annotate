@@ -32,3 +32,10 @@ __pycache__/
 /artifacts/pose/ace_k_nomano.yml
 /artifacts/arctic/manifest.json
 /artifacts/arctic/report.json
+
+# HOT3D source videos, prepared poses, local models and experiment scratch
+/artifacts/hot3d/
+/models/
+/.venv/
+/artifacts/demo/
+/artifacts/color-demo/

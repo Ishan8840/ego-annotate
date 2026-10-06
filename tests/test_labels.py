@@ -105,3 +105,26 @@ def test_every_pack_shares_the_core_verbs():
         verbs = DM.verbs_for(pack)
         assert set(DM.CORE_VERBS) <= set(verbs)
         assert len(verbs) == len(set(verbs))
+
+
+def test_generic_manipulation_can_describe_typing_without_shelf_vocabulary():
+    assert DM.pack_for(cls='manipulation') == 'general_manipulation'
+    AL.use_domain('general_manipulation')
+    try:
+        lab = label('Type on the laptop keyboard with both hands above the desk',
+                    verb='type', noun='keyboard', hand='BOTH')
+        assert not errors(lab)
+    finally:
+        AL.use_domain('retail_shelf')
+
+
+def test_food_preparation_supports_cutting_and_washing():
+    assert DM.pack_for(cls='food preparation') == 'food_preparation'
+    assert {'slice', 'cut', 'wash', 'rinse'} <= set(DM.verbs_for('food_preparation'))
+    AL.use_domain('food_preparation')
+    try:
+        lab = label('Slice the courgette on the green board with the right hand',
+                    verb='slice', noun='courgette', hand='RIGHT')
+        assert not errors(lab)
+    finally:
+        AL.use_domain('retail_shelf')

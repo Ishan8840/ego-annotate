@@ -1,0 +1,12 @@
+{
+  "clips": 11,
+  "captions": 22,
+  "run_switch": true,
+  "video_seek": true,
+  "video_decode": true,
+  "javascript_errors": [],
+  "video_size": [
+    768,
+    960
+  ]
+}

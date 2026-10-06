@@ -65,6 +65,9 @@ def _list(msg, field) -> list:
 
 def read_episode(path, want_video: bool = True, topics: Iterable[str] | None = None) -> dict:
     """One pass over the mcap; returns pose arrays, calibration and video bytes."""
+    if str(path).endswith(".npz"):
+        from .hot3d import read_prepared
+        return read_prepared(path, want_video=want_video)
     from mcap.reader import make_reader
     from mcap_protobuf.decoder import DecoderFactory
 
@@ -171,7 +174,7 @@ def read_episode(path, want_video: bool = True, topics: Iterable[str] | None = N
     tl, tr = ep["/pose/left_hand"], ep["/pose/right_hand"]
     n = min(len(tl), len(tr))
     ep["hands_share_timebase"] = bool(
-        n and np.allclose(tl[:n, 0], tr[:n, 0], atol=1e-6))
+        n and len(tl) == len(tr) and np.allclose(tl[:, 0], tr[:, 0], atol=1e-6, rtol=0))
     return ep
 
 

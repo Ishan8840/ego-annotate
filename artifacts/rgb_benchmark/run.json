@@ -1,0 +1,755 @@
+{
+  "system_prompt": "Annotate short egocentric RGB video spans. Boundaries are supplied by an RGB motion segmenter. There is no motion capture or measured hand pose. For each given span, describe the single main visible manipulation action. Use only visible evidence. Do not guess a brand, material, hidden action or task success. If the action is unclear, set uncertain=true. Hand is a visual prediction. Return one flat JSON object per span, with exactly these keys: span_id, text, verb, noun, hand, visibility, uncertain. hand is LEFT, RIGHT, BOTH or NEITHER; visibility is FULL, PARTIAL or OCCLUDED. Text must be an imperative sentence of 10\u201315 words describing ONE main action. Favor 11\u201313 words. Use modifiers rather than linking different actions. Do not reuse phrases from unrelated spans. Preserve the supplied IDs. Allowed verbs: reach, grasp, pinch, lift, transport, place, release, withdraw, align, rotate, twist, flip, push, pull, poke, tap, steady, wrap, adjust, open, close, slide, chop, click, cut, dispense, drain, dry, grate, insert, mix, peel, pour, press, remove, rinse, scoop, scrape, screw, scrub, seat, slice, snap, spread, sprinkle, squeeze, stir, tear, tilt, type, unscrew, wash, wipe.\nHARD FORMAT RULES. A caption breaking any of these is rejected automatically.\n\nR1. `text` MUST be 10 to 15 words. Count them. Nine words is a rejection.\n    If you are under 10, add the acting hand and the specific destination or\n    surface - never padding words.\nR2. `text` MUST BEGIN with the verb, capitalised, spelled EXACTLY as it appears\n    in the verb list below, and that same lowercase spelling goes in `verb`.\n    Do not write \"grab\", \"pick\", \"put\", \"take\", \"move\", \"set\" or \"hold\" - they are\n    not in the list. The nearest legal choices are grasp, lift, place, transport\n    and steady.\nR3. Exactly ONE action verb in the whole sentence. Never join two actions with\n    \"and\", \"then\", \"while\", \"before\", \"after\", \"until\" or a comma. One span,\n    one action. If you catch yourself describing a sequence, describe only the\n    part that occupies THIS span.\n    Also never state the PURPOSE of the action with \"to <verb>\" - write\n    \"Scrub the pan with the yellow sponge\", not \"Grasp the sponge to scrub the\n    pan\". Name the action happening now, not what it is for.\nR4. `noun` is the single manipulated object, and its head word must appear in\n    `text` (noun \"shampoo bottle\" -> the word \"bottle\" must be in the sentence).\nR5. `visibility` is FULL, PARTIAL, OCCLUDED or OUT_OF_FRAME - describing the\n    object and the acting hand.\nR6. Never write: \"continue\", \"etc\", \"neatly\", \"properly\", \"them\", \"those\",\n    \"items\", \"second\", \"third\", \"fourth\", \"finish\" or \"complete\".\nR7. Describe what you see specifically - object colour, brand, material, and the\n    exact surface or container involved. When consecutive spans repeat a similar\n    action, individuate them by naming the specific destination, the position, or\n    the object's state - NEVER by counting or numbering them.\nR8. Consecutive spans are usually different STAGES of one sequence, not repeats.\n    Do not reuse the previous caption's wording.\n\nUNCERTAINTY. R7 asks for specifics; it does NOT ask you to invent them.\nIf the frames do not show you an object's colour, brand or identity - it is\noccluded, blurred, out of frame, or your view is of the back of the hand - then:\n  * set \"uncertain\": true\n  * set \"visibility\" to PARTIAL, OCCLUDED or OUT_OF_FRAME as applicable\n  * name the object at whatever level you actually can (\"the bottle\", \"the\n    small part\", \"an object in the sink\") and drop the modifiers\n  * you may fall below 10 words when uncertain is true\nA caption marked uncertain and vague is CORRECT. A caption that guesses a colour\nor a brand you cannot see is WRONG, and worse than vague, because it cannot be\ntold apart from a caption that got it right.",
+  "sources": [
+    {
+      "id": "epic-prep",
+      "path": "/workspace/ego-annotate/artifacts/color-demo/epic-prep.mp4",
+      "duration_s": 24.0,
+      "sha256": "af976596589fee53ba13a50f0083542bc38f0e15380ca23daf901d42d97f384d",
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "boundary_statistics": {
+        "split": 12,
+        "merged": 0,
+        "dropped": 0
+      },
+      "refinement": {
+        "shifted": 0,
+        "rejected": 1,
+        "considered": 13,
+        "total_delta": 0.0
+      }
+    },
+    {
+      "id": "epic-cook",
+      "path": "/workspace/ego-annotate/artifacts/color-demo/epic-cook.mp4",
+      "duration_s": 24.0,
+      "sha256": "29a8ca3acb4e28daf9e98c78655f0499bb5d53d063f391f676b22f05a9c0272b",
+      "fps": 30.0,
+      "width": 1280,
+      "height": 720,
+      "boundary_statistics": {
+        "split": 12,
+        "merged": 0,
+        "dropped": 0
+      },
+      "refinement": {
+        "shifted": 0,
+        "rejected": 2,
+        "considered": 13,
+        "total_delta": 0.0
+      }
+    }
+  ],
+  "calls": [
+    {
+      "requested_ids": [
+        "epic-prep#000.000"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#000.000\",\n  \"text\": \"Reach for the cabinet with the right hand\",\n  \"verb\": \"reach\",\n  \"noun\": \"cabinet\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 72,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#000.000"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#000.000\", \"text\": \"Reach for the cabinet with the right hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5714,
+        "output_tokens": 63,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#000.000"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#000.000\", \"text\": \"Reach for the cabinet with the right hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5714,
+        "output_tokens": 63,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#001.312"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#001.312\",\n  \"text\": \"Reach into the cabinet with the left hand\",\n  \"verb\": \"reach\",\n  \"noun\": \"cabinet\",\n  \"hand\": \"LEFT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 72,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#001.312"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#001.312\", \"text\": \"Reach into the cabinet with the left hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5716,
+        "output_tokens": 63,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#001.312"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#001.312\", \"text\": \"Reach into the cabinet with the left hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5716,
+        "output_tokens": 63,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#003.062"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#003.062\",\n  \"text\": \"Grasp the red container under the cabinet with both hands\",\n  \"verb\": \"grasp\",\n  \"noun\": \"container\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 76,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#004.938"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#004.938\",\n  \"text\": \"Place the green cutting board on the wooden countertop\",\n  \"verb\": \"place\",\n  \"noun\": \"cutting board\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 76,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#004.938"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#004.938\", \"text\": \"Place the green cutting board on the wooden countertop\", \"verb\": \"place\", \"noun\": \"cutting board\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5720,
+        "output_tokens": 67,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#004.938"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#004.938\", \"text\": \"Place the green cutting board on the wooden countertop\", \"verb\": \"place\", \"noun\": \"cutting board\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5720,
+        "output_tokens": 67,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#006.938"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#006.938\",\n  \"text\": \"Reach for the sink with the right hand\",\n  \"verb\": \"reach\",\n  \"noun\": \"sink\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 71,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#006.938"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#006.938\", \"text\": \"Reach for the sink with the right hand\", \"verb\": \"reach\", \"noun\": \"sink\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5715,
+        "output_tokens": 62,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#006.938"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#006.938\", \"text\": \"Reach for the sink with the right hand\", \"verb\": \"reach\", \"noun\": \"sink\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5715,
+        "output_tokens": 62,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#009.438"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#009.438\",\n  \"text\": \"Reach for the blue bowl under the wooden counter\",\n  \"verb\": \"reach\",\n  \"noun\": \"bowl\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"PARTIAL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5482,
+        "output_tokens": 74,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#009.438"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#009.438\", \"text\": \"Reach for the blue bowl under the wooden counter\", \"verb\": \"reach\", \"noun\": \"bowl\", \"hand\": \"RIGHT\", \"visibility\": \"PARTIAL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5720,
+        "output_tokens": 65,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#009.438"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#009.438\", \"text\": \"Reach for the blue bowl under the wooden counter\", \"verb\": \"reach\", \"noun\": \"bowl\", \"hand\": \"RIGHT\", \"visibility\": \"PARTIAL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5720,
+        "output_tokens": 65,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#010.938"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#010.938\",\n  \"text\": \"Grasp the drawer handle with the right hand to pull it open\",\n  \"verb\": \"grasp\",\n  \"noun\": \"drawer handle\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 78,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#010.938"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#010.938\", \"text\": \"Pull open the drawer with the right hand\", \"verb\": \"pull\", \"noun\": \"drawer\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5736,
+        "output_tokens": 62,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#010.938"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#010.938\", \"text\": \"Pull open the drawer with the right hand\", \"verb\": \"pull\", \"noun\": \"drawer\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5736,
+        "output_tokens": 62,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#012.438"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#012.438\",\n  \"text\": \"Grasp the knife from the drawer with the right hand\",\n  \"verb\": \"grasp\",\n  \"noun\": \"knife\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 75,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#014.438"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#014.438\",\n  \"text\": \"Grasp the knife from the drawer with the right hand\",\n  \"verb\": \"grasp\",\n  \"noun\": \"knife\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 75,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#016.688"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#016.688\",\n  \"text\": \"Place the knife on the wooden countertop near the sink\",\n  \"verb\": \"place\",\n  \"noun\": \"knife\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 74,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#018.438"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#018.438\",\n  \"text\": \"Grasp the zucchini with the left hand\",\n  \"verb\": \"grasp\",\n  \"noun\": \"zucchini\",\n  \"hand\": \"LEFT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 74,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#018.438"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#018.438\", \"text\": \"Grasp the zucchini with the left hand and place it under running water\", \"verb\": \"grasp\", \"noun\": \"zucchini\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5722,
+        "output_tokens": 71,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#018.438"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#018.438\", \"text\": \"Grasp the zucchini with the left hand and place it under running water\", \"verb\": \"grasp\", \"noun\": \"zucchini\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5722,
+        "output_tokens": 71,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#020.312"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#020.312\",\n  \"text\": \"Rinse the cucumber under running water with both hands\",\n  \"verb\": \"rinse\",\n  \"noun\": \"cucumber\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 77,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#020.312"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#020.312\", \"text\": \"Rinse the cucumber under running water with both hands\", \"verb\": \"rinse\", \"noun\": \"cucumber\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5725,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#020.312"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-prep#020.312\", \"text\": \"Rinse the cucumber under running water with both hands\", \"verb\": \"rinse\", \"noun\": \"cucumber\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5725,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#021.688"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-prep#021.688\",\n  \"text\": \"Rinse the green cucumber under running water\",\n  \"verb\": \"rinse\",\n  \"noun\": \"cucumber\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 75,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-prep#021.688"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-prep#021.688\", \"text\": \"Rinse the green cucumber under running water with both hands\", \"verb\": \"rinse\", \"noun\": \"cucumber\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5721,
+        "output_tokens": 69,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#000.000"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#000.000\",\n  \"text\": \"Reach into the cabinet with the right hand\",\n  \"verb\": \"reach\",\n  \"noun\": \"cabinet\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 72,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#000.000"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#000.000\", \"text\": \"Reach into the open cabinet with the right hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5714,
+        "output_tokens": 64,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#000.000"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-cook#000.000\", \"text\": \"Reach into the open cabinet with the right hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5714,
+        "output_tokens": 64,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#001.562"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#001.562\",\n  \"text\": \"Reach into the cabinet with the right hand\",\n  \"verb\": \"reach\",\n  \"noun\": \"cabinet\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 72,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#001.562"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#001.562\", \"text\": \"Reach into the cabinet with the right hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5716,
+        "output_tokens": 63,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#001.562"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-cook#001.562\", \"text\": \"Reach into the cabinet with the right hand\", \"verb\": \"reach\", \"noun\": \"cabinet\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5716,
+        "output_tokens": 63,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#002.938"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#002.938\",\n  \"text\": \"Grasp the metal grater with the right hand\",\n  \"verb\": \"grasp\",\n  \"noun\": \"grater\",\n  \"hand\": \"RIGHT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 75,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#002.938"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#002.938\", \"text\": \"Grasp the metal grater with the right hand\", \"verb\": \"grasp\", \"noun\": \"grater\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5719,
+        "output_tokens": 66,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#002.938"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-cook#002.938\", \"text\": \"Grasp the metal grater with the right hand\", \"verb\": \"grasp\", \"noun\": \"grater\", \"hand\": \"RIGHT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5719,
+        "output_tokens": 66,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#004.688"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#004.688\",\n  \"text\": \"Reach into the cabinet with both hands\",\n  \"verb\": \"reach\",\n  \"noun\": \"cabinet\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 72,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#004.688"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#004.688\", \"text\": \"Reach into the cabinet with both hands to retrieve an object\", \"verb\": \"reach\", \"noun\": \"object\", \"hand\": \"BOTH\", \"visibility\": \"PARTIAL\", \"uncertain\": true}",
+      "usage": {
+        "input_tokens": 5716,
+        "output_tokens": 67,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#006.062"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#006.062\",\n  \"text\": \"Grasp the black pan handle with the left hand\",\n  \"verb\": \"grasp\",\n  \"noun\": \"pan handle\",\n  \"hand\": \"LEFT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 75,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#006.062"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#006.062\", \"text\": \"Grasp the black pan handle with the left hand and steady it\", \"verb\": \"grasp\", \"noun\": \"pan handle\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5719,
+        "output_tokens": 69,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#006.062"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-cook#006.062\", \"text\": \"Grasp the black pan handle with the left hand and steady it\", \"verb\": \"grasp\", \"noun\": \"pan handle\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5719,
+        "output_tokens": 69,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#007.438"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#007.438\",\n  \"text\": \"Lift the black frying pan from the stack with both hands\",\n  \"verb\": \"lift\",\n  \"noun\": \"frying pan\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5481,
+        "output_tokens": 78,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#009.562"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#009.562\",\n  \"text\": \"Place the black frying pan on the stovetop burner\",\n  \"verb\": \"place\",\n  \"noun\": \"frying pan\",\n  \"hand\": \"LEFT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5482,
+        "output_tokens": 77,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#009.562"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#009.562\", \"text\": \"Place the black frying pan on the stovetop burner\", \"verb\": \"place\", \"noun\": \"frying pan\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5723,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#009.562"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-cook#009.562\", \"text\": \"Place the black frying pan on the stovetop burner\", \"verb\": \"place\", \"noun\": \"frying pan\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5723,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#011.812"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#011.812\",\n  \"text\": \"Release the frying pan on the stovetop burner\",\n  \"verb\": \"release\",\n  \"noun\": \"frying pan\",\n  \"hand\": \"LEFT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 76,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#011.812"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#011.812\", \"text\": \"Release the black frying pan on the stovetop burner\", \"verb\": \"release\", \"noun\": \"frying pan\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5724,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#011.812"
+      ],
+      "attempt": 2,
+      "raw": "{\"span_id\": \"epic-cook#011.812\", \"text\": \"Release the black frying pan on the stovetop burner\", \"verb\": \"release\", \"noun\": \"frying pan\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5724,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#013.812"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#013.812\",\n  \"text\": \"Grasp the zucchini with the left hand\",\n  \"verb\": \"grasp\",\n  \"noun\": \"zucchini\",\n  \"hand\": \"LEFT\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 74,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#013.812"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#013.812\", \"text\": \"Grasp the zucchini with the left hand on the green cutting board\", \"verb\": \"grasp\", \"noun\": \"zucchini\", \"hand\": \"LEFT\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5722,
+        "output_tokens": 70,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#016.062"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#016.062\",\n  \"text\": \"Slice the zucchini on the green cutting board\",\n  \"verb\": \"slice\",\n  \"noun\": \"zucchini\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 74,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#016.062"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#016.062\", \"text\": \"Slice the zucchini on the green cutting board with the knife\", \"verb\": \"slice\", \"noun\": \"zucchini\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5722,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#018.188"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#018.188\",\n  \"text\": \"Slice the zucchini on the green cutting board\",\n  \"verb\": \"slice\",\n  \"noun\": \"zucchini\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 74,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#018.188"
+      ],
+      "attempt": 1,
+      "raw": "{\"span_id\": \"epic-cook#018.188\", \"text\": \"Slice the zucchini on the green cutting board with the knife\", \"verb\": \"slice\", \"noun\": \"zucchini\", \"hand\": \"BOTH\", \"visibility\": \"FULL\", \"uncertain\": false}",
+      "usage": {
+        "input_tokens": 5722,
+        "output_tokens": 68,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#019.562"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#019.562\",\n  \"text\": \"Slice the zucchini on the green cutting board with the knife\",\n  \"verb\": \"slice\",\n  \"noun\": \"zucchini\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 77,
+        "n_images": 5
+      }
+    },
+    {
+      "requested_ids": [
+        "epic-cook#021.438"
+      ],
+      "attempt": 0,
+      "raw": "{\n  \"span_id\": \"epic-cook#021.438\",\n  \"text\": \"Slice the zucchini on the green cutting board with the knife\",\n  \"verb\": \"slice\",\n  \"noun\": \"zucchini\",\n  \"hand\": \"BOTH\",\n  \"visibility\": \"FULL\",\n  \"uncertain\": false\n}",
+      "usage": {
+        "input_tokens": 5483,
+        "output_tokens": 77,
+        "n_images": 5
+      }
+    }
+  ]
+}

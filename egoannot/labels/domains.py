@@ -95,6 +95,28 @@ PACKS = {
         ]),
 }
 
+# An explicitly generic manipulation corpus must not inherit shelf-stocking
+# vocabulary. In particular, typing is not grasping a keyboard.
+PACKS["general_manipulation"] = dict(
+    label="general egocentric manipulation",
+    verbs=sorted({v for pack in PACKS.values() for v in pack["verbs"]} | {"type", "click"}),
+    nouns=sorted({n for pack in PACKS.values() for n in pack["nouns"]}
+                 | {"keyboard", "mouse", "remote control", "spoon", "object"}),
+    exemplars=[
+        "Type on the laptop keyboard with both hands above the desk",
+        "Press the remote control button with the thumb of the right hand",
+        "Place the cup upright on the table with the right hand",
+        "Rotate the small object clockwise between the fingers of the right hand",
+    ])
+
+
+PACKS['food_preparation'] = dict(
+    label='food preparation',
+    verbs=sorted(set(PACKS['general_manipulation']['verbs']) |
+                 {'cut', 'slice', 'chop', 'peel', 'grate', 'mix', 'spread', 'sprinkle'}),
+    nouns=['vegetable', 'carrot', 'courgette', 'knife', 'cutting board', 'pan', 'grater'],
+    exemplars=[])
+
 
 def verbs_for(key):
     p = PACKS.get(key) or {}
@@ -118,6 +140,10 @@ _RULES = [
 
 
 def pack_for(task=None, scene=None, cls=None):
+    if cls == 'food preparation':
+        return 'food_preparation'
+    if cls == "manipulation":
+        return "general_manipulation"
     hay = " ".join(str(x or "") for x in (task, scene, cls)).lower()
     for pat, key in _RULES:
         if re.search(pat, hay):

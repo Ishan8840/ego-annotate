@@ -59,7 +59,7 @@ def episode_path(name: str) -> Path:
     root and some under ep/, so try both instead of assuming one layout.
     """
     root = corpus()
-    for cand in (name, f"{name}.mcap", f"ep/{name}.mcap", f"ep/{name}"):
+    for cand in (name, f"{name}.mcap", f"{name}.npz", f"ep/{name}.mcap", f"ep/{name}"):
         p = root / cand
         if p.exists():
             return p
@@ -229,6 +229,7 @@ SPANS_CFG = dict(
 
 # ---------------------------------------------------------------- stage: caption
 CAPTION = dict(
+    max_retries=int(os.environ.get("CAPTION_MAX_RETRIES", "1")),
     frames_per_span=int(os.environ.get("FRAMES_PER_SPAN", "4")),
     # Measured on 269 spans with Qwen3-VL-8B, identical throughput (0.62 vs
     # 0.60 spans/s) and a 269/269 bind rate either way:

@@ -160,13 +160,14 @@ class SegmentFrames:
         if not store:
             raise RuntimeError(
                 f"decoded no frames for segment {seg!r} from {self.path_for(seg)}")
-        keys = sorted(store)
         out = []
         for i in self.indices_for(seg, span["v_start"], span["v_end"], n):
             if i in store:
                 out.append(store[i])
-            else:                      # nearest planned frame
-                out.append(store[min(keys, key=lambda k: abs(k - i))])
+            else:
+                raise RuntimeError(
+                    f"missing requested frame {i} for segment {seg!r}; "
+                    "video may be truncated or the sampling plan is stale")
         return out
 
     def release(self, segment: str) -> None:

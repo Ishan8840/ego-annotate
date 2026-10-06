@@ -49,6 +49,13 @@ def build_parser():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="stage", required=True)
 
+    hot = sub.add_parser("hot3d", help="import native HOT3D-Clips with UmeTrack poses")
+    hot.add_argument("clips", nargs="+", help="native clip .tar paths")
+    hot.add_argument("--out", required=True, help="prepared corpus directory")
+    hot.add_argument("--stream", default=None, help="camera stream (default: RGB or physical left)")
+    hot.add_argument("--rotate", type=int, default=0, choices=[0, 90, 180, 270],
+                     help="clockwise display rotation; 90 makes the tested Quest3 streams upright")
+
     # -- quality -------------------------------------------------------
     q = sub.add_parser("quality", help="T1-T4 per-clip quality records")
     qs = q.add_subparsers(dest="cmd", required=True)
@@ -61,6 +68,12 @@ def build_parser():
             sp.add_argument("--out", default=None)
     qr = qs.add_parser("report", help="re-print a report from existing records")
     qr.add_argument("records", nargs="?", default=None)
+    qa = qs.add_parser("analyze", help="descriptive dataset quality report with timestamped evidence")
+    qa.add_argument("inputs", nargs="+", help="video files, MP4 directory, or prepared HOT3D corpus")
+    qa.add_argument("--out", required=True, help="directory for JSON, text and playable HTML reports")
+    qa.add_argument("--spec", default=None, help="JSON task instructions, collection rules and expected video properties")
+    qa.add_argument("--visual", choices=["none", "qwen-local"], default="none")
+    qa.add_argument("--model", default=None, help="local Qwen model path or model ID")
 
     # -- events --------------------------------------------------------
     e = sub.add_parser("events", help="contact/release events and actionness")
@@ -248,6 +261,11 @@ def main(argv=None):
     args = build_parser().parse_args(argv)
     stage = args.stage
 
+    if stage == "hot3d":
+        from .core.hot3d import prepare
+        prepare(args.clips, args.out, stream=args.stream, rotate=args.rotate)
+        return
+
     if stage == "paths":
         print(f"repo      {config.ROOT}")
         try:
@@ -267,6 +285,10 @@ def main(argv=None):
         return 0
 
     if stage == "quality":
+        if args.cmd == "analyze":
+            from .quality.analysis import analyze
+            analyze(args.inputs, args.out, args.spec, args.visual, args.model)
+            return 0
         from .stages import quality
         if args.cmd == "measure":
             quality.measure(_episodes(args), args.out)

@@ -20,7 +20,6 @@ import base64
 import io
 import json
 import os
-import re
 import time
 
 import numpy as np
@@ -48,6 +47,9 @@ def system_prompt(pack_key=None, frames_per_span=None, free_text=None):
     if free:
         rules = rules.replace(
             rules[rules.index("R2."):rules.index("R3.")], DM.FREE_TEXT_R2 + "\n")
+    examples = ("Worked examples illustrate grammar only. Their objects and brands "
+                "are not hints about the images. Each is 10-15 words:\n"
+                + "\n".join("  " + e for e in DM.PROMPT_EXEMPLARS) + "\n\n")
     return (
         "You caption short atomic actions in egocentric (head-camera) video of "
         "manipulation work.\n\n"
@@ -59,9 +61,8 @@ def system_prompt(pack_key=None, frames_per_span=None, free_text=None):
         '  {"span_id": "<given>", "text": "...", "verb": "...", "noun": "...", '
         '"visibility": "...", "uncertain": false}\n\n'
         f"{rules}\n\n{DM.DETAIL_RULES}\n\n"
-        f"The verb must be one of: {', '.join(DM.CORE_VERBS)}\n\n"
-        "Worked examples - each is 10-15 words and passes validation:\n"
-        + "\n".join("  " + e for e in DM.PROMPT_EXEMPLARS) + "\n\n"
+        f"The verb must be one of: {', '.join(DM.verbs_for(pack_key))}\n\n"
+        + examples +
         "Do not output `hand`, `start_ts` or `end_ts` - those come from motion "
         "capture.\nOutput one JSON object per line, in the order given, nothing "
         "else.")
@@ -71,6 +72,10 @@ def build_user(batch, context, episode_task, frames, cfg=CFG):
     """The user turn: task, recent captions, then per-span facts and frames."""
     parts = []
     head = f"Episode task: {episode_task or 'unknown'}\n"
+    if any(s.get("camera_modality") == "monochrome" for s in batch):
+        head += ("These camera images are monochrome. Describe shape, material or "
+                 "light/dark appearance; do not infer color hues. Name a brand only "
+                 "if its text is actually legible.\n")
     if context:
         head += ("\nPrevious captions in this episode (most recent last), in the "
                  "same JSON form you must produce - do not repeat their wording:\n")
@@ -180,7 +185,8 @@ class OpenAICompat:
                     "url": "data:image/jpeg;base64,"
                            + base64.standard_b64encode(v).decode()}})
         body = json.dumps(dict(
-            model=self.model, max_tokens=2048, temperature=CFG["temperature"],
+            model=self.model, max_tokens=2048,
+            temperature=0 if CFG.get("greedy") else CFG["temperature"],
             messages=[{"role": "system", "content": system},
                       {"role": "user", "content": content}])).encode()
         req = urllib.request.Request(self.base + "/chat/completions", body,
@@ -246,137 +252,190 @@ BACKENDS = {"stub": Stub, "anthropic": AnthropicBackend,
 def parse_objects(txt, batch):
     """
     Pull JSON objects out of whatever the model wrapped them in, and bind each
-    to a span ONLY when the binding is unambiguous.
-
-    The original fell back to positional mapping whenever an id did not match,
-    including when the model returned fewer objects than the batch. That
-    silently attached captions to the wrong time spans: in one measured run a
-    10-span batch came back with 8 objects and they were bound to spans 0-7
-    regardless of which spans they described. A mislabelled timestamp is worse
-    than a missing one, so positional binding now applies only when the counts
-    match exactly.
+    to a span ONLY when the binding is unambiguous. Positional binding is
+    allowed only for full replies where every object omits its ID. Mixed IDs,
+    unknown IDs and conflicting duplicates never overwrite a valid binding.
     """
     found = []
-    for m in re.finditer(r"\{[^{}]*\}", txt):
+    def collect(value):
+        if isinstance(value, dict):
+            if "text" in value:
+                found.append(value)
+            else:
+                for child in value.values():
+                    collect(child)
+        elif isinstance(value, list):
+            for child in value:
+                collect(child)
+
+    decoder, offset = json.JSONDecoder(), 0
+    while (start := txt.find("{", offset)) >= 0:
         try:
-            obj = json.loads(m.group(0))
+            obj, end = decoder.raw_decode(txt, start)
         except ValueError:
+            offset = start + 1
             continue
-        if "text" in obj:
-            found.append(obj)
+        offset = end
+        collect(obj)
 
     ids = [s["span_id"] for s in batch]
-    id_set = set(ids)
-    bound, unbound = [], []
+    if len(set(ids)) != len(ids):
+        raise ValueError("duplicate span IDs in request")
+    # Only a completely ID-less, full reply has a positional interpretation.
+    # Mixed/malformed IDs must never overwrite a correct (possibly reordered) ID.
+    if len(found) == len(ids) and all("span_id" not in o for o in found):
+        return [dict(obj, span_id=sid) for obj, sid in zip(found, ids)]
+    groups = {sid: [] for sid in ids}
     for obj in found:
-        if obj.get("span_id") in id_set:
-            bound.append(obj)
-        else:
-            unbound.append(obj)
-    if unbound and len(found) == len(ids):
-        # Full-length reply with missing or mangled ids: order is trustworthy.
-        for obj, span_id in zip(found, ids):
-            obj["span_id"] = span_id
-        return found
-    return bound
+        sid = obj.get("span_id")
+        if isinstance(sid, str) and sid in groups:
+            groups[sid].append(obj)
+    # Conflicting duplicates are ambiguous; omit them for explicit retry.
+    return [groups[sid][0] for sid in ids if len(groups[sid]) == 1]
 
 
 # ---------------------------------------------------------------- run
+def _label(obj, span, pack, backend):
+    """Validate model types before normalizing; never coerce 'false' to True."""
+    for key in ('text', 'verb', 'noun', 'visibility'):
+        if not isinstance(obj.get(key), str) or not obj[key].strip():
+            raise ValueError(f'{key} must be a nonempty string')
+    if not isinstance(obj.get('uncertain', False), bool):
+        raise ValueError('uncertain must be a JSON boolean')
+    result = {k: span.get(k) for k in (
+        'span_id', 'segment', 'episode', 'cls', 'start_ts', 'end_ts', 'hand',
+        'rotation', 'fingers', 'ap_trend', 'aperture_mm', 'wrist_speed',
+        'pose_source', 'camera_modality')}
+    result.update(pack=pack, backend=backend, text=obj['text'].strip(),
+                  verb=obj['verb'].strip().lower(), noun=obj['noun'].strip().lower(),
+                  visibility=obj['visibility'].strip().upper(),
+                  uncertain=obj.get('uncertain', False))
+    return result
+
+
+def _errors(label):
+    from ..labels import atomicity as AL
+    AL.use_domain(label['pack'])
+    try:
+        return [f'{code}: {message}' for severity, code, message in AL.lint(label)
+                if severity == 'ERROR']
+    finally:
+        AL.use_domain('retail_shelf')
+
+
 def run(spans_path=None, backend="stub", out=None, limit=None, cfg=CFG):
     spans_path = str(spans_path or config.SPANS)
     out = str(out or config.CAPTIONS)
-    spans = [json.loads(l) for l in open(spans_path)]
-    if limit:
+    spans = [json.loads(l) for l in open(spans_path) if l.strip()]
+    if limit is not None:
         spans = spans[:limit]
     if not spans:
-        raise SystemExit(f"no spans in {spans_path}")
-
+        raise ValueError(f"no spans in {spans_path}")
+    if len({s['span_id'] for s in spans}) != len(spans):
+        raise ValueError('input contains duplicate span IDs')
+    if cfg['spans_per_call'] < 1 or cfg['frames_per_span'] < 1:
+        raise ValueError('batch and frame counts must be positive')
+    retries = int(cfg.get('max_retries', 1))
+    if retries < 0:
+        raise ValueError('max_retries must be nonnegative')
+    # Fail missing video before loading a multi-GB model.
+    frames = SegmentFrames(config.SEGMENTS_DIR, cfg['jpeg_quality'])
+    planned = frames.plan(spans, cfg['frames_per_span'])
     engine = BACKENDS[backend]()
-
-    tasks_path = str(config.EVENTS_RECORDS).replace(".jsonl", ".episodes.json")
     task_of = {}
+    tasks_path = str(config.EVENTS_RECORDS).replace('.jsonl', '.episodes.json')
     if os.path.exists(tasks_path):
-        task_of = {t["episode"]: t.get("task") for t in json.load(open(tasks_path))}
-
-    frames = SegmentFrames(config.SEGMENTS_DIR, cfg["jpeg_quality"])
-    planned = frames.plan(spans, cfg["frames_per_span"])
-    print(f"frame plan: {sum(planned.values())} distinct frames across "
-          f"{len(planned)} segments "
-          f"(vs decoding every frame of each segment, which held 8.2 GB)")
-
-    by_segment: dict[str, list] = {}
-    for s in spans:
-        by_segment.setdefault(s["segment"], []).append(s)
-
-    captions, usage, dropped, t_start = [], [], 0, time.time()
-    for segment, group in by_segment.items():
-        group.sort(key=lambda x: x["start_ts"])
-        context = []
-        for i in range(0, len(group), cfg["spans_per_call"]):
-            batch = group[i:i + cfg["spans_per_call"]]
-            task = task_of.get(batch[0]["episode"])
-            pack = DM.pack_for(task, batch[0]["segment"], batch[0]["cls"])
-            parts = build_user(batch, context, task, frames, cfg)
-            try:
-                got, u = engine(system_prompt(pack, cfg["frames_per_span"]),
-                                parts, batch)
-            except Exception as e:
-                print(f"  CALL FAILED {segment}: {type(e).__name__}: {e}", flush=True)
-                dropped += len(batch)
-                continue
-            usage.append(u)
-            by_id = {s["span_id"]: s for s in batch}
-            if len(got) != len(batch):
-                dropped += len(batch) - len(got)
-                if os.environ.get("CAP_DEBUG"):
-                    print(f"    DEBUG got={len(got)} want={len(batch)} "
-                          f"raw={(getattr(engine, 'last_raw', '') or '')[:260]!r}",
-                          flush=True)
-            for obj in got:
-                span = by_id.get(obj.get("span_id"))
-                if not span:
-                    continue
-                captions.append(dict(
-                    span_id=span["span_id"], segment=span["segment"],
-                    episode=span["episode"], cls=span["cls"], pack=pack,
-                    # pose-derived, authoritative
-                    start_ts=span["start_ts"], end_ts=span["end_ts"],
-                    hand=span["hand"], rotation=span.get("rotation"),
-                    fingers=span.get("fingers"), ap_trend=span.get("ap_trend"),
-                    aperture_mm=span.get("aperture_mm"),
-                    wrist_speed=span.get("wrist_speed"),
-                    # model-produced
-                    text=obj.get("text", ""),
-                    verb=(obj.get("verb") or "").lower(),
-                    noun=(obj.get("noun") or "").lower(),
-                    visibility=(obj.get("visibility") or "FULL").upper(),
-                    uncertain=bool(obj.get("uncertain")),
-                    backend=engine.name))
-                if obj.get("text"):
-                    context.append(obj)
-            print(f"  {segment:<14s} [{pack}] spans {i:3d}-{i + len(batch) - 1:3d} "
-                  f"-> {len(got):2d} captions  "
-                  f"({', '.join(f'{k}={v}' for k, v in list(u.items())[:3])})",
-                  flush=True)
-        frames.release(segment)
-
-    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
-    with open(out, "w") as fh:
-        for c in captions:
-            fh.write(json.dumps(c) + "\n")
-
+        task_of = {t['episode']: t.get('task') for t in json.load(open(tasks_path))}
+    by_segment = {}
+    for span in spans:
+        by_segment.setdefault(span['segment'], []).append(span)
+    captions, attempts = [], []
+    t_start = time.time()
+    os.makedirs(os.path.dirname(out) or '.', exist_ok=True)
+    # Checkpoint each completed batch so a late model failure does not lose work.
+    with open(out, 'w') as output:
+        for segment, group in by_segment.items():
+            group.sort(key=lambda s: s['start_ts'])
+            context = []
+            for i in range(0, len(group), cfg['spans_per_call']):
+                batch = group[i:i + cfg['spans_per_call']]
+                task = task_of.get(batch[0]['episode'])
+                pack = DM.pack_for(task, segment, batch[0]['cls'])
+                pending, best, feedback = batch, {}, {}
+                for attempt in range(retries + 1):
+                    if not pending:
+                        break
+                    parts = build_user(pending, context, task, frames, cfg)
+                    if feedback:
+                        parts.append(('text', 'Correct the following validation failures. '
+                                      'Keep the same span IDs, describe these images, and do not '
+                                      'invent details or mark uncertainty just to pass a rule.\n'
+                                      + "\n".join(
+                                          f"Span {sid}: {'; '.join(item['errors'])}. "
+                                          f"Previous rejected reply: {json.dumps(item['previous'])}"
+                                          for sid, item in feedback.items())
+                                      + '\nReturn revised flat JSON objects with span_id, text, '
+                                      'verb, noun, visibility, uncertain. Do not wrap them in a map.'))
+                        parts.append(('text', 'For a length error, target 11 to 13 words using '
+                                      'visible object details, location, or the measured acting hand. '
+                                      'For multiple actions, retain only the main visible action. '
+                                      'Do not use uncertainty to bypass a length error.'))
+                    record = dict(segment=segment, attempt=attempt,
+                                  requested=[s['span_id'] for s in pending])
+                    try:
+                        got, usage = engine(system_prompt(pack, cfg['frames_per_span']), parts, pending)
+                        # Enforce unique binding even for custom backends.
+                        got = parse_objects('\n'.join(json.dumps(o) for o in got), pending)
+                        record.update(usage=usage, raw=getattr(engine, 'last_raw', None))
+                    except Exception as exc:
+                        got = []
+                        record['error'] = f'{type(exc).__name__}: {exc}'
+                        print('CALL FAILED', record['error'], flush=True)
+                    by_id = {o['span_id']: o for o in got}
+                    feedback, remaining = {}, []
+                    for span in pending:
+                        sid = span['span_id']
+                        obj = by_id.get(sid)
+                        errors = ['missing or ambiguous reply']
+                        if obj is not None:
+                            try:
+                                label = _label(obj, span, pack, engine.name)
+                                errors = _errors(label)
+                                label.update(validation_errors=errors, caption_attempt=attempt)
+                                # Preserve a better earlier candidate if a repair regresses.
+                                if sid not in best or len(errors) < len(best[sid]['validation_errors']):
+                                    best[sid] = label
+                            except ValueError as exc:
+                                errors = [str(exc)]
+                        if sid not in best or best[sid]['validation_errors']:
+                            remaining.append(span)
+                            feedback[sid] = dict(errors=errors, previous=obj)
+                    record['remaining'] = [s['span_id'] for s in remaining]
+                    attempts.append(record)
+                    pending = remaining
+                for span in batch:
+                    label = best.get(span['span_id'])
+                    if label is not None:
+                        captions.append(label)
+                        output.write(json.dumps(label, allow_nan=False) + '\n')
+                        if not label['validation_errors']:
+                            context.append(label)
+                output.flush()
+                print(f'{segment}: batch {i}, {len(best)}/{len(batch)} captioned, '
+                      f'{len(pending)} unresolved', flush=True)
+            frames.release(segment)
     elapsed = time.time() - t_start
-    video = sum(s["duration"] for s in spans)
-    print(f"\n{len(captions)} captions from {len(spans)} spans in {elapsed:.0f}s"
-          + (f"  ({dropped} spans unparsed)" if dropped else ""))
-    print(f"  throughput: {len(captions) / max(elapsed, 1e-9):.2f} spans/s  |  "
-          f"{video / max(elapsed, 1e-9):.1f}x realtime "
-          f"({video:.0f}s video in {elapsed:.0f}s)")
-    print(f"  frame store peak {frames.bytes_peak / 1e6:.1f} MB "
-          f"({sum(planned.values())} JPEG frames; the old raw-frame cache held 8.2 GB)")
-    if usage and "input_tokens" in usage[0]:
-        print(f"  mean tokens/call: in "
-              f"{np.mean([u.get('input_tokens', 0) for u in usage]):.0f}  out "
-              f"{np.mean([u.get('output_tokens', 0) for u in usage]):.0f}")
-    print("  wrote", out)
+    covered = {c['span_id'] for c in captions}
+    report = dict(requested=len(spans), captioned=len(captions),
+                  valid=sum(not c['validation_errors'] for c in captions),
+                  missing_span_ids=[s['span_id'] for s in spans if s['span_id'] not in covered],
+                  coverage=len(captions) / len(spans), elapsed_s=elapsed,
+                  frame_store_peak_bytes=frames.bytes_peak, planned_frames=sum(planned.values()),
+                  config=cfg, attempts=attempts)
+    with open(out + '.run.json', 'w') as fh:
+        json.dump(report, fh, indent=2, allow_nan=False)
+    print(f"{len(captions)}/{len(spans)} captions; {report['valid']} valid; "
+          f"{elapsed:.1f}s; wrote {out}")
+    if not captions:
+        raise RuntimeError(f'all caption calls failed; see {out}.run.json')
     return captions
