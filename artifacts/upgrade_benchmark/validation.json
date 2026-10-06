@@ -1,0 +1,56 @@
+{
+  "tests": {
+    "passed": 193,
+    "skipped": 12,
+    "environment": "configured GPU server"
+  },
+  "hot3d": {
+    "requested_spans": 22,
+    "captions": 22,
+    "missing": 0,
+    "annotations_with_findings": 3,
+    "verified_annotations": 0,
+    "finding_counts": {
+      "annotation_rule": 3
+    }
+  },
+  "rgb": {
+    "requested_spans": 26,
+    "captions": 26,
+    "missing": 0,
+    "annotations_with_findings": 23,
+    "verified_annotations": 26,
+    "finding_counts": {
+      "annotation_rule": 14,
+      "visual_contradicted": 31,
+      "visual_unknown": 19,
+      "uncertain_annotation": 1
+    }
+  },
+  "injected_action_object_errors": {
+    "tested": 2,
+    "flagged": 2,
+    "limitation": "Obvious synthetic faults; not a calibrated sensitivity benchmark."
+  },
+  "quality": {
+    "clip_seconds": 24.000000333333336,
+    "windows": 3,
+    "assessed_dimensions_per_window": 11,
+    "observations": 33,
+    "sampled_frames": 36,
+    "unavailable_dimensions": {
+      "instruction_compliance": "No task supplied; cannot judge this requirement.",
+      "task_success": "No final_state supplied; cannot judge this requirement.",
+      "action_correctness": "No required_steps supplied; cannot judge this requirement.",
+      "privacy_safety": "No collection_rules supplied; cannot judge this requirement."
+    },
+    "attempts": 13,
+    "retries": 3,
+    "replayed_source_matched_replies": 10
+  },
+  "limitations": [
+    "Annotation findings mix formatting errors, uncertainty and unverified model disagreements.",
+    "No human-labeled semantic-accuracy improvement has been measured.",
+    "Original labels are preserved; a correction queue is written separately."
+  ]
+}

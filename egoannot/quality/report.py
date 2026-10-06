@@ -66,6 +66,11 @@ def write_reports(data, out):
                 md.append('  Wording caveat: ' + ' '.join(obs['claim_caveats']))
         for dim, why in clip.get('visual', {}).get('unavailable', {}).items():
             md.append(f'- {dim}: {why}')
+        windows = clip.get('visual', {}).get('windows', [])
+        if windows:
+            md.append(f'- Visual windows: {len(windows)}; windows with unavailable analysis: '
+                      f'{sum(bool(w["unavailable"]) for w in windows)}. '
+                      'Window coverage is sampled analysis, not continuous event detection.')
         md.append('')
     md += ['## Interpretation limits', '', *['- ' + x for x in data['protocol']['limitations']]]
     md += ['', '## Dataset diversity', '']
@@ -132,6 +137,7 @@ function render(){const root=document.querySelector('#clips');root.replaceChildr
  video.onerror=()=>el('p','Preview unavailable in this browser. Open the source video in a compatible player.',player);
  const findings=el('div',undefined,body),v=c.visual;
  el('small',v?'Visual samples at '+v.sample_timestamps_s.map(t=>t.toFixed(2)).join(', ')+' s':'Visual model not run.',findings);
+ if(v?.windows){el('p','Visual windows: '+v.windows.length+' · Windows with missing analysis: '+v.windows.filter(w=>Object.keys(w.unavailable).length).length,findings);}
  if(focus.value==='all'||focus.value==='measured'){
   for(const o of c.observations){const f=el('div',undefined,findings);f.className='finding';el('strong',o.kind.replaceAll('_',' ')+' · '+o.source,f);el('p',o.description,f);seek(f,video,o.intervals_s);}
   if(!c.observations.length)el('p','No candidates under the configured measured thresholds. See visual findings and limits.',findings);

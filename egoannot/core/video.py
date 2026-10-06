@@ -15,6 +15,9 @@ about 15 MB for the same work, a ~500x reduction.
 from __future__ import annotations
 
 import os
+import math
+import hashlib
+import json
 import subprocess
 import tempfile
 
@@ -85,6 +88,8 @@ class SegmentFrames:
         self._wanted: dict[str, set[int]] = {}
         self._frames: dict[str, dict[int, bytes]] = {}
         self._fps: dict[str, float] = {}
+        self._counts: dict[str, int] = {}
+        self._sources = {}
         self.bytes_held = 0
         self.bytes_peak = 0
 
@@ -101,14 +106,49 @@ class SegmentFrames:
                     f"no rendered clip for segment {segment!r} at {path} - run "
                     f"`python -m egoannot segments render --only {segment}`")
             cap = cv2.VideoCapture(path)
-            self._fps[segment] = float(cap.get(cv2.CAP_PROP_FPS) or 30.0)
+            fps = float(cap.get(cv2.CAP_PROP_FPS))
+            count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            opened = cap.isOpened()
             cap.release()
+            if not opened or not math.isfinite(fps) or fps <= 0 or count <= 0:
+                raise ValueError(f'unreadable video or invalid FPS/frame count: {path}')
+            # This sampler indexes by nominal FPS. Refuse VFR or broken timing
+            # rather than pairing an action with a different instant.
+            result = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0',
+                                     '-show_frames', '-show_entries', 'frame=best_effort_timestamp_time',
+                                     '-of', 'json', path], capture_output=True, text=True)
+            if result.returncode or result.stderr.strip():
+                raise ValueError(f'video probe reported corruption: {path}')
+            pts = [float(f.get('best_effort_timestamp_time', 'nan'))
+                   for f in json.loads(result.stdout).get('frames', [])]
+            if (len(pts) != count or not all(math.isfinite(t) for t in pts)
+                    or any(abs((t - pts[0]) - i / fps) > .002 for i, t in enumerate(pts))):
+                raise ValueError(f'frame-index sampler requires complete constant-rate timestamps: {path}')
+            self._fps[segment] = fps
+            self._counts[segment] = count
         return self._fps[segment]
+
+    def provenance(self, segment):
+        if segment not in self._sources:
+            self._probe_fps(segment)
+            with open(self.path_for(segment), 'rb') as fh:
+                digest = hashlib.file_digest(fh, 'sha256').hexdigest()
+            self._sources[segment] = dict(sha256=digest, fps=self._fps[segment],
+                                         frame_count=self._counts[segment])
+        return self._sources[segment]
 
     def indices_for(self, segment: str, v_start: float, v_end: float, n: int) -> list[int]:
         """The frame indices this span samples: n evenly spaced, span-local times."""
         fps = self._probe_fps(segment)
-        lo, hi = v_start * fps, max(v_start * fps, v_end * fps - 1)
+        if (type(n) is not int or n < 1 or
+            any(type(t) not in (int, float) or not math.isfinite(t) for t in (v_start, v_end)) or
+            not 0 <= v_start < v_end):
+            raise ValueError('sampling requires finite, ordered nonnegative times and a positive frame count')
+        if segment in self._counts and v_end > self._counts[segment] / fps + .001:
+            raise ValueError(f'span ends beyond video duration: {segment} at {v_end}s')
+        lo, hi = math.ceil(v_start * fps - 1e-7), math.ceil(v_end * fps - 1e-7) - 1
+        if lo > hi:
+            raise ValueError(f'span contains no video frame: {segment}')
         return sorted({int(round(x)) for x in np.linspace(lo, hi, n)})
 
     def plan(self, spans, n_per_span: int) -> dict[str, int]:

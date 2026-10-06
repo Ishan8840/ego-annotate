@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "clip-000000": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000000.mp4",
+      "sha256": "66a97a0beea6c27a64693745b73b181ec63de70886bde0b14e05b93e640d6bb0",
+      "duration_s": 5.0
+    },
+    "clip-000001": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000001.mp4",
+      "sha256": "f55e25b2af6d0ceb0f5736f8118b27211fb8ff871df41a4fe8015624c1076fb4",
+      "duration_s": 5.0
+    },
+    "clip-000006": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000006.mp4",
+      "sha256": "1c91fabd11b0799e0aa09fab01ab007f27024d8a0768a65d34e2ba7f7cde56e8",
+      "duration_s": 5.0
+    },
+    "clip-000007": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000007.mp4",
+      "sha256": "3b530432a3e12ae496c5a33e4826af7d9f93e3dbfd64bf803eac57b7bcce0af9",
+      "duration_s": 5.0
+    },
+    "clip-000008": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000008.mp4",
+      "sha256": "25bfe34c2497f4e3aa65cbed5e4dada6cf6dccf8febd2daf541f621d53b7b756",
+      "duration_s": 5.0
+    },
+    "clip-000100": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000100.mp4",
+      "sha256": "c241c53b2bb15207818f76dffe49ab5d527a76afb321b2529632bcfd1a64e5db",
+      "duration_s": 5.0
+    },
+    "clip-000200": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000200.mp4",
+      "sha256": "e165cd6f27a5e02da88b40c09a8b459f5c73cf93868e273a8533bc625d5c2170",
+      "duration_s": 5.0
+    },
+    "clip-000500": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000500.mp4",
+      "sha256": "7921af7ee1f0f0426345d1a710fd92394c8138735691c63f90cb534fafafe587",
+      "duration_s": 5.0
+    },
+    "clip-000700": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-000700.mp4",
+      "sha256": "c641d9f8cc316eea2b34a28f3095045b948839e3c5a4146db3a17126471b7ce1",
+      "duration_s": 5.0
+    },
+    "clip-001000": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-001000.mp4",
+      "sha256": "e1a575c74eebfd5c2efc03df68d2bc338be706c138569ce8f45764b30c4167f4",
+      "duration_s": 5.0
+    },
+    "clip-001100": {
+      "path": "/workspace/ego-annotate/artifacts/hot3d/corpus_full/segments/clip-001100.mp4",
+      "sha256": "ed3a532f49b60119371ebe6eb04fc79efd9f6310b75b8f1857dbe8d8bbd9f289",
+      "duration_s": 5.0
+    }
+  },
+  "input_issues": [],
+  "annotations": [
+    {
+      "span_id": "clip-000000#000.000",
+      "text": "Grasp the white plastic spoon lying on the table with the right hand",
+      "source_interval_s": [
+        0.0,
+        2.967
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000000#002.967",
+      "text": "Rotate the wooden spoon clockwise with both hands above the table",
+      "source_interval_s": [
+        2.967,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000001#000.000",
+      "text": "Place the remote control on the dark table with the right hand",
+      "source_interval_s": [
+        0.0,
+        2.067
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000001#002.067",
+      "text": "Grasp the white bottle with both hands and twist the cap counter-clockwise",
+      "source_interval_s": [
+        2.067,
+        5.0
+      ],
+      "issues": [
+        {
+          "code": "annotation_rule",
+          "detail": "A3: 2 verb cores in text: grasp+twist"
+        }
+      ],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000006#000.000",
+      "text": "Grasp the keyboard on the desk with both hands using the right index finger",
+      "source_interval_s": [
+        0.0,
+        1.967
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000006#001.967",
+      "text": "Release the keyboard on the desk with the right hand",
+      "source_interval_s": [
+        1.967,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000007#000.000",
+      "text": "Type on the keyboard with both hands while seated at the desk",
+      "source_interval_s": [
+        0.0,
+        3.033
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000007#003.033",
+      "text": "Release the mouse with the right hand after using it on the desk",
+      "source_interval_s": [
+        3.033,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000008#000.000",
+      "text": "Type on the keyboard with both hands while holding the mouse with the right hand",
+      "source_interval_s": [
+        0.0,
+        3.133
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000008#003.133",
+      "text": "Type on the keyboard with both hands while holding the mouse with the right hand",
+      "source_interval_s": [
+        3.133,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000100#000.000",
+      "text": "Grasp the carton of orange juice on the round table with the right hand",
+      "source_interval_s": [
+        0.0,
+        2.233
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000100#002.233",
+      "text": "Rotate the carton of orange juice clockwise with both hands",
+      "source_interval_s": [
+        2.233,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000200#000.000",
+      "text": "Grasp the dark-handled potato masher above the wooden bowl with the left hand",
+      "source_interval_s": [
+        0.0,
+        3.033
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000200#003.033",
+      "text": "Withdraw the potato masher from the wooden bowl with the left hand",
+      "source_interval_s": [
+        3.033,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000500#000.000",
+      "text": "Grasp the wooden bowl with both hands and lift it upward",
+      "source_interval_s": [
+        0.0,
+        2.633
+      ],
+      "issues": [
+        {
+          "code": "annotation_rule",
+          "detail": "A3: 2 verb cores in text: grasp+lift"
+        }
+      ],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000500#002.633",
+      "text": "Lift the wooden bowl higher with both hands toward the camera",
+      "source_interval_s": [
+        2.633,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000700#000.000",
+      "text": "Pinch the dark rectangular object with both hands while fingers close",
+      "source_interval_s": [
+        0.0,
+        2.233
+      ],
+      "issues": [
+        {
+          "code": "annotation_rule",
+          "detail": "A3: 2 verb cores in text: close+pinch"
+        }
+      ],
+      "verification": null
+    },
+    {
+      "span_id": "clip-000700#002.233",
+      "text": "Release the dark rectangular object with both hands toward the table",
+      "source_interval_s": [
+        2.233,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-001000#000.000",
+      "text": "Grasp the rectangular milk carton with both hands on the wooden table",
+      "source_interval_s": [
+        0.0,
+        2.167
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-001000#002.167",
+      "text": "Rotate the milk carton counter-clockwise with both hands over the cup",
+      "source_interval_s": [
+        2.167,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-001100#000.000",
+      "text": "Steady the keyboard on the wooden desk with both hands",
+      "source_interval_s": [
+        0.0,
+        3.333
+      ],
+      "issues": [],
+      "verification": null
+    },
+    {
+      "span_id": "clip-001100#003.333",
+      "text": "Type on the keyboard with both hands on the wooden desk",
+      "source_interval_s": [
+        3.333,
+        5.0
+      ],
+      "issues": [],
+      "verification": null
+    }
+  ],
+  "correction_queue": [
+    {
+      "span_id": "clip-000001#002.067",
+      "issues": [
+        {
+          "code": "annotation_rule",
+          "detail": "A3: 2 verb cores in text: grasp+twist"
+        }
+      ]
+    },
+    {
+      "span_id": "clip-000500#000.000",
+      "issues": [
+        {
+          "code": "annotation_rule",
+          "detail": "A3: 2 verb cores in text: grasp+lift"
+        }
+      ]
+    },
+    {
+      "span_id": "clip-000700#000.000",
+      "issues": [
+        {
+          "code": "annotation_rule",
+          "detail": "A3: 2 verb cores in text: close+pinch"
+        }
+      ]
+    }
+  ],
+  "model": null,
+  "visual_backend": "none",
+  "limitations": [
+    "Verification is a model second opinion, not ground truth or calibrated accuracy.",
+    "Sampled stills may miss brief events; a second call to the same model can repeat its mistakes.",
+    "Source hashes bind this audit to current files; detecting an earlier source replacement requires the earlier hashes."
+  ],
+  "missing_span_ids": [],
+  "summary": {
+    "requested_spans": 22,
+    "captions": 22,
+    "missing": 0,
+    "annotations_with_findings": 3,
+    "verified_annotations": 0,
+    "finding_counts": {
+      "annotation_rule": 3
+    }
+  }
+}

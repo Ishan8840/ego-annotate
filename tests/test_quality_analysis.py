@@ -157,7 +157,7 @@ def test_supplied_task_enables_semantic_comparison(videos):
                 result = {key: 'visible example' for key in DIVERSITY_FIELDS}
             else:
                 requested = json.loads(parts[0][1].split('Requested dimensions: ')[1].split('\nTask/collection')[0])
-                result = {'observations': [row(dimension=key, concerns=[]) for key in requested]}
+                result = {'observations': [row(dimension=key, concerns=[], evidence_s=[[0, 0]]) for key in requested]}
             self.last_raw = json.dumps(result)
             return [], {}
     result = describe_video(measure_video(path), Model(), dict(task='Move cup', final_state='Cup on table',
@@ -192,3 +192,80 @@ def test_exact_repeated_content_detected_across_intervening_frames(videos):
     result = measure_video(path)
     assert result['candidate_frame_fractions']['identical_adjacent_frames'] == 0
     assert result['candidate_frame_fractions']['repeated_nonadjacent_frames'] == .5
+
+
+def test_visual_evidence_cannot_cite_unsampled_times():
+    with pytest.raises(ValueError, match='sample timestamps'):
+        parse_visual(json.dumps({'observations': [row(evidence_s=[[.4, .4]])]}),
+                     ['hand_visibility'], 2, [0., 1.])
+
+
+def test_windowed_analysis_preserves_late_events_and_partial_failure(videos):
+    from egoannot.quality.analysis import DIVERSITY_FIELDS, summarize
+    path = videos('long', [np.full((80, 120, 3), 100, np.uint8)] * 180)
+    clip = measure_video(path)
+    class Model:
+        def __call__(self, system, parts, _):
+            if 'inventory' in parts[0][1]:
+                result = {k: None for k in DIVERSITY_FIELDS}
+            else:
+                requested = json.loads(parts[0][1].split('Requested dimensions: ')[1].split('\nTask/collection')[0])
+                t = float(next(v.split()[2] for k, v in parts if k == 'text' and v.startswith('Frame at ')))
+                if 8 <= t < 16:
+                    raise RuntimeError('simulated model outage')
+                result = {'observations': [row(dimension=k, evidence_s=[[t,t]],
+                    concerns=['late event'] if t >= 16 else []) for k in requested]}
+            self.last_raw = json.dumps(result)
+            return [], {}
+    clip['visual'] = describe_video(clip, Model())
+    visual = clip['visual']
+    assert len(visual['windows']) == 3
+    assert max(visual['sample_timestamps_s']) > 17
+    assert visual['windows'][1]['unavailable']
+    result = summarize([clip], [], {})['visual_dimensions']['hand_visibility']
+    assert result['analyzed_clips'] == result['clips_with_model_concerns'] == 1
+    assert result['analyzed_windows'] == 2
+    assert len(result['unavailable']) == 1
+
+
+def test_short_flash_gets_an_extra_sample(videos):
+    from egoannot.quality.analysis import visual_frames
+    path = videos('flash', [np.full((80, 120, 3), 0 if i == 3 else 100, np.uint8) for i in range(80)])
+    _, times = visual_frames(path, 8, extra_times=[.3])
+    assert .3 in times
+    assert len(times) > 12
+
+
+@pytest.mark.parametrize('spec', [
+    {'expected_video': {'fpps': 30}}, {'expected_video': {'fps': float('nan')}},
+    {'expected_video': {'width': True}}, {'required_steps': 'do it'},
+    {'clips': {'typo': {'task': 'move'}}}, {'finalstate': 'done'},
+])
+def test_bad_collection_spec_is_not_silently_ignored(spec):
+    from egoannot.quality.analysis import validate_spec
+    with pytest.raises(ValueError):
+        validate_spec(spec, ['actual'])
+
+
+def test_quality_retries_bad_evidence_and_ignores_rounded_empty_tail(videos):
+    from egoannot.quality.analysis import DIVERSITY_FIELDS
+    path = videos('rounded', [np.full((80, 120, 3), 100, np.uint8)] * 80)
+    clip = measure_video(path)
+    clip['duration_s'] = 8.0000003333
+    class Model:
+        def __call__(self, system, parts, _):
+            prompt = parts[0][1]
+            if 'inventory' in prompt:
+                result = {k: None for k in DIVERSITY_FIELDS}
+            else:
+                keys = json.loads(prompt.split('Requested dimensions: ')[1].split('\nTask/collection')[0])
+                t = 0 if 'previous reply failed' in prompt else 8
+                result = {'observations': [row(dimension=k, evidence_s=[[t,t]]) for k in keys]}
+            self.last_raw = json.dumps(result)
+            return [], {}
+    visual = describe_video(clip, Model())
+    assert len(visual['windows']) == 1
+    assert len(visual['observations']) == 11
+    assert len([c for c in visual['calls'] if c.get('attempt') == 1]) == 3
+    assert not visual['windows'][0]['unavailable']
+    assert len([c for c in visual['calls'] if c.get('error')]) == 3

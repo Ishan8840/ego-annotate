@@ -108,7 +108,8 @@ def main():
                         if not isinstance(hand,str):
                             raise ValueError('hand must be a string')
                         label = caption._label(obj, dict(row, hand=hand.upper()), pack, engine.name)
-                        label.update(hand_source='vlm_prediction', boundary_signal='rgb_flow', caption_attempt=attempt)
+                        label.update(hand_source='vlm_prediction', boundary_signal='rgb_flow', caption_attempt=attempt,
+                                     source_video_sha256=source['sha256'])
                         label['validation_errors'] = caption._errors(label)
                         old = best.get(row['span_id'])
                         if old is None or len(label['validation_errors']) < len(old['validation_errors']):

@@ -1,0 +1,40 @@
+{
+  "requested": 2,
+  "captioned": 2,
+  "valid": 2,
+  "missing_span_ids": [],
+  "coverage": 1.0,
+  "elapsed_s": 0.24484825134277344,
+  "frame_store_peak_bytes": 499807,
+  "planned_frames": 8,
+  "config": {
+    "max_retries": 1,
+    "frames_per_span": 4,
+    "spans_per_call": 5,
+    "context_n": 4,
+    "context_mode": "sequential",
+    "free_text": false,
+    "jpeg_quality": 80,
+    "anthropic_model": "claude-opus-5",
+    "openai_base": "http://127.0.0.1:8000/v1",
+    "openai_model": "Qwen/Qwen2.5-VL-7B-Instruct",
+    "qwen_model": "Qwen/Qwen3-VL-8B-Instruct",
+    "temperature": 0.4,
+    "greedy": false
+  },
+  "attempts": [
+    {
+      "segment": "clip-000000",
+      "attempt": 0,
+      "requested": [
+        "clip-000000#000.000",
+        "clip-000000#002.967"
+      ],
+      "usage": {
+        "stub": true
+      },
+      "raw": "{\"start_ts\": 0.0, \"end_ts\": 2.0, \"hand\": \"RIGHT\", \"text\": \"Grasp the cardboard box on the shelf with the right hand\", \"verb\": \"grasp\", \"noun\": \"cardboard box\", \"visibility\": \"FULL\"}\n{\"start_ts\": 2.0, \"end_ts\": 4.0, \"hand\": \"RIGHT\", \"text\": \"Grasp the cardboard box on the shelf with the right hand\", \"verb\": \"grasp\", \"noun\": \"cardboard box\", \"visibility\": \"FULL\"}\n{\"start_ts\": 4.0, \"end_ts\": 6.0, \"hand\": \"RIGHT\", \"text\": \"Grasp the cardboard box on the shelf with the right hand\", \"verb\": \"grasp\", \"noun\": \"cardboard box\", \"visibility\": \"FULL\"}",
+      "remaining": []
+    }
+  ]
+}

@@ -74,6 +74,8 @@ def build_parser():
     qa.add_argument("--spec", default=None, help="JSON task instructions, collection rules and expected video properties")
     qa.add_argument("--visual", choices=["none", "qwen-local"], default="none")
     qa.add_argument("--model", default=None, help="local Qwen model path or model ID")
+    qa.add_argument("--window-seconds", type=float, default=8,
+                    help="consecutive visual-analysis window length (default: 8s)")
 
     # -- events --------------------------------------------------------
     e = sub.add_parser("events", help="contact/release events and actionness")
@@ -200,6 +202,13 @@ def build_parser():
     cr.add_argument("--limit", type=int, default=None)
     cp = cs.add_parser("prompt", help="print the system prompt for a domain pack")
     cp.add_argument("--pack", default="retail_shelf")
+    ca = cs.add_parser("audit", help="audit source binding and optionally verify visible caption claims")
+    ca.add_argument("captions")
+    ca.add_argument("--spans", required=True)
+    ca.add_argument("--segments", required=True, help="directory containing source segment MP4s")
+    ca.add_argument("--out", required=True)
+    ca.add_argument("--visual", choices=["none", "qwen-local"], default="none")
+    ca.add_argument("--model", default=None)
 
     # -- score ---------------------------------------------------------
     b = sub.add_parser("baseline",
@@ -287,7 +296,7 @@ def main(argv=None):
     if stage == "quality":
         if args.cmd == "analyze":
             from .quality.analysis import analyze
-            analyze(args.inputs, args.out, args.spec, args.visual, args.model)
+            analyze(args.inputs, args.out, args.spec, args.visual, args.model, args.window_seconds)
             return 0
         from .stages import quality
         if args.cmd == "measure":
@@ -376,6 +385,11 @@ def main(argv=None):
 
     if stage == "caption":
         from .stages import caption
+        if args.cmd == "audit":
+            from .quality.annotations import audit
+            result = audit(args.captions, args.spans, args.segments, args.out, args.visual, args.model)
+            print(json.dumps(result['summary'], indent=2))
+            return 0
         if args.cmd == "prompt":
             print(caption.system_prompt(args.pack))
         else:

@@ -19,7 +19,7 @@ python -m egoannot quality analyze /path/to/videos --out artifacts/quality \
   --spec quality-spec.json --visual qwen-local
 ```
 
-Inputs can be explicit video files, a directory of MP4 files, or the prepared
+Inputs can be explicit video files, a directory of MP4/MOV/MKV/AVI/WebM/M4V files (case insensitive), or the prepared
 HOT3D corpus directory. Analyze the native capture export if you want to assess
 capture quality: resized/re-encoded imports describe the quality of those
 derivatives, not necessarily their originals. Video basenames must be unique.
@@ -59,12 +59,21 @@ can still analyze files that ffmpeg/OpenCV can decode.
 | Duplicates | File SHA-256, decoded-frame hashes, aligned perceptual-hash comparisons | Near matches are candidates. Partial overlaps, crops, time shifts and speed changes can be missed. Low-texture near matches are deliberately excluded. |
 | Diversity | Source sequence/participant counts, resolution/FPS/luminance distributions, supplied labels and sampled model descriptions for all seven requested dimensions | Description wording is not an identity label. Sufficiency requires a target distribution and broader sample. |
 
-The visual model sees up to 12 timestamped images per clip, targeting 2 FPS and
-including the start and end. On long clips the cap increases sampling gaps; the
-exact timestamps appear in every clip report. Confidence is a subjective model
-label, not a calibrated probability. Invalid/missing responses are retained as
-unavailable analysis rather than favorable findings. Concern counts are counts
-of clips where the model expressed a concern, not verified dataset defect rates.
+The visual model checks consecutive eight-second windows (`--window-seconds`
+changes this). Each window uses up to 12 uniformly distributed frames and up to
+eight extra frames at measured anomaly onsets. The exact decoded presentation
+timestamps are retained; model evidence must cite those samples. Nonmonotonic or
+missing timestamps make visual evidence unavailable rather than fabricating a
+nominal timestamp. Diversity uses a separate whole-clip sample.
+
+Malformed visual replies get one retry with the exact allowed evidence timestamps; both attempts remain in the report. Empty windows caused by container rounding are omitted. Reports record successful and failed windows separately. Clip counts remain
+unique even when several windows raise concerns. The event-sampling cap is
+recorded explicitly: some brief events can still fall between samples. Confidence
+is subjective, and concern counts are not verified defect prevalence. Longer
+videos now require proportionally more inference calls.
+
+Specification typos, unknown clip IDs, invalid expected dimensions/FPS, and
+malformed task-step lists are rejected before loading the visual model.
 
 ## Optional specification
 
@@ -128,3 +137,57 @@ See the [saved summary](../artifacts/hot3d_benchmark/quality_summary.md) and
 report is served at `http://localhost:18081/quality/` while the SSH tunnel from
 the HOT3D setup is active. These findings apply only to this small analyzed
 sample, not to the whole HOT3D dataset.
+
+## Annotation verification and correction queue
+
+```sh
+python -m egoannot caption audit artifacts/captions.jsonl \
+  --spans artifacts/spans.jsonl --segments artifacts/segments \
+  --out artifacts/annotation-audit
+
+# Optional local visual second opinion, up to 16 images per annotation:
+CAPTION_GREEDY=1 python -m egoannot caption audit artifacts/captions.jsonl \
+  --spans artifacts/spans.jsonl --segments artifacts/segments \
+  --out artifacts/annotation-audit --visual qwen-local --model /path/to/model
+```
+
+The audit checks missing/duplicate IDs, source binding, timebase consistency,
+interval overlap, invalid timestamps, duration mismatches, source video bounds,
+format errors, uncertainty, and potential acting-hand contradictions. New caption
+runs attach source video hashes; the audit detects a changed source when a prior
+hash is present. Older labels without hashes cannot establish historical identity.
+
+The optional verifier checks action, object, acting hand, visibility, and specific
+visual details. Every supported/contradicted judgment must cite sampled frames;
+unknown judgments and failed model calls remain explicit. It is a separate call,
+not an independent model by default; correlated mistakes remain possible. This
+has not been calibrated against a human-labeled accuracy benchmark.
+
+`audit.json` preserves raw verification replies and source hashes;
+`corrections.jsonl` lists labels needing attention; `summary.md` describes the
+findings. Original annotations are never overwritten or automatically removed.
+Use the queue to correct confirmed issues, then audit the revised labels. This
+is distinct from the descriptive video quality report: it has no dataset
+PASS/FAIL/REVIEW label.
+
+Caption generation now requires explicit model span IDs and a boolean uncertainty
+field; it retries ambiguous replies instead of assigning them by position.
+Uncertain captions are excluded from subsequent prompt context. The frame-index
+sampler requires constant-rate, complete presentation timestamps and refuses
+out-of-bounds spans. Convert variable-rate footage with an explicit time mapping
+before this caption path, or analyze it with the PTS-based quality sampler.
+
+## Upgrade validation
+
+Saved results are in [`artifacts/upgrade_benchmark`](../artifacts/upgrade_benchmark).
+The server suite passed 193 tests with 12 skips. Source/timing
+audits covered 22 HOT3D annotations; the RGB visual audit covered 26 annotations.
+The verifier flagged both deliberately wrong action/object captions on real
+frames. That small fault-injection check does not measure general accuracy.
+
+The 24-second RGB quality check produced 33 valid dimension/window observations
+from 36 sampled frames. Three malformed evidence replies were retried; all
+three windows then had all 11 assessable dimensions. Four dimensions remained
+unknown because task/final-state/step/collection specifications were absent.
+Source-matched model replies were reused where possible, with reuse and original
+prompts logged. Original labels and failed replies remain available in the reports.

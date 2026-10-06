@@ -191,10 +191,10 @@ def test_a_partial_reply_with_bad_ids_binds_nothing():
     assert caption.parse_objects(raw, _batch()) == []
 
 
-def test_a_full_reply_without_ids_binds_by_order():
+def test_a_full_reply_without_ids_is_not_guessed_by_order():
     raw = '{"text":"x"}\n{"text":"y"}\n{"text":"z"}'
     got = caption.parse_objects(raw, _batch())
-    assert [o["span_id"] for o in got] == ["a#0", "a#1", "a#2"]
+    assert got == []
 
 
 def test_a_partial_reply_with_good_ids_binds_only_those():
@@ -471,7 +471,7 @@ def test_caption_retries_only_failed_spans_and_records_coverage(tmp_path, monkey
         def __call__(self, system, parts, batch):
             calls.append([s['span_id'] for s in batch])
             return [dict(span_id=s['span_id'], text=good if len(calls) > 1 or s['span_id']=='a#0'
-                         else 'Grasp box', verb='grasp', noun='box', visibility='FULL')
+                         else 'Grasp box', verb='grasp', noun='box', visibility='FULL', uncertain=False)
                     for s in batch], {}
     monkeypatch.setattr(caption, 'SegmentFrames', Frames)
     monkeypatch.setitem(caption.BACKENDS, 'fake', Engine)
@@ -532,3 +532,9 @@ def test_general_prompt_does_not_seed_repeated_object_captions():
     prompt = caption.system_prompt('general_manipulation')
     assert 'Type on the laptop keyboard' not in prompt
     assert 'The verb must be one of:' in prompt and 'type' in prompt
+
+
+def test_missing_uncertainty_is_not_silently_certain():
+    with pytest.raises(ValueError, match='JSON boolean'):
+        caption._label(dict(text='Grasp box', verb='grasp', noun='box', visibility='FULL'),
+                       {}, 'retail_shelf', 'fake')

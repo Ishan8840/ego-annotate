@@ -411,3 +411,5 @@ It uses two EPIC-KITCHENS excerpts and retains the raw model output in
 [`artifacts/rgb_benchmark`](artifacts/rgb_benchmark). Build instructions and source
 credits are in [`demo/README.txt`](demo/README.txt). The final MP4 and silent
 version are generated under `artifacts/demo/`.
+
+Annotation audits now check source/time binding and can verify visible action/object claims with `caption audit --visual qwen-local`. Quality analysis examines consecutive windows and records missed analysis explicitly. See [quality analysis and annotation verification](docs/dataset-quality.md).
