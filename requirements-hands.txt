@@ -1,0 +1,6 @@
+# Install compatible torch + torchvision first; see docs/getting-started.md.
+# Deliberately does not replace an existing CUDA/PyTorch installation.
+-r requirements-quality.txt
+transformers==4.57.3
+huggingface-hub==0.36.0
+scipy==1.17.1

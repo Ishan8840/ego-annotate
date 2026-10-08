@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := help
+
 # Full build. Every target writes into artifacts/ and reads the previous stage.
 PY ?= python3
 EGO = $(PY) -m egoannot
@@ -24,3 +26,13 @@ BACKEND ?= stub
 
 clean-artifacts:
 	rm -rf artifacts/quality artifacts/events artifacts/spans artifacts/captions
+
+.PHONY: help doctor
+help:
+	@echo "Video workflows: $(PY) ego.py --help"
+	@echo "Setup check:     make doctor PY=.venv/bin/python"
+	@echo "Tests:           make test PY=.venv/bin/python"
+	@echo "Legacy corpus:   make all (see docs/pipeline.md)"
+
+doctor:
+	$(PY) ego.py doctor

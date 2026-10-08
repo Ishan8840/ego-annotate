@@ -13,7 +13,7 @@ Deliverables in artifacts/demo/:
 
 Previous monochrome HOT3D deliverables are preserved in artifacts/demo/v1-hot3d/.
 
-Visual direction: navy, cool white and ice blue; Inter Display + JetBrains Mono.
+Visual direction: forest green, warm white and lime green; Inter Display + JetBrains Mono.
 Font licenses are in demo/fonts/. The film and delivery page are unbranded.
 
 Timeline:

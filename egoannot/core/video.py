@@ -24,6 +24,16 @@ import tempfile
 import numpy as np
 
 
+def video_thread_args():
+    """Optional decoder limit; legacy defaults remain unchanged."""
+    value = os.environ.get('EGO_VIDEO_THREADS')
+    if value is None:
+        return []
+    if not value.isdecimal() or int(value) < 1:
+        raise ValueError('EGO_VIDEO_THREADS must be positive')
+    return ['-threads', value]
+
+
 def decode_stream(h264_bytes: bytes, src_fps: float, out_fps: float,
                   size: tuple[int, int] | None = None):
     """Yield grayscale frames as uint8 arrays, streamed from ffmpeg."""
@@ -43,7 +53,7 @@ def decode_stream(h264_bytes: bytes, src_fps: float, out_fps: float,
                  "-show_entries", "stream=width,height", "-of", "csv=p=0", tmp],
                 capture_output=True, text=True)
             w, h = [int(x) for x in probe.stdout.strip().split(",")[:2]]
-        cmd = ["ffmpeg", "-v", "error", "-f", "h264", "-r", str(src_fps), "-i", tmp,
+        cmd = ["ffmpeg", "-v", "error", *video_thread_args(), "-f", "h264", "-r", str(src_fps), "-i", tmp,
                "-vf", vf, "-pix_fmt", "gray", "-f", "rawvideo", "-"]
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.DEVNULL)
@@ -82,13 +92,15 @@ class SegmentFrames:
         store.release("pp_noodles")       # free a finished segment
     """
 
-    def __init__(self, segment_dir, jpeg_quality: int = 80):
+    def __init__(self, segment_dir, jpeg_quality: int = 80, probe_cache=None):
+        self.probe_cache = probe_cache
         self.dir = str(segment_dir)
         self.quality = int(jpeg_quality)
         self._wanted: dict[str, set[int]] = {}
         self._frames: dict[str, dict[int, bytes]] = {}
         self._fps: dict[str, float] = {}
         self._counts: dict[str, int] = {}
+        self._times: dict[str, list[float]] = {}
         self._sources = {}
         self.bytes_held = 0
         self.bytes_peak = 0
@@ -114,18 +126,23 @@ class SegmentFrames:
                 raise ValueError(f'unreadable video or invalid FPS/frame count: {path}')
             # This sampler indexes by nominal FPS. Refuse VFR or broken timing
             # rather than pairing an action with a different instant.
-            result = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0',
-                                     '-show_frames', '-show_entries', 'frame=best_effort_timestamp_time',
-                                     '-of', 'json', path], capture_output=True, text=True)
-            if result.returncode or result.stderr.strip():
+            if self.probe_cache is not None:
+                data, code, diagnostic = self.probe_cache.get(path)
+            else:
+                result = subprocess.run(['ffprobe', '-v', 'error', *video_thread_args(), '-select_streams', 'v:0',
+                                         '-show_frames', '-show_entries', 'frame=best_effort_timestamp_time',
+                                         '-of', 'json', path], capture_output=True, text=True)
+                data, code, diagnostic = json.loads(result.stdout), result.returncode, result.stderr
+            if code or diagnostic.strip():
                 raise ValueError(f'video probe reported corruption: {path}')
             pts = [float(f.get('best_effort_timestamp_time', 'nan'))
-                   for f in json.loads(result.stdout).get('frames', [])]
+                   for f in data.get('frames', [])]
             if (len(pts) != count or not all(math.isfinite(t) for t in pts)
                     or any(abs((t - pts[0]) - i / fps) > .002 for i, t in enumerate(pts))):
                 raise ValueError(f'frame-index sampler requires complete constant-rate timestamps: {path}')
             self._fps[segment] = fps
             self._counts[segment] = count
+            self._times[segment] = [t - pts[0] for t in pts]
         return self._fps[segment]
 
     def provenance(self, segment):

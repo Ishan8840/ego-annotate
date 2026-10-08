@@ -1,0 +1,4 @@
+# CPU video-quality workflow; existing tested dependencies, no learned model.
+# Python 3.11 or 3.12 (3.12 tested). FFmpeg/ffprobe must also be on PATH.
+numpy==1.26.4
+opencv-python-headless==4.11.0.86

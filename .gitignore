@@ -39,3 +39,14 @@ __pycache__/
 /.venv/
 /artifacts/demo/
 /artifacts/color-demo/
+
+# Public-data speed evaluation and separate optional inference environment
+/artifacts/speed/
+/.venv-vllm/
+
+# Near-real-time evaluation: source data and generated reports
+/artifacts/realtime/
+
+# New everyday pipeline runs and local environments
+/outputs/
+/.venv-*/

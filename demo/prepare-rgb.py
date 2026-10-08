@@ -56,7 +56,7 @@ data['quality'] = dict(overall_score_percent=composite['score_percent'],score_co
     hand_observation=hand,glare_observation=glare)
 (OUT / 'film-data.json').write_text(json.dumps(data, indent=2)+'\n')
 provenance = dict(
-    brand=None, revision='Unbranded blue / zucchini to quality / combined visual-quality estimate', duration_seconds=30,
+    brand=None, revision='Unbranded green / zucchini to quality / combined visual-quality estimate', duration_seconds=30,
     resolution=[1920,1080], fps=30,
     source_dataset='EPIC-KITCHENS', original_video='P01_01.MP4',
     source_url='https://data.bris.ac.uk/datasets/3h91syskeag572hl6tvuovwv4d/videos/train/P01/P01_01.MP4',
@@ -75,7 +75,7 @@ provenance = dict(
     quality_source=str(quality_path.relative_to(ROOT)),
     quality_claims=data['quality'],
     composite_source=str(composite_path.relative_to(ROOT)),
-    visual_theme='Navy, ice blue and cool white',
+    visual_theme='Forest green, lime and warm white',
     interpretation='Overall quality percentage is a normalized model estimate across eight equally weighted visual criteria. It is unvalidated and is not a probability or a percentage of usable frames. Quality visual findings are sampled model observations, not verified defects. Annotation density is measured on two 24-second excerpts. It is not a semantic accuracy score. Model captions may contain semantic and format errors. All original output and validation flags are retained.',
     credits=dict(footage='EPIC-KITCHENS dataset',dataset_url='https://epic-kitchens.github.io/',
                  annotations_url='https://github.com/epic-kitchens/epic-kitchens-100-annotations',

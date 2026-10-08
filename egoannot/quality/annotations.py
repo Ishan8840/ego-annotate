@@ -90,9 +90,9 @@ def parse_verification(raw, timestamps):
     return value
 
 
-def verify_label(label, span, engine, frame_times=None):
+def verify_label(label, span, engine, frame_times=None, evidence=None, max_retries=0):
     from .analysis import visual_frames
-    parts, times = visual_frames(span['video_path'], span['video_duration_s'],
+    parts, times = evidence if evidence is not None else visual_frames(span['video_path'], span['video_duration_s'],
                                  start=span['v_start'], end=span['v_end'],
                                  sample_fps=4, max_frames=16, frame_times=frame_times)
     if not times:
@@ -113,16 +113,33 @@ def verify_label(label, span, engine, frame_times=None):
         'No rewriting of the candidate.')
     candidate = {k: label.get(k) for k in ('text', 'verb', 'noun', 'hand', 'visibility', 'uncertain')}
     call = dict(sample_timestamps_s=times, candidate=candidate, system_prompt=system)
+    attempts = []
     try:
-        _, usage = engine(system, [('text', 'Candidate annotation: ' + json.dumps(candidate))] + parts, [])
-        call.update(raw=engine.last_raw, usage=usage)
-        call['fields'] = parse_verification(engine.last_raw, times)
+        request = [('text', 'Candidate annotation: ' + json.dumps(candidate))] + parts
+        for attempt in range(max_retries + 1):
+            _, usage = engine(system, request, [])
+            call.update(raw=engine.last_raw, usage=usage)
+            record = dict(raw=engine.last_raw, usage=usage)
+            attempts.append(record)
+            try:
+                call['fields'] = parse_verification(engine.last_raw, times)
+                break
+            except (ValueError, TypeError) as error:
+                record['error'] = str(error)
+                if attempt == max_retries:
+                    raise
+                request = request + [('text', 'Previous response failed validation: ' + str(error)
+                    + '. Reassess the SAME images. Cite only these exact timestamps, without rounding: '
+                    + json.dumps(times))]
     except Exception as exc:
         call['error'] = f'{type(exc).__name__}: {exc}'
+    if max_retries:
+        call['attempts'] = attempts
     return call
 
 
-def audit(captions_path, spans_path, segments, out, visual='none', model=None, engine=None):
+def audit(captions_path, spans_path, segments, out, visual='none', model=None, engine=None,
+          probe_cache=None, frame_store=None):
     from ..core.video import SegmentFrames
     from ..stages.caption import _errors, QwenLocal
     from .analysis import probe, _number
@@ -137,7 +154,7 @@ def audit(captions_path, spans_path, segments, out, visual='none', model=None, e
     by_id = {s['span_id']: s for s in spans if isinstance(s.get('span_id'), str)}
     invalid = {i['span_id'] for i in issues if isinstance(i['span_id'], str)}
     source_counts = Counter(s.get('span_id') for s in spans if isinstance(s.get('span_id'), str))
-    store, sources, times = SegmentFrames(segments), {}, {}
+    store, sources, times = frame_store or SegmentFrames(segments, probe_cache=probe_cache), {}, {}
     if visual == 'qwen-local' and engine is None:
         engine = QwenLocal(model)
     result = dict(schema_version=1, sources=sources, input_issues=issues, annotations=[],
@@ -184,7 +201,7 @@ def audit(captions_path, spans_path, segments, out, visual='none', model=None, e
                 store.indices_for(segment, span['v_start'], span['v_end'], 8)
                 if segment not in sources:
                     path = Path(store.path_for(segment))
-                    data, _, _ = probe(path)
+                    data, _, _ = probe_cache.get(path) if probe_cache is not None else probe(path)
                     ts = [_number(f.get('best_effort_timestamp_time'), float('nan')) for f in data.get('frames', [])]
                     times[segment] = [t - ts[0] for t in ts] if ts else []
                     with path.open('rb') as fh:

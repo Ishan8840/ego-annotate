@@ -90,7 +90,8 @@ def ranges(times, mask, step, minimum=0):
 
 
 def probe(path):
-    p = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0',
+    from ..core.video import video_thread_args
+    p = subprocess.run(['ffprobe', '-v', 'error', *video_thread_args(), '-select_streams', 'v:0',
                         '-show_streams', '-show_format', '-show_frames',
                         '-show_entries',
                         'stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration,codec_name:'
@@ -121,13 +122,40 @@ def _rate(value):
 
 def _phash(gray):
     d = cv2.dct(cv2.resize(gray, (32, 32)).astype(np.float32))[:8, :8].flatten()[1:]
-    return ''.join('1' if x > np.median(d) else '0' for x in d)
+    median = np.median(d)
+    return ''.join('1' if x > median else '0' for x in d)
 
 
-def measure_video(path, metadata=None, expected=None):
+def measure_video(path, metadata=None, expected=None, probe_cache=None, *, fast=False,
+                  frame_observer=None):
+    """Optional fast scheduling retains all measurements and strict decode checks.
+
+    The observer receives every decoded frame synchronously; it must copy any
+    pixels it retains. It cannot change measurement inputs.
+    """
+    if not fast:
+        return _measure_video(path, metadata, expected, probe_cache,
+                              frame_observer=frame_observer)
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        diagnostic = pool.submit(_strict_decode, path)
+        return _measure_video(path, metadata, expected, probe_cache,
+                              diagnostic=diagnostic, frame_observer=frame_observer,
+                              fast=True)
+
+
+def _strict_decode(path):
+    from ..core.video import video_thread_args
+    return subprocess.run(['ffmpeg', '-v', 'error', *video_thread_args(), '-xerror', '-i', str(path),
+                           '-map', '0:v:0', '-f', 'null', '-'], capture_output=True, text=True)
+
+
+def _measure_video(path, metadata=None, expected=None, probe_cache=None, *,
+                   diagnostic=None, frame_observer=None, fast=False):
+    from ..core.video import video_thread_args
     path = Path(path)
     metadata, expected = metadata or {}, expected or {}
-    data, code, error = probe(path)
+    data, code, error = probe_cache.get(path) if probe_cache is not None else probe(path)
     stream = next(iter(data.get('streams', [])), {})
     fps = _rate(stream.get('avg_frame_rate')) or _rate(stream.get('r_frame_rate'))
     declared_duration = _number(stream.get('duration')) or _number(data.get('format', {}).get('duration'))
@@ -135,8 +163,7 @@ def measure_video(path, metadata=None, expected=None):
     valid_times = bool(raw_times) and all(math.isfinite(t) for t in raw_times)
     times = np.asarray(raw_times) - raw_times[0] if valid_times else np.array([])
     # ffmpeg reports bitstream damage which tolerant OpenCV decoders may conceal.
-    decode = subprocess.run(['ffmpeg', '-v', 'error', '-xerror', '-i', str(path),
-                             '-map', '0:v:0', '-f', 'null', '-'], capture_output=True, text=True)
+    decode = None if diagnostic is not None else _strict_decode(path)
     cap = cv2.VideoCapture(str(path))
     sample_times, means, dark, light, sharp, noise, changes, exact = ([] for _ in range(8))
     thumbnails, previous, previous_digest, frame_digest = [], None, None, hashlib.sha256()
@@ -151,7 +178,7 @@ def measure_video(path, metadata=None, expected=None):
         h, w = frame.shape[:2]
         dimensions[f'{w}x{h}'] += 1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        digest = hashlib.sha256(frame.tobytes()).digest()
+        digest = hashlib.sha256(memoryview(frame) if fast and frame.flags.c_contiguous else frame.tobytes()).digest()
         frame_digest.update(f'{w}x{h}:'.encode() + digest)
         exact.append(previous_digest == digest)
         repeated_nonadjacent.append(digest in seen_frames and previous_digest != digest)
@@ -165,12 +192,18 @@ def measure_video(path, metadata=None, expected=None):
         light.append(float(np.mean(gray >= 250)))
         sharp.append(float(cv2.Laplacian(gray, cv2.CV_32F).var()))
         # High-frequency residual also responds to texture and compression; not an SNR estimate.
-        noise.append(float(np.median(np.abs(gray.astype(float) - cv2.medianBlur(gray, 3)))))
+        residual = (cv2.absdiff(gray, cv2.medianBlur(gray, 3)) if fast else
+                    np.abs(gray.astype(float) - cv2.medianBlur(gray, 3)))
+        noise.append(float(np.median(residual)))
         changes.append(float(np.mean(cv2.absdiff(previous, gray)))
                        if previous is not None and previous.shape == gray.shape else 0.)
         previous = gray
         if not thumbnails or t - thumbnails[-1][0] >= .5 - 1e-5:
             thumbnails.append((t, _phash(gray), float(gray.std())))
+        if frame_observer is not None:
+            frame_observer(n, t, frame, gray, dict(mean=means[-1], dark=dark[-1],
+                light=light[-1], detail=sharp[-1], change=changes[-1],
+                exact=exact[-1], repeated=repeated_nonadjacent[-1]))
         n += 1
     cap.release()
     with path.open('rb') as fh:
@@ -179,6 +212,8 @@ def measure_video(path, metadata=None, expected=None):
     measurements = dict(mean_luma=distribution(means), dark_pixel_fraction=distribution(dark),
                         clipped_light_fraction=distribution(light), laplacian_variance=distribution(sharp),
                         high_frequency_residual=distribution(noise), frame_change_mae=distribution(changes))
+    if diagnostic is not None:
+        decode = diagnostic.result()
     issues = []
     def issue(kind, description, intervals, source='image_metric'):
         issues.append(dict(kind=kind, description=description, intervals_s=intervals, source=source))
@@ -399,12 +434,12 @@ def annotate_visual_limits(visual):
     return visual
 
 
-def describe_video(clip, engine, spec=None, window_seconds=8):
+def describe_video(clip, engine, spec=None, window_seconds=8, workers=1, probe_cache=None, parallel_groups=False):
     spec = spec or {}
     if not math.isfinite(window_seconds) or window_seconds <= 0:
         raise ValueError('window_seconds must be positive and finite')
     result = dict(observations=[], unavailable={}, calls=[], sample_timestamps_s=[], windows=[])
-    data, _, _ = probe(clip['path'])
+    data, _, _ = probe_cache.get(clip['path']) if probe_cache is not None else probe(clip['path'])
     times = [_number(f.get('best_effort_timestamp_time'), float('nan')) for f in data.get('frames', [])]
     if times:
         times = [t - times[0] for t in times]
@@ -431,11 +466,15 @@ def describe_video(clip, engine, spec=None, window_seconds=8):
               'A single-frame observation uses [t,t]. Never invent observations to fill a category.')
     # A rounded container duration must not invent an empty tail window.
     last_frame_end = times[-1] + 1e-9 if times and math.isfinite(times[-1]) else clip['duration_s']
-    for start in np.arange(0., max(0., last_frame_end), window_seconds):
+    if type(workers) is not int or workers < 1:
+        raise ValueError('Visual worker count must be a positive integer')
+
+    def describe_window(start):
+        local_result = dict(observations=[], calls=[], sample_timestamps_s=[], windows=[])
         start = float(start)
         end = min(start + window_seconds, clip['duration_s'])
         window = dict(interval_s=[start, end], analyzed_dimensions=[], unavailable={})
-        result['windows'].append(window)
+        local_result['windows'].append(window)
         # Add brief anomaly onsets which uniform samples may miss. The cap is explicit.
         events = sorted({float(a) for o in clip.get('observations', [])
                          for a, b in o['intervals_s'] if start <= a < end})
@@ -448,10 +487,11 @@ def describe_video(clip, engine, spec=None, window_seconds=8):
                 raise ValueError('No frames in window')
         except Exception as exc:
             window['unavailable'] = {d: str(exc) for d in available}
-            continue
+            return local_result
         window['sample_timestamps_s'] = timestamps
-        result['sample_timestamps_s'].extend(timestamps)
-        for offset in range(0, len(available), 4):
+        local_result['sample_timestamps_s'].extend(timestamps)
+        def describe_group(offset):
+            group_result = dict(observations=[], calls=[], unavailable={}, analyzed_dimensions=[])
             group = available[offset:offset+4]
             prompt = (f'Clip length {clip["duration_s"]:.4f}s. Requested dimensions: '
                       + json.dumps({d: DIMENSIONS[d] for d in group})
@@ -466,28 +506,59 @@ def describe_video(clip, engine, spec=None, window_seconds=8):
                     call.update(raw=engine.last_raw, usage=usage)
                 except Exception as exc:
                     call['error'] = f'{type(exc).__name__}: {exc}'
-                    window['unavailable'].update({d: 'Visual analysis failed: ' + call['error'] for d in group})
-                    result['calls'].append(call)
+                    group_result['unavailable'].update({d: 'Visual analysis failed: ' + call['error'] for d in group})
+                    group_result['calls'].append(call)
                     break
                 try:
                     rows = parse_visual(engine.last_raw, group, clip['duration_s'], timestamps)
                     for row in rows:
                         row['window_s'] = [start, end]
-                    window['analyzed_dimensions'].extend(group)
-                    result['observations'].extend(rows)
-                    result['calls'].append(call)
+                    group_result['analyzed_dimensions'].extend(group)
+                    group_result['observations'].extend(rows)
+                    group_result['calls'].append(call)
                     break
                 except (ValueError, TypeError, KeyError) as exc:
                     call['error'] = f'{type(exc).__name__}: {exc}'
-                    result['calls'].append(call)
+                    group_result['calls'].append(call)
                     if attempt == 1:
-                        window['unavailable'].update({d: 'Visual analysis failed: ' + call['error'] for d in group})
+                        group_result['unavailable'].update({d: 'Visual analysis failed: ' + call['error'] for d in group})
                     correction = ('\nYour previous reply failed schema validation: ' + call['error']
                                   + '\nReturn all requested dimensions. Do not invent findings. '
                                   'Evidence interval endpoints MUST be selected from these exact JSON numbers: '
                                   + json.dumps(timestamps)
                                   + '. Use [t,t] for one frame. Return an empty evidence array for no concern. '
                                   'Do not use the window end unless it is in this list.')
+            return group_result
+        offsets = list(range(0, len(available), 4))
+        def collect_group(group_result):
+            local_result['observations'].extend(group_result['observations'])
+            local_result['calls'].extend(group_result['calls'])
+            window['unavailable'].update(group_result['unavailable'])
+            window['analyzed_dimensions'].extend(group_result['analyzed_dimensions'])
+        if workers == 1 or not parallel_groups:
+            for offset in offsets:
+                collect_group(describe_group(offset))
+        else:
+            from concurrent.futures import ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=len(offsets)) as group_pool:
+                for group_result in group_pool.map(describe_group, offsets):
+                    collect_group(group_result)
+        return local_result
+
+    starts = list(np.arange(0., max(0., last_frame_end), window_seconds))
+    if workers == 1:
+        results = map(describe_window, starts)
+        for local_result in results:
+            for key, values in local_result.items():
+                result[key].extend(values)
+    else:
+        # Independent windows share a concurrency-safe queued engine. Merge in
+        # source order so request completion order cannot change aggregation.
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            for local_result in pool.map(describe_window, starts):
+                for key, values in local_result.items():
+                    result[key].extend(values)
     for dim in available:
         failures = [w['interval_s'] for w in result['windows'] if dim in w['unavailable']]
         if failures:
@@ -588,7 +659,7 @@ def validate_spec(spec, clip_ids):
             raise ValueError('Unknown diversity field')
 
 
-def analyze(inputs, out, spec_path=None, visual='none', model=None, window_seconds=8):
+def analyze(inputs, out, spec_path=None, visual='none', model=None, window_seconds=8, engine=None, probe_cache=None, visual_workers=1):
     from .report import write_reports
     out = Path(out)
     if not math.isfinite(window_seconds) or window_seconds <= 0:
@@ -618,8 +689,7 @@ def analyze(inputs, out, spec_path=None, visual='none', model=None, window_secon
     if not isinstance(spec, dict):
         raise ValueError('Specification must be a JSON object.')
     validate_spec(spec, [p.stem for p in paths])
-    engine = None
-    if visual == 'qwen-local':
+    if engine is None and visual == 'qwen-local':
         from ..stages.caption import QwenLocal
         engine = QwenLocal(model)
     clips = []
@@ -628,9 +698,9 @@ def analyze(inputs, out, spec_path=None, visual='none', model=None, window_secon
         print('Analyzing', path.name, flush=True)
         local_spec = {k: v for k, v in spec.items() if k != 'clips'}
         local_spec.update(spec.get('clips', {}).get(path.stem, {}))
-        clip = measure_video(path, metadata.get(path.stem), local_spec.get('expected_video'))
+        clip = measure_video(path, metadata.get(path.stem), local_spec.get('expected_video'), probe_cache=probe_cache)
         if engine and clip['frame_count']:
-            clip['visual'] = describe_video(clip, engine, local_spec, window_seconds)
+            clip['visual'] = describe_video(clip, engine, local_spec, window_seconds, workers=visual_workers, probe_cache=probe_cache)
         clips.append(clip)
         # A crash in a later model call does not erase measurements from completed clips.
         (out / 'clips.partial.json').write_text(json.dumps(clips, indent=2, allow_nan=False) + '\n')
