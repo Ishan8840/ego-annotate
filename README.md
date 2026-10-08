@@ -47,6 +47,11 @@ to load the model once; their filenames must have different stems:
 python ego.py quality clip-a.mp4 clip-b.mp4 --hands --out outputs/batch
 ```
 
+For higher batch throughput, add `--episode-workers 4` to `quality` in measured
+mode (with or without `--hands`). Episodes keep separate tracking/evidence state
+and share one GPU model. The default remains one episode at a time.
+[Concurrency benchmarks and scope](docs/episode-concurrency.md).
+
 Optional VLM context uses `--mode hybrid` and the separate
 [VLM environment](docs/getting-started.md#optional-vlm-context). The new shortcut
 defaults to `measured`; the existing scripts keep their original defaults.

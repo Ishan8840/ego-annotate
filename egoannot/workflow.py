@@ -44,6 +44,8 @@ def parser():
             sp.add_argument('--mode', choices=['measured', 'hybrid'], default='measured',
                             help='measured: no VLM (default); hybrid: add compact VLM context')
             sp.add_argument('--hands', action='store_true', help='include hand tracking in the same decode pass')
+            sp.add_argument('--episode-workers', type=int, choices=[1, 2, 4], default=1,
+                            help='Concurrent episodes in measured mode (default: 1)')
             sp.add_argument('--model', type=Path, default=ROOT / 'models/qwen3-vl-8b')
         else:
             sp.add_argument('--no-overlay', action='store_true', help='save reports only; skip video/review rendering')
@@ -156,6 +158,8 @@ def main(argv=None):
         page = build_review(p, args.kind, args.input, args.out)
         print(f'Open in your browser: {page.resolve()}')
         return 0
+    if args.command == 'quality' and args.episode_workers > 1 and args.mode != 'measured':
+        p.error('Concurrent episodes require --mode measured; hybrid concurrency is not validated.')
     validate_sources(p, args)
     with_hands = args.command == 'hands' or args.hands
     profile = 'hybrid' if args.command == 'quality' and args.mode == 'hybrid' else ('hands' if with_hands else 'measured')
@@ -173,7 +177,8 @@ def main(argv=None):
             page = build_review(p, 'hands', args.out)
             print(f'Open in your browser: {page.resolve()}')
     else:
-        options = [*common, '--mode', args.mode, '--model', args.model]
+        options = [*common, '--mode', args.mode, '--model', args.model,
+                   '--episode-workers', args.episode_workers]
         if with_hands:
             options += ['--hands', '--hand-model', args.hand_model,
                         '--hand-accuracy', args.accuracy, '--hand-hz', args.hz]

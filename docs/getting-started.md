@@ -82,6 +82,30 @@ python ego.py quality input.mp4 --hands --out outputs/quality-hands
 cadence experiment. Track predictions between detector samples do not count
 as observed coverage. [Hand detector details](hand-tracking.md).
 
+## Concurrent episodes
+
+```bash
+# Measured checks + motion, four episodes in flight
+python ego.py quality clip1.mp4 clip2.mp4 clip3.mp4 clip4.mp4 \
+  --episode-workers 4 --out outputs/concurrent-quality
+
+# Add the balanced hand detector; one model shared across episodes
+python ego.py quality clip1.mp4 clip2.mp4 clip3.mp4 clip4.mp4 \
+  --hands --episode-workers 4 --out outputs/concurrent-hands
+```
+
+Use 1 (default), 2 or 4 episode workers. This improves total batch throughput;
+an individual episode can take longer while sharing resources. Hand recovery,
+tracks, source probes and output files remain independent for each episode.
+The model still processes one image request at a time, preserving the tested
+numerics. GPU image batching remains a separate benchmark experiment because
+it changed outputs and did not improve throughput on the test set.
+
+Concurrency is supported for measured quality, including optional hands.
+`--mode hybrid --episode-workers 2/4` is rejected before model loading;
+captioning and VLM concurrency have not been benchmarked on the replacement VM.
+See [measurements and reproduction commands](episode-concurrency.md).
+
 ## Optional VLM context
 
 Use this when you need the compact visual judgments in addition to measurements.

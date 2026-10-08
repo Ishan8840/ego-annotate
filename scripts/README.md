@@ -10,6 +10,7 @@ All existing scripts and flags remain available for reproducible experiments.
 | Human review | `build_quality_review.py`, `build_hand_review.py`, `summarize_quality_review.py` |
 | Full RGB annotation / near-real-time candidate | `process_rgb_pipeline.py`, `process_rgb_realtime.py` |
 | Public benchmark inputs / Qwen weights | `download_speed_data.py`, `download_speed_model.py` |
+| Episode concurrency | `benchmark_episode_concurrency.py` |
 | Quality performance | `benchmark_quality.py`, `benchmark_quality_measurements.py`, `compare_quality_benchmarks.py` |
 | RGB runtime comparisons | `replay_speed.py`, `summarize_speed.py`, `compare_speed_outputs.py`, `compare_realtime_outputs.py` |
 | Hand recovery experiments | `probe_hand_recovery.py`, `probe_hand_competing.py`, `compare_hand_recovery.py` |

@@ -107,3 +107,12 @@ def test_model_defaults_independent_of_cwd(tmp_path, monkeypatch):
     args = w.parser().parse_args(['quality', 'input.mp4', '--hands', '--out', 'out'])
     assert args.hand_model == w.ROOT / 'models/owlv2-hand'
     assert args.videos == [Path('input.mp4')]
+
+
+def test_hybrid_concurrency_rejected_before_loading(tmp_path, monkeypatch):
+    monkeypatch.setattr(w, 'ready', lambda *a: pytest.fail('loaded before validation'))
+    with pytest.raises(SystemExit) as exc:
+        w.main(['quality', str(video(tmp_path)), '--out', str(tmp_path / 'out'),
+                '--mode', 'hybrid', '--episode-workers', '2'])
+    assert exc.value.code == 2
+    assert not (tmp_path / 'out').exists()

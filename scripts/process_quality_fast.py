@@ -124,6 +124,35 @@ def run(path, out, engine=None, workers=8, hand_detector=None, hand_hz=2., hand_
     return timing
 
 
+def run_concurrent(videos, out, workers, hand_detector=None, hand_hz=2.):
+    """Overlap independent episodes, retaining one serialized GPU model.
+
+    Recovery cadence, tracking state, evidence and reports belong to each episode.
+    True GPU microbatching remains a benchmark-only experiment.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    from egoannot.quality.shared_hand import SharedHandExecutor
+    server = None
+    if hand_detector is not None:
+        from egoannot.quality.hand_recovery import RecoveryHandDetector
+        base = hand_detector.detector if isinstance(hand_detector, RecoveryHandDetector) else hand_detector
+        server = SharedHandExecutor(base, max_batch=1)
+    def one(path):
+        local = None
+        if server:
+            local = server.client()
+            if isinstance(hand_detector, RecoveryHandDetector):
+                local = RecoveryHandDetector(local, discovery=hand_detector.discovery,
+                    verify_weak=hand_detector.verify_weak, discovery_every=hand_detector.discovery_every)
+        return run(path.resolve(), out / path.stem, hand_detector=local, hand_hz=hand_hz)
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            return list(pool.map(one, videos))
+    finally:
+        if server:
+            server.close()
+
+
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('videos', nargs='+', type=Path)
@@ -131,6 +160,8 @@ def main():
     parser.add_argument('--mode', choices=['hybrid', 'measured'], default='hybrid')
     parser.add_argument('--model', default='models/qwen3-vl-8b')
     parser.add_argument('--workers', type=int, default=8)
+    parser.add_argument('--episode-workers', type=int, choices=[1, 2, 4], default=1,
+                        help='Concurrent episodes for measured mode; share one hand model (default: 1)')
     parser.add_argument('--max-output-tokens', type=int, default=768)
     parser.add_argument('--decoding', choices=['plain', 'regex', 'json'], default='regex')
     parser.add_argument('--hands', action='store_true', help='Sparse Apache-2.0 OWLv2 hand detection + optical flow')
@@ -143,6 +174,8 @@ def main():
             len({p.stem for p in args.videos}) != len(args.videos) or
             args.workers < 1 or args.max_output_tokens < 1):
         parser.error('Use existing unique-basename sources, a new output directory, and positive limits')
+    if args.episode_workers > 1 and args.mode != 'measured':
+        parser.error('Concurrent episodes are validated only for measured mode; use --mode measured')
     os.environ['CAPTION_GREEDY'] = '1'
     os.environ['EGO_VIDEO_THREADS'] = '4'
     os.environ['OPENCV_FFMPEG_THREADS'] = '4'
@@ -177,12 +210,15 @@ def main():
         runtime.stats.clear()
     ready = time.perf_counter()
     try:
-        rows = []
-        for path in args.videos:
-            if runtime:
-                runtime.llm.reset_prefix_cache()
-                runtime.llm.reset_mm_cache()
-            rows.append(run(path.resolve(), args.out / path.stem, runtime, args.workers, hand_detector, args.hand_hz))
+        if args.episode_workers > 1:
+            rows = run_concurrent(args.videos, args.out, args.episode_workers, hand_detector, args.hand_hz)
+        else:
+            rows = []
+            for path in args.videos:
+                if runtime:
+                    runtime.llm.reset_prefix_cache()
+                    runtime.llm.reset_mm_cache()
+                rows.append(run(path.resolve(), args.out / path.stem, runtime, args.workers, hand_detector, args.hand_hz))
     finally:
         if runtime:
             runtime.close()
